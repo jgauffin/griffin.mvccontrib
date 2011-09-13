@@ -21,7 +21,7 @@ namespace Griffin.MvcContrib.Providers
     /// </item>
     /// </list>
     /// </remarks>
-    public interface IServiceLocator 
+    public interface IServiceLocator
     {
         /// <summary>
         /// Get one of the services needed by <see cref="MembershipProvider"/>.

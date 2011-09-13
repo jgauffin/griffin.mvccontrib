@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Griffin.MvcContrib.Providers.Roles
 {
@@ -11,15 +8,15 @@ namespace Griffin.MvcContrib.Providers.Roles
     public interface IUserWithRoles
     {
         /// <summary>
+        /// Gets a list of all roles that the user is a member of.
+        /// </summary>
+        IEnumerable<string> Roles { get; }
+
+        /// <summary>
         /// Check if the user is a member of the specified role
         /// </summary>
         /// <param name="roleName">Role</param>
         /// <returns>true if user belongs to the role; otherwise false.</returns>
         bool IsInRole(string roleName);
-
-        /// <summary>
-        /// Gets a list of all roles that the user is a member of.
-        /// </summary>
-        IEnumerable<string> Roles { get; }
     }
 }

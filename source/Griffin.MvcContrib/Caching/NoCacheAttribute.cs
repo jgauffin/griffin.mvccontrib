@@ -6,7 +6,7 @@ namespace Griffin.MvcContrib.Caching
     /// <summary>
     /// Do not cache anything
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class|AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public class NoCacheAttribute : OutputCacheAttribute
     {
         /// <summary>

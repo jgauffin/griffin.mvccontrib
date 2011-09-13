@@ -21,10 +21,10 @@ namespace Griffin.MvcContrib.Providers.Membership.PasswordStrategies
         {
             if (account.PasswordSalt == null)
                 account.PasswordSalt = CreateSalt(10);
-            string saltAndPwd = String.Concat(account.Password, account.PasswordSalt);
+            var saltAndPwd = String.Concat(account.Password, account.PasswordSalt);
             var bytes = Encoding.Default.GetBytes(saltAndPwd);
-            SHA1 sha1 = SHA1.Create();
-            Byte[] computedHash = sha1.ComputeHash(bytes);
+            var sha1 = SHA1.Create();
+            var computedHash = sha1.ComputeHash(bytes);
             return Convert.ToBase64String(computedHash);
         }
 
@@ -60,10 +60,9 @@ namespace Griffin.MvcContrib.Providers.Membership.PasswordStrategies
         /// </returns>
         public bool Compare(AccountPasswordInfo account, string clearTextPassword)
         {
-
             var clearTextInfo = new AccountPasswordInfo(account.UserName, clearTextPassword)
                                     {PasswordSalt = account.PasswordSalt};
-            string password = Encrypt(clearTextInfo);
+            var password = Encrypt(clearTextInfo);
             return account.Password == password;
         }
 

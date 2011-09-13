@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Griffin.MvcContrib.Json
+﻿namespace Griffin.MvcContrib.Json
 {
     /// <summary>
     /// A response sent back to the client

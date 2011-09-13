@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
+﻿using System.Runtime.CompilerServices;
 
 namespace Griffin.MvcContrib.Json
 {
@@ -10,7 +6,7 @@ namespace Griffin.MvcContrib.Json
     /// Classes making it easier to handle JSON in MVC
     /// </summary>
     [CompilerGenerated]
-    class NamespaceDoc
+    internal class NamespaceDoc
     {
     }
 }

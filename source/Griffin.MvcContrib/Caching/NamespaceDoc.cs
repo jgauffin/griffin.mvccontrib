@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
+﻿using System.Runtime.CompilerServices;
 
 namespace Griffin.MvcContrib.Caching
 {
@@ -10,7 +6,7 @@ namespace Griffin.MvcContrib.Caching
     /// Classes making it easier to handle Caching in MVC
     /// </summary>
     [CompilerGenerated]
-    class NamespaceDoc
+    internal class NamespaceDoc
     {
     }
 }

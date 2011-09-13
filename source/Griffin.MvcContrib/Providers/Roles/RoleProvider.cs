@@ -86,7 +86,7 @@ namespace Griffin.MvcContrib.Providers.Roles
         /// <param name="username">The user name to search for.</param><param name="roleName">The role to search in.</param>
         public override bool IsUserInRole(string username, string roleName)
         {
-            IUserWithRoles user = Repository.GetUser(ApplicationName, username);
+            var user = Repository.GetUser(ApplicationName, username);
             return user.IsInRole(roleName);
         }
 
@@ -99,7 +99,7 @@ namespace Griffin.MvcContrib.Providers.Roles
         /// <param name="username">The user to return a list of roles for.</param>
         public override string[] GetRolesForUser(string username)
         {
-            IUserWithRoles user = Repository.GetUser(ApplicationName, username);
+            var user = Repository.GetUser(ApplicationName, username);
             if (user == null)
                 return new string[0];
             return user.Roles.ToArray();
@@ -112,7 +112,7 @@ namespace Griffin.MvcContrib.Providers.Roles
         public override void CreateRole(string roleName)
         {
             if (RoleExists(roleName))
-                throw new ProviderException("Role '"+roleName+"' already exists.");
+                throw new ProviderException("Role '" + roleName + "' already exists.");
 
             if (roleName.Contains(","))
                 throw new ArgumentNullException("roleName", "Role names cannot contain commas.");
@@ -132,7 +132,7 @@ namespace Griffin.MvcContrib.Providers.Roles
             if (!RoleExists(roleName))
                 throw new ProviderException("Role '" + roleName + "' do not exists.");
 
-            IRole role = Repository.GetRole(ApplicationName, roleName);
+            var role = Repository.GetRole(ApplicationName, roleName);
             if (role.Count != 0 && throwOnPopulatedRole)
                 throw new ProviderException("Role '" + roleName + "' have assigned users.");
 
@@ -169,7 +169,6 @@ namespace Griffin.MvcContrib.Providers.Roles
             }
 
 
-
             foreach (var roleName in roleNames)
             {
                 foreach (var username in usernames)
@@ -185,9 +184,9 @@ namespace Griffin.MvcContrib.Providers.Roles
         /// <param name="usernames">A string array of user names to be removed from the specified roles. </param><param name="roleNames">A string array of role names to remove the specified user names from.</param>
         public override void RemoveUsersFromRoles(string[] usernames, string[] roleNames)
         {
-            foreach (string roleName in roleNames)
+            foreach (var roleName in roleNames)
             {
-                foreach (string username in usernames)
+                foreach (var username in usernames)
                 {
                     Repository.RemoveUserFromRole(ApplicationName, roleName, username);
                 }
@@ -203,7 +202,7 @@ namespace Griffin.MvcContrib.Providers.Roles
         /// <param name="roleName">The name of the role to get the list of users for.</param>
         public override string[] GetUsersInRole(string roleName)
         {
-            IRole role = Repository.GetRole(ApplicationName, roleName);
+            var role = Repository.GetRole(ApplicationName, roleName);
             return role == null ? new string[0] : role.Users.ToArray();
         }
 
@@ -227,8 +226,8 @@ namespace Griffin.MvcContrib.Providers.Roles
         /// <param name="roleName">The role to search in.</param><param name="usernameToMatch">The user name to search for.</param>
         public override string[] FindUsersInRole(string roleName, string usernameToMatch)
         {
-            string userName = usernameToMatch.ToLower();
-            IRole role = Repository.GetRole(ApplicationName, roleName);
+            var userName = usernameToMatch.ToLower();
+            var role = Repository.GetRole(ApplicationName, roleName);
             return role.Users.Where(user => user.ToLower().Contains(userName)).ToArray();
         }
 

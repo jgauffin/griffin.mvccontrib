@@ -24,6 +24,5 @@ namespace Griffin.MvcContrib.Json
         {
             get { return _message; }
         }
-
     }
 }

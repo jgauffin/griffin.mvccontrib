@@ -1,4 +1,23 @@
-﻿using System;
+﻿/*
+ * Copyright (c) 2011, Jonas Gauffin. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301 USA
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
 
@@ -25,7 +44,7 @@ namespace Griffin.MvcContrib.Localization
     /// }
     /// </code>
     /// </example>
-    public class LocalizedModelMetadataProvider : DataAnnotationsModelMetadataProvider 
+    public class LocalizedModelMetadataProvider : DataAnnotationsModelMetadataProvider
     {
         private readonly ILocalizedStringProvider _stringProvider;
 
@@ -49,7 +68,8 @@ namespace Griffin.MvcContrib.Localization
         /// <returns>
         /// The metadata for the property.
         /// </returns>
-        protected override ModelMetadata CreateMetadata(IEnumerable<Attribute> attributes, Type containerType, Func<object> modelAccessor, Type modelType, string propertyName)
+        protected override ModelMetadata CreateMetadata(IEnumerable<Attribute> attributes, Type containerType,
+                                                        Func<object> modelAccessor, Type modelType, string propertyName)
         {
             var metadata = base.CreateMetadata(attributes, containerType, modelAccessor, modelType, propertyName);
             if (containerType == null || propertyName == null)
@@ -59,7 +79,7 @@ namespace Griffin.MvcContrib.Localization
                 metadata.DisplayName = Translate(containerType, propertyName);
 
             if (metadata.Watermark == null)
-                metadata.Watermark = Translate(containerType, propertyName , "Watermark");
+                metadata.Watermark = Translate(containerType, propertyName, "Watermark");
 
             if (metadata.Description == null)
                 metadata.Description = Translate(containerType, propertyName, "Description");
@@ -91,10 +111,9 @@ namespace Griffin.MvcContrib.Localization
         /// <param name="propertyName">Property name</param>
         /// <param name="metadataName">Meta data name</param>
         /// <returns>Translated string</returns>
-        protected  virtual string Translate(Type type, string propertyName, string metadataName)
+        protected virtual string Translate(Type type, string propertyName, string metadataName)
         {
             return _stringProvider.GetModelString(type, propertyName, metadataName);
         }
-
     }
 }

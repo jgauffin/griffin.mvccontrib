@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Security;
 
 namespace Griffin.MvcContrib.Providers.Membership.PasswordStrategies
@@ -60,12 +57,18 @@ namespace Griffin.MvcContrib.Providers.Membership.PasswordStrategies
         /// <summary>
         /// Gets if passwords can be decrypted.
         /// </summary>
-        public bool IsPasswordsDecryptable { get { return true; } }
+        public bool IsPasswordsDecryptable
+        {
+            get { return true; }
+        }
 
         /// <summary>
         /// Gets how passwords are stored in the database.
         /// </summary>
-        public MembershipPasswordFormat PasswordFormat { get { return MembershipPasswordFormat.Clear; } }
+        public MembershipPasswordFormat PasswordFormat
+        {
+            get { return MembershipPasswordFormat.Clear; }
+        }
 
         /// <summary>
         /// Checks if the specified password is valid
@@ -76,7 +79,6 @@ namespace Griffin.MvcContrib.Providers.Membership.PasswordStrategies
         public bool IsValid(string password, IPasswordPolicy passwordPolicy)
         {
             return passwordPolicy.IsPasswordValid(password);
-
         }
 
         #endregion

@@ -39,5 +39,4 @@ namespace Griffin.MvcContrib.Json
             base.OnActionExecuting(filterContext);
         }
     }
-
 }

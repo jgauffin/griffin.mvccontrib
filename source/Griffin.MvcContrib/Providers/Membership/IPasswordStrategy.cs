@@ -1,3 +1,22 @@
+/*
+ * Copyright (c) 2011, Jonas Gauffin. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301 USA
+ */
+
 using System.Web.Security;
 
 namespace Griffin.MvcContrib.Providers.Membership
@@ -7,6 +26,16 @@ namespace Griffin.MvcContrib.Providers.Membership
     /// </summary>
     public interface IPasswordStrategy
     {
+        /// <summary>
+        /// Gets if passwords can be decrypted.
+        /// </summary>
+        bool IsPasswordsDecryptable { get; }
+
+        /// <summary>
+        /// Gets how passwords are stored in the database.
+        /// </summary>
+        MembershipPasswordFormat PasswordFormat { get; }
+
         /// <summary>
         /// Encrypt a password
         /// </summary>
@@ -41,16 +70,6 @@ namespace Griffin.MvcContrib.Providers.Membership
         /// with the one that have been stored in a database.
         /// </remarks>
         bool Compare(AccountPasswordInfo account, string clearTextPassword);
-
-        /// <summary>
-        /// Gets if passwords can be decrypted.
-        /// </summary>
-        bool IsPasswordsDecryptable { get; }
-
-        /// <summary>
-        /// Gets how passwords are stored in the database.
-        /// </summary>
-        MembershipPasswordFormat PasswordFormat { get; }
 
         /// <summary>
         /// Checks if the specified password is valid

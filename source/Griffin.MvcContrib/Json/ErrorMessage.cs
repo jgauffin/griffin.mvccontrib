@@ -5,8 +5,8 @@ namespace Griffin.MvcContrib.Json
     /// </summary>
     public class ErrorMessage : IJsonResponseContent
     {
-        private readonly string _propertyName;
         private readonly string _message;
+        private readonly string _propertyName;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ErrorMessage"/> class.

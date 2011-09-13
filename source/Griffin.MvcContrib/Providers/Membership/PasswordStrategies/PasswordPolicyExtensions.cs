@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 
 namespace Griffin.MvcContrib.Providers.Membership.PasswordStrategies
 {
@@ -26,7 +24,7 @@ namespace Griffin.MvcContrib.Providers.Membership.PasswordStrategies
         public static string GeneratePassword(this IPasswordPolicy policy)
         {
             var length = _random.Next(policy.PasswordMinimumLength, policy.PasswordMinimumLength + 5);
-            string password = "";
+            var password = "";
 
             var allowedCharacters = "abcdefghjkmnopqrstuvxtzABCDEFGHJKLMNPQRSTUVXYZ23456789";
             var alphas = "@!?&%/\\";
@@ -34,9 +32,9 @@ namespace Griffin.MvcContrib.Providers.Membership.PasswordStrategies
                 allowedCharacters += alphas;
 
             var nonAlphaLeft = policy.MinRequiredNonAlphanumericCharacters;
-            for (int i = 0; i < length; i++)
+            for (var i = 0; i < length; i++)
             {
-                char ch = allowedCharacters[_random.Next(0, allowedCharacters.Length)];
+                var ch = allowedCharacters[_random.Next(0, allowedCharacters.Length)];
                 if (alphas.IndexOf(ch) != -1)
                     nonAlphaLeft--;
 
@@ -48,6 +46,5 @@ namespace Griffin.MvcContrib.Providers.Membership.PasswordStrategies
 
             return password;
         }
-
     }
 }

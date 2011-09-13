@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 
 namespace Griffin.MvcContrib.Json
 {
@@ -17,12 +13,13 @@ namespace Griffin.MvcContrib.Json
         /// <param name="controller"></param>
         /// <param name="content"></param>
         /// <returns></returns>
-        public static JsonResult JsonResponse( this Controller controller, IJsonResponseContent content)
+        public static JsonResult JsonResponse(this Controller controller, IJsonResponseContent content)
         {
-            return new JsonResult{Data = content};
+            return new JsonResult {Data = content};
         }
 
-        public static JsonResult JsonResponse(this Controller controller, IJsonResponseContent content, JsonRequestBehavior requestBehavior)
+        public static JsonResult JsonResponse(this Controller controller, IJsonResponseContent content,
+                                              JsonRequestBehavior requestBehavior)
         {
             return new JsonResult {Data = content, JsonRequestBehavior = requestBehavior};
         }

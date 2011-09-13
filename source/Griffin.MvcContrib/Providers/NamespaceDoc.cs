@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
+﻿using System.Runtime.CompilerServices;
 
 namespace Griffin.MvcContrib.Providers
 {
@@ -10,7 +6,7 @@ namespace Griffin.MvcContrib.Providers
     /// A bit more SOLID implementation of a membership provider.
     /// </summary>
     [CompilerGenerated]
-    class NamespaceDoc
+    internal class NamespaceDoc
     {
     }
 }

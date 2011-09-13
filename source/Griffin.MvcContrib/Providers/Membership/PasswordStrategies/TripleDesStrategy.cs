@@ -59,7 +59,7 @@ namespace Griffin.MvcContrib.Providers.Membership.PasswordStrategies
         /// </returns>
         public bool Compare(AccountPasswordInfo account, string clearTextPassword)
         {
-            string clear = DecryptString(account.Password, _passphrase.ToString());
+            var clear = DecryptString(account.Password, _passphrase.ToString());
             return clearTextPassword == clear;
         }
 
@@ -102,7 +102,7 @@ namespace Griffin.MvcContrib.Providers.Membership.PasswordStrategies
             // which is a valid length for the TripleDES encoder we use below
 
             var HashProvider = new MD5CryptoServiceProvider();
-            byte[] TDESKey = HashProvider.ComputeHash(UTF8.GetBytes(passphrase));
+            var TDESKey = HashProvider.ComputeHash(UTF8.GetBytes(passphrase));
 
             // Step 2. Create a new TripleDESCryptoServiceProvider object
             var TDESAlgorithm = new TripleDESCryptoServiceProvider();
@@ -113,12 +113,12 @@ namespace Griffin.MvcContrib.Providers.Membership.PasswordStrategies
             TDESAlgorithm.Padding = PaddingMode.PKCS7;
 
             // Step 4. Convert the input string to a byte[]
-            byte[] DataToEncrypt = UTF8.GetBytes(password);
+            var DataToEncrypt = UTF8.GetBytes(password);
 
             // Step 5. Attempt to encrypt the string
             try
             {
-                ICryptoTransform Encryptor = TDESAlgorithm.CreateEncryptor();
+                var Encryptor = TDESAlgorithm.CreateEncryptor();
                 Results = Encryptor.TransformFinalBlock(DataToEncrypt, 0, DataToEncrypt.Length);
             }
             finally
@@ -142,7 +142,7 @@ namespace Griffin.MvcContrib.Providers.Membership.PasswordStrategies
             // which is a valid length for the TripleDES encoder we use below
 
             var HashProvider = new MD5CryptoServiceProvider();
-            byte[] TDESKey = HashProvider.ComputeHash(UTF8.GetBytes(Passphrase));
+            var TDESKey = HashProvider.ComputeHash(UTF8.GetBytes(Passphrase));
 
             // Step 2. Create a new TripleDESCryptoServiceProvider object
             var TDESAlgorithm = new TripleDESCryptoServiceProvider();
@@ -153,12 +153,12 @@ namespace Griffin.MvcContrib.Providers.Membership.PasswordStrategies
             TDESAlgorithm.Padding = PaddingMode.PKCS7;
 
             // Step 4. Convert the input string to a byte[]
-            byte[] DataToDecrypt = Convert.FromBase64String(password);
+            var DataToDecrypt = Convert.FromBase64String(password);
 
             // Step 5. Attempt to decrypt the string
             try
             {
-                ICryptoTransform Decryptor = TDESAlgorithm.CreateDecryptor();
+                var Decryptor = TDESAlgorithm.CreateDecryptor();
                 Results = Decryptor.TransformFinalBlock(DataToDecrypt, 0, DataToDecrypt.Length);
             }
             finally

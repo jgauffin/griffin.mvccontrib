@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
+﻿using System.Runtime.CompilerServices;
 
 namespace Griffin.MvcContrib
 {
@@ -12,7 +8,7 @@ namespace Griffin.MvcContrib
     /// Blog articles about the framework can be found at: http://blog.gauffin.org
     /// </summary>
     [CompilerGenerated]
-    class NamespaceDoc
+    internal class NamespaceDoc
     {
     }
 }
