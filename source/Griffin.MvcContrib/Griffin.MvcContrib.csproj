@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0D102D58-4D79-444D-B633-F7ACD3B6D749}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Griffin.MvcContrib</RootNamespace>
+    <AssemblyName>Griffin.MvcContrib</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Caching\NoCacheAttribute.cs" />
+    <Compile Include="Json\AllowCrossSiteScripting.cs" />
+    <Compile Include="Json\ControllerExtensions.cs" />
+    <Compile Include="Json\ErrorMessage.cs" />
+    <Compile Include="Json\IJsonResponseContent.cs" />
+    <Compile Include="Json\JsonResponse.cs" />
+    <Compile Include="Json\MessageBox.cs" />
+    <Compile Include="Localization\ILocalizedStringProvider.cs" />
+    <Compile Include="Localization\LocalizedAttribute.cs" />
+    <Compile Include="Localization\LocalizedCacheAttribute.cs" />
+    <Compile Include="Localization\LocalizedMetadataProvider.cs" />
+    <Compile Include="Localization\LocalizedModelValidatorProvider.cs" />
+    <Compile Include="Localization\ResourceStringProvider.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Providers\IServiceLocator.cs" />
+    <Compile Include="Providers\Membership\IAccountPasswordInfo.cs" />
+    <Compile Include="Providers\Membership\IAccountRepository.cs" />
+    <Compile Include="Providers\Membership\IPasswordPolicy.cs" />
+    <Compile Include="Providers\Membership\IPasswordStrategy.cs" />
+    <Compile Include="Providers\Membership\IUserAccount.cs" />
+    <Compile Include="Providers\Membership\MembershipProvider.cs" />
+    <Compile Include="Providers\Membership\PasswordExtensions.cs" />
+    <Compile Include="Providers\Membership\PasswordPolicy.cs" />
+    <Compile Include="Providers\Membership\PasswordStrategies\ClearTextStrategy.cs" />
+    <Compile Include="Providers\Membership\PasswordStrategies\HashPasswordStrategy.cs" />
+    <Compile Include="Providers\Membership\PasswordStrategies\PasswordPolicyExtensions.cs" />
+    <Compile Include="Providers\Membership\PasswordStrategies\TripleDesStrategy.cs" />
+    <Compile Include="Providers\Profile\ProfileProvider.cs" />
+    <Compile Include="Providers\Roles\IRole.cs" />
+    <Compile Include="Providers\Roles\IRoleRepository.cs" />
+    <Compile Include="Providers\Roles\IUserWithRoles.cs" />
+    <Compile Include="Providers\Roles\RoleProvider.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
