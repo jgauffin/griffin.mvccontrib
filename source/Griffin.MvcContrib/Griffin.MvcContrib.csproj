@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\Griffin.MvcContrib.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -45,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Caching\NamespaceDoc.cs" />
     <Compile Include="Caching\NoCacheAttribute.cs" />
     <Compile Include="Json\AllowCrossSiteScripting.cs" />
     <Compile Include="Json\ControllerExtensions.cs" />
@@ -52,12 +54,15 @@
     <Compile Include="Json\IJsonResponseContent.cs" />
     <Compile Include="Json\JsonResponse.cs" />
     <Compile Include="Json\MessageBox.cs" />
+    <Compile Include="Json\NamespaceDoc.cs" />
     <Compile Include="Localization\ILocalizedStringProvider.cs" />
     <Compile Include="Localization\LocalizedAttribute.cs" />
     <Compile Include="Localization\LocalizedCacheAttribute.cs" />
     <Compile Include="Localization\LocalizedMetadataProvider.cs" />
     <Compile Include="Localization\LocalizedModelValidatorProvider.cs" />
+    <Compile Include="Localization\NamespaceDoc.cs" />
     <Compile Include="Localization\ResourceStringProvider.cs" />
+    <Compile Include="NamespaceDoc.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\IServiceLocator.cs" />
     <Compile Include="Providers\Membership\IAccountPasswordInfo.cs" />
@@ -72,6 +77,7 @@
     <Compile Include="Providers\Membership\PasswordStrategies\HashPasswordStrategy.cs" />
     <Compile Include="Providers\Membership\PasswordStrategies\PasswordPolicyExtensions.cs" />
     <Compile Include="Providers\Membership\PasswordStrategies\TripleDesStrategy.cs" />
+    <Compile Include="Providers\NamespaceDoc.cs" />
     <Compile Include="Providers\Profile\ProfileProvider.cs" />
     <Compile Include="Providers\Roles\IRole.cs" />
     <Compile Include="Providers\Roles\IRoleRepository.cs" />
