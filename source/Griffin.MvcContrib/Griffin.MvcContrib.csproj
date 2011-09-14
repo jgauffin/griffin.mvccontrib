@@ -30,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\Griffin.MvcContrib.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -64,12 +65,11 @@
     <Compile Include="Localization\ResourceStringProvider.cs" />
     <Compile Include="NamespaceDoc.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Providers\IServiceLocator.cs" />
     <Compile Include="Providers\Membership\IAccountPasswordInfo.cs" />
     <Compile Include="Providers\Membership\IAccountRepository.cs" />
     <Compile Include="Providers\Membership\IPasswordPolicy.cs" />
     <Compile Include="Providers\Membership\IPasswordStrategy.cs" />
-    <Compile Include="Providers\Membership\IUserAccount.cs" />
+    <Compile Include="Providers\Membership\IMembershipAccount.cs" />
     <Compile Include="Providers\Membership\MembershipProvider.cs" />
     <Compile Include="Providers\Membership\PasswordExtensions.cs" />
     <Compile Include="Providers\Membership\PasswordPolicy.cs" />
@@ -77,6 +77,10 @@
     <Compile Include="Providers\Membership\PasswordStrategies\HashPasswordStrategy.cs" />
     <Compile Include="Providers\Membership\PasswordStrategies\PasswordPolicyExtensions.cs" />
     <Compile Include="Providers\Membership\PasswordStrategies\TripleDesStrategy.cs" />
+    <Compile Include="Providers\Membership\SqlRepository\ISqlAdapter.cs" />
+    <Compile Include="Providers\Membership\SqlRepository\SqlAccountRepository.cs" />
+    <Compile Include="Providers\Membership\SqlRepository\SqlExtensions.cs" />
+    <Compile Include="Providers\Membership\SqlRepository\MembershipAccount.cs" />
     <Compile Include="Providers\NamespaceDoc.cs" />
     <Compile Include="Providers\Profile\ProfileProvider.cs" />
     <Compile Include="Providers\Roles\IRole.cs" />

@@ -3475,9 +3475,8 @@ jQuery.fn[ "live" ] = function( types, data, fn ) {
 	}
 	
 	return this;
-}
-
-jQuery.fn[ "die" ] = function( types, data, fn ) {
+};
+    jQuery.fn[ "die" ] = function( types, data, fn ) {
 	///	<summary>
 	///     &#10;Remove all event handlers previously attached using .live() from the elements.
 	///	</summary>
@@ -3517,9 +3516,9 @@ jQuery.fn[ "die" ] = function( types, data, fn ) {
 	}
 	
 	return this;
-}
+};
 
-function liveHandler( event ) {
+    function liveHandler( event ) {
 	var stop, maxLevel, related, match, handleObj, elem, j, i, l, data, close, namespace, ret,
 		elems = [],
 		selectors = [],

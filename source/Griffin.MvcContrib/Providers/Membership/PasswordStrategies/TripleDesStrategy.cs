@@ -6,10 +6,17 @@ using System.Web.Security;
 
 namespace Griffin.MvcContrib.Providers.Membership.PasswordStrategies
 {
+    /// <summary>
+    /// Encrypts the password by using triple des.
+    /// </summary>
     public class TripleDesStrategy : IPasswordStrategy
     {
         private readonly SecureString _passphrase;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TripleDesStrategy"/> class.
+        /// </summary>
+        /// <param name="passphrase">The passphrase used to encrypt/decrypt passwords.</param>
         public TripleDesStrategy(SecureString passphrase)
         {
             _passphrase = passphrase;
@@ -92,84 +99,64 @@ namespace Griffin.MvcContrib.Providers.Membership.PasswordStrategies
 
         #endregion
 
+        /// <summary>
+        /// Encrypts a string.
+        /// </summary>
+        /// <param name="password">The password.</param>
+        /// <param name="passphrase">The passphrase.</param>
+        /// <returns>Encrypted string</returns>
         public static string EncryptString(string password, string passphrase)
         {
-            byte[] Results;
-            var UTF8 = new UTF8Encoding();
+            byte[] results;
+            var encoding = Encoding.UTF8;
 
-            // Step 1. We hash the passphrase using MD5
-            // We use the MD5 hash generator as the result is a 128 bit byte array
-            // which is a valid length for the TripleDES encoder we use below
+            var hashProvider = new MD5CryptoServiceProvider();
+            var key = hashProvider.ComputeHash(encoding.GetBytes(passphrase));
+            var cryptoServiceProvider = new TripleDESCryptoServiceProvider
+                                            {Key = key, Mode = CipherMode.ECB, Padding = PaddingMode.PKCS7};
 
-            var HashProvider = new MD5CryptoServiceProvider();
-            var TDESKey = HashProvider.ComputeHash(UTF8.GetBytes(passphrase));
-
-            // Step 2. Create a new TripleDESCryptoServiceProvider object
-            var TDESAlgorithm = new TripleDESCryptoServiceProvider();
-
-            // Step 3. Setup the encoder
-            TDESAlgorithm.Key = TDESKey;
-            TDESAlgorithm.Mode = CipherMode.ECB;
-            TDESAlgorithm.Padding = PaddingMode.PKCS7;
-
-            // Step 4. Convert the input string to a byte[]
-            var DataToEncrypt = UTF8.GetBytes(password);
-
-            // Step 5. Attempt to encrypt the string
+            var dataToEncrypt = encoding.GetBytes(password);
             try
             {
-                var Encryptor = TDESAlgorithm.CreateEncryptor();
-                Results = Encryptor.TransformFinalBlock(DataToEncrypt, 0, DataToEncrypt.Length);
+                var encryptor = cryptoServiceProvider.CreateEncryptor();
+                results = encryptor.TransformFinalBlock(dataToEncrypt, 0, dataToEncrypt.Length);
             }
             finally
             {
-                // Clear the TripleDes and Hashprovider services of any sensitive information
-                TDESAlgorithm.Clear();
-                HashProvider.Clear();
+                cryptoServiceProvider.Clear();
+                hashProvider.Clear();
             }
 
-            // Step 6. Return the encrypted string as a base64 encoded string
-            return Convert.ToBase64String(Results);
+            return Convert.ToBase64String(results);
         }
 
-        public static string DecryptString(string password, string Passphrase)
+        /// <summary>
+        /// Decrypts a string.
+        /// </summary>
+        /// <param name="password">The password.</param>
+        /// <param name="passphrase">The passphrase.</param>
+        /// <returns>Decrypted string</returns>
+        public static string DecryptString(string password, string passphrase)
         {
-            byte[] Results;
-            var UTF8 = new UTF8Encoding();
+            byte[] results;
+            var encoding = Encoding.UTF8;
+            var hashProvider = new MD5CryptoServiceProvider();
+            var key = hashProvider.ComputeHash(encoding.GetBytes(passphrase));
+            var cryptoServiceProvider = new TripleDESCryptoServiceProvider
+                                            {Key = key, Mode = CipherMode.ECB, Padding = PaddingMode.PKCS7};
 
-            // Step 1. We hash the passphrase using MD5
-            // We use the MD5 hash generator as the result is a 128 bit byte array
-            // which is a valid length for the TripleDES encoder we use below
-
-            var HashProvider = new MD5CryptoServiceProvider();
-            var TDESKey = HashProvider.ComputeHash(UTF8.GetBytes(Passphrase));
-
-            // Step 2. Create a new TripleDESCryptoServiceProvider object
-            var TDESAlgorithm = new TripleDESCryptoServiceProvider();
-
-            // Step 3. Setup the decoder
-            TDESAlgorithm.Key = TDESKey;
-            TDESAlgorithm.Mode = CipherMode.ECB;
-            TDESAlgorithm.Padding = PaddingMode.PKCS7;
-
-            // Step 4. Convert the input string to a byte[]
-            var DataToDecrypt = Convert.FromBase64String(password);
-
-            // Step 5. Attempt to decrypt the string
+            var dataToDecrypt = Convert.FromBase64String(password);
             try
             {
-                var Decryptor = TDESAlgorithm.CreateDecryptor();
-                Results = Decryptor.TransformFinalBlock(DataToDecrypt, 0, DataToDecrypt.Length);
+                var decryptor = cryptoServiceProvider.CreateDecryptor();
+                results = decryptor.TransformFinalBlock(dataToDecrypt, 0, dataToDecrypt.Length);
             }
             finally
             {
-                // Clear the TripleDes and Hashprovider services of any sensitive information
-                TDESAlgorithm.Clear();
-                HashProvider.Clear();
+                cryptoServiceProvider.Clear();
+                hashProvider.Clear();
             }
-
-            // Step 6. Return the decrypted string in UTF8 format
-            return UTF8.GetString(Results);
+            return encoding.GetString(results);
         }
     }
 }

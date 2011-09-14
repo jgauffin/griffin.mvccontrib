@@ -20,6 +20,7 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration.Provider;
+using System.Web.Mvc;
 using System.Web.Security;
 
 namespace Griffin.MvcContrib.Providers.Membership
@@ -27,16 +28,18 @@ namespace Griffin.MvcContrib.Providers.Membership
     /// <summary>
     /// A membership provider which uses different components to make it more SOLID.
     /// </summary>
-    /// <seealso cref="IServiceLocator"/>
+    /// <remarks>
+    /// You need to register the services listed under "See also" in your inversion of control container. This provider
+    /// uses <see cref="DependencyResolver"/> to find all dependencies.
+    /// </remarks>
     /// <seealso cref="IAccountRepository"/>
     /// <seealso cref="IPasswordPolicy"/>
     /// <seealso cref="IPasswordStrategy"/>
     public class MembershipProvider : System.Web.Security.MembershipProvider
     {
-        private static IServiceLocator _serviceLocator;
-        private IAccountRepository _UserService;
         private IPasswordPolicy _passwordPolicy;
         private IPasswordStrategy _passwordStrategy;
+        private IAccountRepository _userService;
 
         /// <summary>
         /// Gets a brief, friendly description suitable for display in administrative tools or other user interfaces (UIs).
@@ -132,7 +135,7 @@ namespace Griffin.MvcContrib.Providers.Membership
         /// </returns>
         public override bool RequiresUniqueEmail
         {
-            get { return UserService.IsUniqueEmailRequired; }
+            get { return AccountRepository.IsUniqueEmailRequired; }
         }
 
         /// <summary>
@@ -179,47 +182,59 @@ namespace Griffin.MvcContrib.Providers.Membership
             get { return PasswordPolicy.PasswordStrengthRegularExpression; }
         }
 
-        protected IAccountRepository UserService
+        /// <summary>
+        /// Gets the repository
+        /// </summary>
+        protected IAccountRepository AccountRepository
         {
             get
             {
-                _UserService = _serviceLocator.Get<IAccountRepository>(this);
-                if (_UserService == null)
-                    throw new InvalidOperationException(
-                        "You need to assign a locator to the ServiceLocator property and it should be able to lookup IAccountRepository.");
-                return _UserService;
+                if (_userService == null)
+                {
+                    _userService = DependencyResolver.Current.GetService<IAccountRepository>();
+                    if (_userService == null)
+                        throw new InvalidOperationException(
+                            "You need to assign a locator to the ServiceLocator property and it should be able to lookup IAccountRepository.");
+                }
+                return _userService;
             }
         }
 
+        /// <summary>
+        /// Gets password strategy
+        /// </summary>
         protected IPasswordStrategy PasswordStrategy
         {
             get
             {
-                _passwordStrategy = _serviceLocator.Get<IPasswordStrategy>(this);
-                if (_passwordStrategy == null)
-                    throw new InvalidOperationException(
-                        "You need to assign a locator to the ServiceLocator property and it should be able to lookup IPasswordStrategy.");
-
+                if (_passwordStrategy != null)
+                {
+                    _passwordStrategy = DependencyResolver.Current.GetService<IPasswordStrategy>();
+                    if (_passwordStrategy == null)
+                        throw new InvalidOperationException(
+                            "You need to assign a locator to the ServiceLocator property and it should be able to lookup IPasswordStrategy.");
+                }
                 return _passwordStrategy;
             }
         }
 
+        /// <summary>
+        /// Gets password policy
+        /// </summary>
         protected IPasswordPolicy PasswordPolicy
         {
             get
             {
-                _passwordPolicy = _serviceLocator.Get<IPasswordPolicy>(this);
-                if (_passwordPolicy == null)
-                    throw new InvalidOperationException(
-                        "You need to assign a locator to the ServiceLocator property and it should be able to lookup IPasswordPolicy.");
+                if (_passwordPolicy != null)
+                {
+                    _passwordPolicy = DependencyResolver.Current.GetService<IPasswordPolicy>();
+                    if (_passwordPolicy == null)
+                        throw new InvalidOperationException(
+                            "You need to assign a locator to the ServiceLocator property and it should be able to lookup IPasswordPolicy.");
+                }
 
                 return _passwordPolicy;
             }
-        }
-
-        public static void Configure(IServiceLocator serviceLocator)
-        {
-            _serviceLocator = serviceLocator ?? NullLocator.Instance;
         }
 
         /// <summary>
@@ -233,13 +248,13 @@ namespace Griffin.MvcContrib.Providers.Membership
                                                   string passwordQuestion, string passwordAnswer, bool isApproved,
                                                   object providerUserKey, out MembershipCreateStatus status)
         {
-            if (UserService.IsUniqueEmailRequired && UserService.GetUserNameByEmail(email) != null)
+            if (AccountRepository.IsUniqueEmailRequired && AccountRepository.GetUserNameByEmail(email) != null)
             {
                 status = MembershipCreateStatus.DuplicateEmail;
                 return null;
             }
 
-            if (UserService.Get(username) != null)
+            if (AccountRepository.Get(username) != null)
             {
                 status = MembershipCreateStatus.DuplicateUserName;
                 return null;
@@ -248,19 +263,24 @@ namespace Griffin.MvcContrib.Providers.Membership
             ValidatePassword(username, password);
 
 
-            var account = UserService.Create(providerUserKey, ApplicationName, username, email);
+            var account = AccountRepository.Create(providerUserKey, ApplicationName, username, email);
             var passwordInfo = new AccountPasswordInfo(username, password);
             account.Password = PasswordStrategy.Encrypt(passwordInfo);
             account.PasswordSalt = passwordInfo.PasswordSalt;
 
-            status = UserService.Register(account);
+            status = AccountRepository.Register(account);
             if (status == MembershipCreateStatus.Success)
                 return CloneUser(account);
 
             return null;
         }
 
-        protected MembershipUser CloneUser(IUserAccount account)
+        /// <summary>
+        /// Create a membershipuser from an membership account.
+        /// </summary>
+        /// <param name="account">The account.</param>
+        /// <returns>Created user</returns>
+        protected MembershipUser CloneUser(IMembershipAccount account)
         {
             return new MembershipUser(Name, account.UserName, account.Id, account.Email,
                                       account.PasswordQuestion, account.Comment, account.IsApproved,
@@ -278,7 +298,7 @@ namespace Griffin.MvcContrib.Providers.Membership
         public override bool ChangePasswordQuestionAndAnswer(string username, string password,
                                                              string newPasswordQuestion, string newPasswordAnswer)
         {
-            var account = UserService.Get(username);
+            var account = AccountRepository.Get(username);
             if (account == null)
                 return false;
 
@@ -291,7 +311,7 @@ namespace Griffin.MvcContrib.Providers.Membership
 
             account.PasswordQuestion = newPasswordAnswer;
             account.PasswordAnswer = newPasswordAnswer;
-            UserService.Update(account);
+            AccountRepository.Update(account);
             return true;
         }
 
@@ -307,7 +327,7 @@ namespace Griffin.MvcContrib.Providers.Membership
             if (!PasswordPolicy.IsPasswordRetrievalEnabled || !PasswordStrategy.IsPasswordsDecryptable)
                 throw new ProviderException("Password retrieval is not supported");
 
-            var account = UserService.Get(username);
+            var account = AccountRepository.Get(username);
             if (!account.PasswordAnswer.Equals(answer, StringComparison.OrdinalIgnoreCase))
                 throw new MembershipPasswordException("Answer to Password question was incorrect.");
 
@@ -323,7 +343,7 @@ namespace Griffin.MvcContrib.Providers.Membership
         /// <param name="username">The user to update the password for. </param><param name="oldPassword">The current password for the specified user. </param><param name="newPassword">The new password for the specified user. </param>
         public override bool ChangePassword(string username, string oldPassword, string newPassword)
         {
-            var account = UserService.Get(username);
+            var account = AccountRepository.Get(username);
             var pwInfo = account.CreatePasswordInfo();
             if (!PasswordStrategy.Compare(pwInfo, oldPassword))
                 return false;
@@ -332,7 +352,7 @@ namespace Griffin.MvcContrib.Providers.Membership
 
             account.Password = newPassword;
             account.Password = PasswordStrategy.Encrypt(pwInfo);
-            UserService.Update(account);
+            AccountRepository.Update(account);
             return true;
         }
 
@@ -348,7 +368,7 @@ namespace Griffin.MvcContrib.Providers.Membership
             if (!PasswordPolicy.IsPasswordResetEnabled)
                 throw new NotSupportedException("Password reset is not supported.");
 
-            var user = UserService.Get(username);
+            var user = AccountRepository.Get(username);
             if (PasswordPolicy.IsPasswordQuestionRequired && answer == null)
                 throw new MembershipPasswordException("Password answer is empty and question/answer is required.");
 
@@ -362,7 +382,7 @@ namespace Griffin.MvcContrib.Providers.Membership
             var info = new AccountPasswordInfo(username, newPassword);
             user.Password = PasswordStrategy.Encrypt(info);
             user.PasswordSalt = info.PasswordSalt;
-            UserService.Update(user);
+            AccountRepository.Update(user);
             return newPassword;
         }
 
@@ -383,12 +403,12 @@ namespace Griffin.MvcContrib.Providers.Membership
         /// <param name="user">A <see cref="T:System.Web.Security.MembershipUser"/> object that represents the user to update and the updated information for the user. </param>
         public override void UpdateUser(MembershipUser user)
         {
-            var account = UserService.Get(user.UserName);
+            var account = AccountRepository.Get(user.UserName);
             Merge(user, account);
-            UserService.Update(account);
+            AccountRepository.Update(account);
         }
 
-        private void Merge(MembershipUser user, IUserAccount account)
+        private void Merge(MembershipUser user, IMembershipAccount account)
         {
             account.Comment = user.Comment;
             account.IsApproved = user.IsApproved;
@@ -412,7 +432,7 @@ namespace Griffin.MvcContrib.Providers.Membership
         /// <param name="username">The name of the user to validate. </param><param name="password">The password for the specified user. </param>
         public override bool ValidateUser(string username, string password)
         {
-            var user = UserService.Get(username);
+            var user = AccountRepository.Get(username);
             if (user == null || user.IsLockedOut)
                 return false;
 
@@ -423,7 +443,7 @@ namespace Griffin.MvcContrib.Providers.Membership
                 user.LastLoginAt = DateTime.Now;
                 user.FailedPasswordWindowStartedAt = DateTime.MinValue;
                 user.FailedPasswordWindowAttemptCount = 0;
-                UserService.Update(user);
+                AccountRepository.Update(user);
                 return true;
             }
 
@@ -435,7 +455,7 @@ namespace Griffin.MvcContrib.Providers.Membership
             {
                 user.IsLockedOut = true;
                 user.LastLockedOutAt = DateTime.Now;
-                UserService.Update(user);
+                AccountRepository.Update(user);
             }
 
             return false;
@@ -450,7 +470,7 @@ namespace Griffin.MvcContrib.Providers.Membership
         /// <param name="userName">The membership user whose lock status you want to clear.</param>
         public override bool UnlockUser(string userName)
         {
-            var user = UserService.Get(userName);
+            var user = AccountRepository.Get(userName);
             if (user == null)
                 return false;
 
@@ -459,7 +479,7 @@ namespace Griffin.MvcContrib.Providers.Membership
             user.FailedPasswordAnswerWindowStartedAt = DateTime.MinValue;
             user.FailedPasswordWindowAttemptCount = 0;
             user.FailedPasswordWindowStartedAt = DateTime.MinValue;
-            UserService.Update(user);
+            AccountRepository.Update(user);
             return true;
         }
 
@@ -472,7 +492,7 @@ namespace Griffin.MvcContrib.Providers.Membership
         /// <param name="providerUserKey">The unique identifier for the membership user to get information for.</param><param name="userIsOnline">true to update the last-activity date/time stamp for the user; false to return user information without updating the last-activity date/time stamp for the user.</param>
         public override MembershipUser GetUser(object providerUserKey, bool userIsOnline)
         {
-            var user = UserService.GetById(providerUserKey);
+            var user = AccountRepository.GetById(providerUserKey);
             if (user == null)
                 return null;
 
@@ -481,14 +501,14 @@ namespace Griffin.MvcContrib.Providers.Membership
             return CloneUser(user);
         }
 
-        private void UpdateOnlineState(bool userIsOnline, IUserAccount user)
+        private void UpdateOnlineState(bool userIsOnline, IMembershipAccount user)
         {
             if (!userIsOnline)
                 return;
 
             user.LastActivityAt = DateTime.Now;
             //user.IsOnline = true;
-            UserService.Update(user);
+            AccountRepository.Update(user);
         }
 
         /// <summary>
@@ -500,7 +520,7 @@ namespace Griffin.MvcContrib.Providers.Membership
         /// <param name="username">The name of the user to get information for. </param><param name="userIsOnline">true to update the last-activity date/time stamp for the user; false to return user information without updating the last-activity date/time stamp for the user. </param>
         public override MembershipUser GetUser(string username, bool userIsOnline)
         {
-            var user = UserService.Get(username);
+            var user = AccountRepository.Get(username);
             if (user == null)
                 return null;
 
@@ -519,7 +539,7 @@ namespace Griffin.MvcContrib.Providers.Membership
         /// <param name="email">The e-mail address to search for. </param>
         public override string GetUserNameByEmail(string email)
         {
-            return UserService.GetUserNameByEmail(email);
+            return AccountRepository.GetUserNameByEmail(email);
         }
 
         /// <summary>
@@ -531,7 +551,7 @@ namespace Griffin.MvcContrib.Providers.Membership
         /// <param name="username">The name of the user to delete.</param><param name="deleteAllRelatedData">true to delete data related to the user from the database; false to leave data related to the user in the database.</param>
         public override bool DeleteUser(string username, bool deleteAllRelatedData)
         {
-            return UserService.Delete(username, deleteAllRelatedData);
+            return AccountRepository.Delete(username, deleteAllRelatedData);
         }
 
         /// <summary>
@@ -543,11 +563,11 @@ namespace Griffin.MvcContrib.Providers.Membership
         /// <param name="pageIndex">The index of the page of results to return. <paramref name="pageIndex"/> is zero-based.</param><param name="pageSize">The size of the page of results to return.</param><param name="totalRecords">The total number of matched users.</param>
         public override MembershipUserCollection GetAllUsers(int pageIndex, int pageSize, out int totalRecords)
         {
-            var users = UserService.FindAll(pageIndex, pageSize, out totalRecords);
+            var users = AccountRepository.FindAll(pageIndex, pageSize, out totalRecords);
             return CloneUsers(users);
         }
 
-        private MembershipUserCollection CloneUsers(IEnumerable<IUserAccount> users)
+        private MembershipUserCollection CloneUsers(IEnumerable<IMembershipAccount> users)
         {
             var members = new MembershipUserCollection();
             foreach (var user in users)
@@ -565,7 +585,7 @@ namespace Griffin.MvcContrib.Providers.Membership
         /// </returns>
         public override int GetNumberOfUsersOnline()
         {
-            return UserService.GetNumberOfUsersOnline();
+            return AccountRepository.GetNumberOfUsersOnline();
         }
 
         /// <summary>
@@ -578,8 +598,8 @@ namespace Griffin.MvcContrib.Providers.Membership
         public override MembershipUserCollection FindUsersByName(string usernameToMatch, int pageIndex, int pageSize,
                                                                  out int totalRecords)
         {
-            var users = UserService.FindByUserName(usernameToMatch, pageIndex, pageSize,
-                                                   out totalRecords);
+            var users = AccountRepository.FindByUserName(usernameToMatch, pageIndex, pageSize,
+                                                         out totalRecords);
             return CloneUsers(users);
         }
 
@@ -594,27 +614,9 @@ namespace Griffin.MvcContrib.Providers.Membership
         public override MembershipUserCollection FindUsersByEmail(string emailToMatch, int pageIndex, int pageSize,
                                                                   out int totalRecords)
         {
-            var users = UserService.FindByEmail(emailToMatch, pageIndex, pageSize,
-                                                out totalRecords);
+            var users = AccountRepository.FindByEmail(emailToMatch, pageIndex, pageSize,
+                                                      out totalRecords);
             return CloneUsers(users);
         }
-
-        #region Nested type: NullLocator
-
-        private class NullLocator : IServiceLocator
-        {
-            #region Implementation of IServiceLocator
-
-            public static readonly NullLocator Instance = new NullLocator();
-
-            public T Get<T>(object instance) where T : class
-            {
-                return null;
-            }
-
-            #endregion
-        }
-
-        #endregion
     }
 }

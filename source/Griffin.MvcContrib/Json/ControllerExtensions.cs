@@ -8,16 +8,23 @@ namespace Griffin.MvcContrib.Json
     public static class ControllerExtensions
     {
         /// <summary>
-        /// Return a response.
+        /// Return a structured JSON response.
         /// </summary>
-        /// <param name="controller"></param>
-        /// <param name="content"></param>
-        /// <returns></returns>
+        /// <param name="controller">Controller returning the result</param>
+        /// <param name="content">Content to return</param>
+        /// <returns>Structured json</returns>
         public static JsonResult JsonResponse(this Controller controller, IJsonResponseContent content)
         {
             return new JsonResult {Data = content};
         }
 
+        /// <summary>
+        /// Return a structured JSON response.
+        /// </summary>
+        /// <param name="controller">Controller returning the result</param>
+        /// <param name="content">Content to return</param>
+        /// <param name="requestBehavior">How HTTP Requests should be treaded.</param>
+        /// <returns>Structured json</returns>
         public static JsonResult JsonResponse(this Controller controller, IJsonResponseContent content,
                                               JsonRequestBehavior requestBehavior)
         {

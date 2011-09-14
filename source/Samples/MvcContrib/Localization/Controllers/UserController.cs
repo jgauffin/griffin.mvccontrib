@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 
 namespace Localization.Controllers
 {
@@ -15,6 +11,5 @@ namespace Localization.Controllers
         {
             return View();
         }
-
     }
 }

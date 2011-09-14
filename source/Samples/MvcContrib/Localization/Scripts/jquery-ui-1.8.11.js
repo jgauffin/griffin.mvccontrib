@@ -5113,7 +5113,7 @@ $.widget( "ui.autocomplete", {
 			this._initSource();
 		}
 		if ( key === "appendTo" ) {
-			this.menu.element.appendTo( $( value || "body", this.element[0].ownerDocument )[0] )
+			this.menu.element.appendTo( $( value || "body", this.element[0].ownerDocument )[0] );
 		}
 		if ( key === "disabled" && value && this.xhr ) {
 			this.xhr.abort();
@@ -8880,7 +8880,7 @@ $.extend(Datepicker.prototype, {
 		inst.dpDiv.empty().append(this._generateHTML(inst));
 		var cover = inst.dpDiv.find('iframe.ui-datepicker-cover'); // IE6- only
 		if( !!cover.length ){ //avoid call to outerXXXX() when not in IE6
-			cover.css({left: -borders[0], top: -borders[1], width: inst.dpDiv.outerWidth(), height: inst.dpDiv.outerHeight()})
+			cover.css({left: -borders[0], top: -borders[1], width: inst.dpDiv.outerWidth(), height: inst.dpDiv.outerHeight()});
 		}
 		inst.dpDiv.find('button, .ui-datepicker-prev, .ui-datepicker-next, .ui-datepicker-calendar td a')
 				.bind('mouseout', function(){

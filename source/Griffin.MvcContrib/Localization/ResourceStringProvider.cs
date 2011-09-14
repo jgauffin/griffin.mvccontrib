@@ -101,12 +101,24 @@ namespace Griffin.MvcContrib.Localization
 
         #endregion
 
+        /// <summary>
+        /// Format the model informaiton into a StringTable key.
+        /// </summary>
+        /// <param name="type">Model type</param>
+        /// <param name="propertyName">Name of the property in the model</param>
+        /// <param name="extras">Extras used during formatting</param>
+        /// <returns>String Table key</returns>
         protected virtual string Format(Type type, string propertyName, params string[] extras)
         {
             var baseStr = string.Format("{0}_{1}", type.Name, propertyName);
             return extras.Aggregate(baseStr, (current, extra) => current + ("_" + extra));
         }
 
+        /// <summary>
+        /// Get a string from one of the string tables.
+        /// </summary>
+        /// <param name="name">String table item key</param>
+        /// <returns>string if found; otherwise null.</returns>
         private string GetString(string name)
         {
             return _resourceManagers.Select(resourceManager => resourceManager.GetString(name))

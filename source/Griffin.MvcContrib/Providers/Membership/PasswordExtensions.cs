@@ -20,11 +20,16 @@
 namespace Griffin.MvcContrib.Providers.Membership
 {
     /// <summary>
-    /// Extension methods for <seealso cref="IUserAccount"/>
+    /// Extension methods for <seealso cref="IMembershipAccount"/>
     /// </summary>
     public static class PasswordExtensions
     {
-        public static AccountPasswordInfo CreatePasswordInfo(this IUserAccount account)
+        /// <summary>
+        /// Create a new password info class.
+        /// </summary>
+        /// <param name="account">Account containing password information</param>
+        /// <returns>Password info object</returns>
+        public static AccountPasswordInfo CreatePasswordInfo(this IMembershipAccount account)
         {
             return new AccountPasswordInfo(account.UserName, account.Password) {PasswordSalt = account.PasswordSalt};
         }

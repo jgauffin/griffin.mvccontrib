@@ -6,6 +6,9 @@ using System.Web.Security;
 
 namespace Griffin.MvcContrib.Providers.Membership.PasswordStrategies
 {
+    /// <summary>
+    /// Hash a password using a salt.
+    /// </summary>
     public class HashPasswordStrategy : IPasswordStrategy
     {
         #region Implementation of IPasswordStrategy
@@ -93,6 +96,11 @@ namespace Griffin.MvcContrib.Providers.Membership.PasswordStrategies
             return passwordPolicy.IsPasswordValid(password);
         }
 
+        /// <summary>
+        /// Create a salt and convert it to base64
+        /// </summary>
+        /// <param name="size">The size.</param>
+        /// <returns>Base64 generated salt.</returns>
         protected string CreateSalt(int size)
         {
             //Generate a cryptographic random number.
@@ -106,15 +114,4 @@ namespace Griffin.MvcContrib.Providers.Membership.PasswordStrategies
 
         #endregion
     }
-
-    /*public class SecurityInfo : IAccountPasswordInfo
-    {
-        #region Implementation of IAccountPassword
-
-        public string PasswordSalt { get; set; }
-        public string Password { get; set; }
-        public string UserName { get; set; }
-
-        #endregion
-    }*/
 }

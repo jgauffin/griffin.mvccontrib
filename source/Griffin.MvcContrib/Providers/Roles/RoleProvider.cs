@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Configuration.Provider;
 using System.Linq;
 using System.Web.Hosting;
+using System.Web.Mvc;
 
 namespace Griffin.MvcContrib.Providers.Roles
 {
@@ -10,39 +11,30 @@ namespace Griffin.MvcContrib.Providers.Roles
     /// Provides roles through a repository
     /// </summary>
     /// <remarks>
-    /// You need to invoke <see cref="Configure"/> in your global.asax and register a <see cref="IRoleRepository"/>
-    /// implementation in your Inversion Of Control container.
+    /// You need to register a  <see cref="IRoleRepository"/> in your inversion of control container. This classes
+    /// uses <see cref="DependencyResolver"/> to find it's dependencies.
     /// </remarks>
     /// <example>
     /// <code>
+    /// <![CDATA[
     /// public class MvcApplication : System.Web.HttpApplication
     /// {
     ///     protected void Application_Start()
     ///     {
-    ///         Griffin.MvcContrib.Providers.Roles.RoleProvider.Configure(myServiceLocator);
+    ///         _unity.RegisterType<IRoleRepository, RavenDbRepository>();
     ///     }
     /// }
+    /// ]]>
     /// </code>
     /// </example>
     public class RoleProvider : System.Web.Security.RoleProvider
     {
-        private static IServiceLocator _serviceLocator;
-
         /// <summary>
         /// Gets repository used to retrieve information from the data source.
         /// </summary>
         private IRoleRepository Repository
         {
-            get { return _serviceLocator.Get<IRoleRepository>(this); }
-        }
-
-        /// <summary>
-        /// Configure the provider
-        /// </summary>
-        /// <param name="serviceLocator">Locator used to lookup <see cref="IRoleRepository"/>.</param>
-        public static void Configure(IServiceLocator serviceLocator)
-        {
-            _serviceLocator = serviceLocator;
+            get { return DependencyResolver.Current.GetService<IRoleRepository>(); }
         }
 
         #region Overrides of RoleProvider
@@ -55,6 +47,16 @@ namespace Griffin.MvcContrib.Providers.Roles
         /// </returns>
         public override string ApplicationName { get; set; }
 
+        /// <summary>
+        /// Initializes the provider.
+        /// </summary>
+        /// <param name="name">The friendly name of the provider.</param>
+        /// <param name="config">A collection of the name/value pairs representing the provider-specific attributes specified in the configuration for this provider.</param>
+        /// <exception cref="T:System.ArgumentNullException">The name of the provider is null.</exception>
+        ///   
+        /// <exception cref="T:System.ArgumentException">The name of the provider has a length of zero.</exception>
+        ///   
+        /// <exception cref="T:System.InvalidOperationException">An attempt is made to call <see cref="M:System.Configuration.Provider.ProviderBase.Initialize(System.String,System.Collections.Specialized.NameValueCollection)"/> on a provider after the provider has already been initialized.</exception>
         public override void Initialize(string name, NameValueCollection config)
         {
             name = string.IsNullOrEmpty(name) ? "RoleProvider" : name;

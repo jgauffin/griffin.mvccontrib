@@ -3,6 +3,9 @@ using System.Web.Security;
 
 namespace Griffin.MvcContrib.Providers.Membership.PasswordStrategies
 {
+    /// <summary>
+    /// Strategy that do nothing with the passwords.
+    /// </summary>
     public class ClearTextStrategy : IPasswordStrategy
     {
         private Random _random = new Random();

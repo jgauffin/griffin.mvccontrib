@@ -16,8 +16,15 @@
     <Name>Documentation</Name>
     <!-- SHFB properties -->
     <OutputPath>.\Help\</OutputPath>
-    <HtmlHelpName>Documentation</HtmlHelpName>
+    <HtmlHelpName>griffin.mvccontrib</HtmlHelpName>
     <Language>en-US</Language>
+    <HelpTitle>Griffin.MvcContrib - Extras for ASP.NET MVC3</HelpTitle>
+    <CopyrightHref>http://griffinframework.net</CopyrightHref>
+    <CopyrightText>%28c%29 Jonas Gauffin. All rights Reserved</CopyrightText>
+    <DocumentationSources>
+      <DocumentationSource sourceFile="..\source\Griffin.MvcContrib\Griffin.MvcContrib.csproj" xmlns="" />
+    </DocumentationSources>
+    <HelpFileFormat>HtmlHelp1, Website</HelpFileFormat>
   </PropertyGroup>
   <!-- There are no properties for these groups.  AnyCPU needs to appear in
        order for Visual Studio to perform the build.  The others are optional

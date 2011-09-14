@@ -1,40 +1,23 @@
-/*
- * Copyright (c) 2011, Jonas Gauffin. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301 USA
- */
+﻿using System;
 
-using System;
-
-namespace Griffin.MvcContrib.Providers.Membership
+namespace Griffin.MvcContrib.Providers.Membership.SqlRepository
 {
     /// <summary>
-    /// Account information for a user 
+    /// Default implementation
     /// </summary>
-    public interface IUserAccount
+    public class MembershipAccount : IMembershipAccount
     {
+        #region IMembershipAccount Members
+
         /// <summary>
         /// Gets or sets application that the user belongs to
         /// </summary>
-        string ApplicationName { get; set; }
+        public string ApplicationName { get; set; }
 
         /// <summary>
         /// Gets or sets email address
         /// </summary>
-        string Email { get; set; }
+        public string Email { get; set; }
 
         /// <summary>
         /// Gets or sets password question that must be answered to reset password
@@ -42,50 +25,53 @@ namespace Griffin.MvcContrib.Providers.Membership
         /// <remarks>
         /// Controlled by the <see cref="IPasswordPolicy.IsPasswordQuestionRequired"/> property.
         /// </remarks>
-        string PasswordQuestion { get; set; }
+        public string PasswordQuestion { get; set; }
 
         /// <summary>
-        /// Gets or sets answer for the <see cref="PasswordQuestion"/>.
+        /// Gets or sets answer for the <see cref="IMembershipAccount.PasswordQuestion"/>.
         /// </summary>
-        string PasswordAnswer { get; set; }
+        public string PasswordAnswer { get; set; }
 
         /// <summary>
         /// Gets or sets a comment about the user.
         /// </summary>
-        string Comment { get; set; }
+        public string Comment { get; set; }
 
         /// <summary>
         /// Gets or sets date/time when the user logged in last.
         /// </summary>
-        DateTime LastLoginAt { get; set; }
+        public DateTime LastLoginAt { get; set; }
 
         /// <summary>
         /// Gets or sets whether a new user have been approved and may login.
         /// </summary>
-        bool IsApproved { get; set; }
+        public bool IsApproved { get; set; }
 
         /// <summary>
         /// Gets or sets when the password were changed last time.
         /// </summary>
-        DateTime LastPasswordChangeAt { get; set; }
+        public DateTime LastPasswordChangeAt { get; set; }
 
         /// <summary>
         /// Gets or sets if the account has been locked (the user may not login)
         /// </summary>
-        bool IsLockedOut { get; set; }
+        public bool IsLockedOut { get; set; }
 
         /// <summary>
         /// Gets or sets if the user is online
         /// </summary>
         /// <remarks>
-        /// Caluclated with the help of <see cref="LastActivityAt"/>.
+        /// Caluclated with the help of <see cref="IMembershipAccount.LastActivityAt"/>.
         /// </remarks>
-        bool IsOnline { get; }
+        public bool IsOnline
+        {
+            get { return DateTime.Now.Subtract(LastActivityAt).TotalMinutes < 10; }
+        }
 
         /// <summary>
         /// Gets or sets when the user was locked out.
         /// </summary>
-        DateTime LastLockedOutAt { get; set; }
+        public DateTime LastLockedOutAt { get; set; }
 
         /// <summary>
         /// Gets or sets when the user entered an incorrect password for the first time
@@ -93,12 +79,12 @@ namespace Griffin.MvcContrib.Providers.Membership
         /// <value>
         /// DateTime.MinValue if the user has not entered an incorrect password (or succeded to login again).
         /// </value>
-        DateTime FailedPasswordWindowStartedAt { get; set; }
+        public DateTime FailedPasswordWindowStartedAt { get; set; }
 
         /// <summary>
-        /// Gets or sets number of login attempts since <see cref="FailedPasswordWindowStartedAt"/>.
+        /// Gets or sets number of login attempts since <see cref="IMembershipAccount.FailedPasswordWindowStartedAt"/>.
         /// </summary>
-        int FailedPasswordWindowAttemptCount { get; set; }
+        public int FailedPasswordWindowAttemptCount { get; set; }
 
         /// <summary>
         /// Gets or sets when the user answered the password question incorrect for the first time.
@@ -106,22 +92,22 @@ namespace Griffin.MvcContrib.Providers.Membership
         /// <value>
         /// DateTime.MinValue if the user has not entered an incorrect answer (or succeded to login again).
         /// </value>
-        DateTime FailedPasswordAnswerWindowStartedAt { get; set; }
+        public DateTime FailedPasswordAnswerWindowStartedAt { get; set; }
 
         /// <summary>
-        /// Gets or sets number of times that the user have answered the password question incorrectly since <see cref="FailedPasswordAnswerWindowAttemptCount"/>
+        /// Gets or sets number of times that the user have answered the password question incorrectly since <see cref="IMembershipAccount.FailedPasswordAnswerWindowAttemptCount"/>
         /// </summary>
-        int FailedPasswordAnswerWindowAttemptCount { get; set; }
+        public int FailedPasswordAnswerWindowAttemptCount { get; set; }
 
         /// <summary>
         /// Gets or sets when the user account was created.
         /// </summary>
-        DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
 
         /// <summary>
         /// Gets or sets date/time when the user did something on the site
         /// </summary>
-        DateTime LastActivityAt { get; set; }
+        public DateTime LastActivityAt { get; set; }
 
         /// <summary>
         /// Gets or sets ID identifying the user
@@ -129,10 +115,24 @@ namespace Griffin.MvcContrib.Providers.Membership
         /// <remarks>
         /// Should be an id in your system (for instance i your database)
         /// </remarks>
-        object Id { get; set; }
+        public object Id { get; set; }
 
-        string UserName { get; set; }
-        string Password { get; set; }
-        string PasswordSalt { get; set; }
+        /// <summary>
+        /// Gets or sets username
+        /// </summary>
+        public string UserName { get; set; }
+
+        /// <summary>
+        /// Gets or sets password
+        /// </summary>
+        /// <remarks>The state of the password depends on the <seealso cref="IPasswordStrategy"/> that is used.</remarks>
+        public string Password { get; set; }
+
+        /// <summary>
+        /// Gets or sets the salt if a hashing strategy is used for the password.
+        /// </summary>
+        public string PasswordSalt { get; set; }
+
+        #endregion
     }
 }

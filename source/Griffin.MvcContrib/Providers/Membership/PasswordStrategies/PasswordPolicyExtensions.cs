@@ -3,10 +3,21 @@ using System.Linq;
 
 namespace Griffin.MvcContrib.Providers.Membership.PasswordStrategies
 {
+    /// <summary>
+    /// Extension methods for password policies.
+    /// </summary>
     public static class PasswordPolicyExtensions
     {
         private static readonly Random _random = new Random();
 
+        /// <summary>
+        /// Determines whether the password is valid by going through all defined policies.
+        /// </summary>
+        /// <param name="passwordPolicy">The password policy.</param>
+        /// <param name="password">The password.</param>
+        /// <returns>
+        ///   <c>true</c> if the password is valid; otherwise, <c>false</c>.
+        /// </returns>
         public static bool IsPasswordValid(this IPasswordPolicy passwordPolicy, string password)
         {
             var alphaCount = password.Count(ch => !char.IsLetterOrDigit(ch));
@@ -20,7 +31,7 @@ namespace Griffin.MvcContrib.Providers.Membership.PasswordStrategies
         /// </summary>
         /// <param name="policy">Policy that should be used when generating a new password.</param>
         /// <returns>A password which is not encrypted.</returns>
-        /// <remarks>Uses characters which can't be mixed up along with "@!?&%/\" if non alphas are required</remarks>
+        /// <remarks>Uses characters which can't be mixed up along with <![CDATA["@!?&%/\"]]> if non alphas are required</remarks>
         public static string GeneratePassword(this IPasswordPolicy policy)
         {
             var length = _random.Next(policy.PasswordMinimumLength, policy.PasswordMinimumLength + 5);
