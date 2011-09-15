@@ -83,7 +83,6 @@
     <Compile Include="Providers\Membership\SqlRepository\MembershipAccount.cs" />
     <Compile Include="Providers\NamespaceDoc.cs" />
     <Compile Include="Providers\Profile\ProfileProvider.cs" />
-    <Compile Include="Providers\Roles\IRole.cs" />
     <Compile Include="Providers\Roles\IRoleRepository.cs" />
     <Compile Include="Providers\Roles\IUserWithRoles.cs" />
     <Compile Include="Providers\Roles\RoleProvider.cs" />

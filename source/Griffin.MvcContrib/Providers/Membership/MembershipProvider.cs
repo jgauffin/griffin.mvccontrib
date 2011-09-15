@@ -207,7 +207,7 @@ namespace Griffin.MvcContrib.Providers.Membership
         {
             get
             {
-                if (_passwordStrategy != null)
+                if (_passwordStrategy == null)
                 {
                     _passwordStrategy = DependencyResolver.Current.GetService<IPasswordStrategy>();
                     if (_passwordStrategy == null)
@@ -225,7 +225,7 @@ namespace Griffin.MvcContrib.Providers.Membership
         {
             get
             {
-                if (_passwordPolicy != null)
+                if (_passwordPolicy == null)
                 {
                     _passwordPolicy = DependencyResolver.Current.GetService<IPasswordPolicy>();
                     if (_passwordPolicy == null)

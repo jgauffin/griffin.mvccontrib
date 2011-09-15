@@ -26,15 +26,6 @@ namespace Griffin.MvcContrib.Providers.Roles
         void CreateRole(string applicationName, string roleName);
 
         /// <summary>
-        /// Get a role and all attached users.
-        /// </summary>
-        /// <param name="applicationName">Application that the request is for.</param>
-        /// <param name="roleName">Name of the requested role</param>
-        /// <returns>Role if found; otherwise null.</returns>
-        /// <remarks></remarks>
-        IRole GetRole(string applicationName, string roleName);
-
-        /// <summary>
         /// Remove a role
         /// </summary>
         /// <param name="applicationName">Application that the request is for.</param>
@@ -73,5 +64,31 @@ namespace Griffin.MvcContrib.Providers.Roles
         /// <param name="roleName">Name of the role.</param>
         /// <returns>true if found; otherwise false.</returns>
         bool Exists(string applicationName, string roleName);
+
+        /// <summary>
+        /// Get number of users in a role
+        /// </summary>
+        /// <param name="applicationName">Application to check for</param>
+        /// <param name="roleName">Name of role</param>
+        /// <returns>Number of users</returns>
+        int GetNumberOfUsersInRole(string applicationName, string roleName);
+
+
+        /// <summary>
+        /// Finds the users in a role.
+        /// </summary>
+        /// <param name="applicationName">Application to look in</param>
+        /// <param name="roleName">Name of the role.</param>
+        /// <param name="userNameToMatch">The user name to match.</param>
+        /// <returns>A list of user names.</returns>
+        IEnumerable<string> FindUsersInRole(string applicationName, string roleName, string userNameToMatch);
+
+        /// <summary>
+        /// Finds the users in a role.
+        /// </summary>
+        /// <param name="applicationName">Application to look in</param>
+        /// <param name="roleName">Name of the role.</param>
+        /// <returns>A list of user names.</returns>
+        IEnumerable<string> GetUsersInRole(string applicationName, string roleName);
     }
 }

@@ -134,8 +134,8 @@ namespace Griffin.MvcContrib.Providers.Roles
             if (!RoleExists(roleName))
                 throw new ProviderException("Role '" + roleName + "' do not exists.");
 
-            var role = Repository.GetRole(ApplicationName, roleName);
-            if (role.Count != 0 && throwOnPopulatedRole)
+            var count = Repository.GetNumberOfUsersInRole(ApplicationName, roleName);
+            if (count != 0)
                 throw new ProviderException("Role '" + roleName + "' have assigned users.");
 
             Repository.RemoveRole(ApplicationName, roleName);
@@ -204,8 +204,7 @@ namespace Griffin.MvcContrib.Providers.Roles
         /// <param name="roleName">The name of the role to get the list of users for.</param>
         public override string[] GetUsersInRole(string roleName)
         {
-            var role = Repository.GetRole(ApplicationName, roleName);
-            return role == null ? new string[0] : role.Users.ToArray();
+            return Repository.GetUsersInRole(ApplicationName, roleName).ToArray();
         }
 
         /// <summary>
@@ -229,8 +228,7 @@ namespace Griffin.MvcContrib.Providers.Roles
         public override string[] FindUsersInRole(string roleName, string usernameToMatch)
         {
             var userName = usernameToMatch.ToLower();
-            var role = Repository.GetRole(ApplicationName, roleName);
-            return role.Users.Where(user => user.ToLower().Contains(userName)).ToArray();
+            return Repository.FindUsersInRole(ApplicationName, roleName, userName).ToArray();
         }
 
         #endregion
