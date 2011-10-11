@@ -32,7 +32,7 @@ namespace Griffin.MvcContrib.Localization
         /// </summary>
         /// <param name="model">Model being localized</param>
         /// <param name="propertyName">Property to get string for</param>
-        /// <returns>Translated string</returns>
+        /// <returns>Translated string if found; otherwise null.</returns>
         string GetModelString(Type model, string propertyName);
 
 
@@ -42,7 +42,7 @@ namespace Griffin.MvcContrib.Localization
         /// <param name="model">Model being localized</param>
         /// <param name="propertyName">Property to get string for</param>
         /// <param name="metadataName">Valid names are: Watermark, Description, NullDisplayText, ShortDisplayText.</param>
-        /// <returns>Translated string</returns>
+        /// <returns>Translated string if found; otherwise null.</returns>
         /// <remarks>
         /// Look at <see cref="ModelMetadata"/> to know more about the meta data
         /// </remarks>
@@ -53,11 +53,20 @@ namespace Griffin.MvcContrib.Localization
         /// Get a translated string for a validation attribute
         /// </summary>
         /// <param name="attributeType">Type of attribute</param>
-        /// <returns>Localized validation message</returns>
+        /// <returns>Translated validtion message if found; otherwise null.</returns>
         /// <remarks>
         /// Used to get localized error messages for the DataAnnotation attributes. The returned string 
         /// should have the same format as the built in messages, such as "{0} is required.".
         /// </remarks>
         string GetValidationString(Type attributeType);
+
+        /// <summary>
+        /// Gets a enum string
+        /// </summary>
+        /// <param name="enumType">Type of enum</param>
+        /// <param name="name">Name of the value to translation for</param>
+        /// <returns>Translated name if found; otherwise null.</returns>
+        string GetEnumString(Type enumType, string name);
+
     }
 }

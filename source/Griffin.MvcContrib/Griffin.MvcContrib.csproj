@@ -40,6 +40,7 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Web.WebPages, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -49,6 +50,27 @@
   <ItemGroup>
     <Compile Include="Caching\NamespaceDoc.cs" />
     <Compile Include="Caching\NoCacheAttribute.cs" />
+    <Compile Include="GriffinWebViewPage.cs" />
+    <Compile Include="Html\FormItemAdapterContext.cs" />
+    <Compile Include="Html\Generators\CheckBoxGenerator.cs" />
+    <Compile Include="Html\Generators\GeneratorContext.cs" />
+    <Compile Include="Html\HtmlHelperFor.cs" />
+    <Compile Include="Html\Generators\FormTagGenerator.cs" />
+    <Compile Include="Html\HtmlTagAdapterContext.cs" />
+    <Compile Include="Html\IdNameFormatter.cs" />
+    <Compile Include="Html\IdTitleFormatter.cs" />
+    <Compile Include="Html\IFormItemAdapter.cs" />
+    <Compile Include="Html\ISelectFormatter.cs" />
+    <Compile Include="Html\InputHtmlHelper.cs" />
+    <Compile Include="Html\NestedTagBuilder.cs" />
+    <Compile Include="Html\Generators\RadioButtonGenerator.cs" />
+    <Compile Include="Html\ReflectiveSelectItemFormatter.cs" />
+    <Compile Include="Html\Generators\SelectContext.cs" />
+    <Compile Include="Html\Generators\SelectGenerator.cs" />
+    <Compile Include="Html\Generators\TextAreaGenerator.cs" />
+    <Compile Include="Html\Generators\TextBoxGenerator.cs" />
+    <Compile Include="Html\TagsExtensions.cs" />
+    <Compile Include="Html\TextHtmlHelper.cs" />
     <Compile Include="Json\AllowCrossSiteScripting.cs" />
     <Compile Include="Json\ControllerExtensions.cs" />
     <Compile Include="Json\ErrorMessage.cs" />
@@ -56,7 +78,9 @@
     <Compile Include="Json\JsonResponse.cs" />
     <Compile Include="Json\MessageBox.cs" />
     <Compile Include="Json\NamespaceDoc.cs" />
+    <Compile Include="Localization\MetadataLanguageProvider.cs" />
     <Compile Include="Localization\ILocalizedStringProvider.cs" />
+    <Compile Include="Localization\IViewLocalizer.cs" />
     <Compile Include="Localization\LocalizedAttribute.cs" />
     <Compile Include="Localization\LocalizedCacheAttribute.cs" />
     <Compile Include="Localization\LocalizedMetadataProvider.cs" />
@@ -86,6 +110,9 @@
     <Compile Include="Providers\Roles\IRoleRepository.cs" />
     <Compile Include="Providers\Roles\IUserWithRoles.cs" />
     <Compile Include="Providers\Roles\RoleProvider.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Html\SelectLists\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

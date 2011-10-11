@@ -1,0 +1,27 @@
+﻿@using HtmlHelpersDemo.Models
+@model ListModel
+@{
+    ViewBag.Title = "Index";
+}
+<h2>
+    SELECT demos</h2>
+<p>
+    Dropdown using formatters:
+    <br />
+    @Html2.DropdownFor(model => model.CurrentUser, Select.From<UserFormatter>(Model.Users))
+    <br />
+    @Html2.DropdownFor(model => model.CurrentUser, Select.From<UserCustomFormatter>(Model.Users))
+    <br />
+</p>
+<p>
+    Dropdown using enum:
+    <br />
+    @Html2.DropdownFor(model => model.CurrentUser.Speicies)
+    <br />
+</p>
+<p>
+    Sorted by using the adapter "SortSelectsAdapter":
+    <br />
+    @Html2.DropdownFor(model => model.CurrentUser.Speicies, new { @class = "sortMe" })
+    <br />
+</p>

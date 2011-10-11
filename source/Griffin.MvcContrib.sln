@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{6D99
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MvcContrib", "MvcContrib", "{96BC24AD-7D18-4834-B241-B1CFA8CB9FF6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HtmlHelpersDemo", "samples\mvccontrib\HtmlHelpersDemo\HtmlHelpersDemo.csproj", "{69BA3CD7-9A9E-4F0B-9FF3-2AA557549915}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{B5949D64-4C2B-4FEB-B8F7-59A64434B0BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5949D64-4C2B-4FEB-B8F7-59A64434B0BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5949D64-4C2B-4FEB-B8F7-59A64434B0BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69BA3CD7-9A9E-4F0B-9FF3-2AA557549915}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69BA3CD7-9A9E-4F0B-9FF3-2AA557549915}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69BA3CD7-9A9E-4F0B-9FF3-2AA557549915}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69BA3CD7-9A9E-4F0B-9FF3-2AA557549915}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -36,5 +42,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{96BC24AD-7D18-4834-B241-B1CFA8CB9FF6} = {6D9911B1-ACD1-4848-95FB-D4922B38E787}
 		{B5949D64-4C2B-4FEB-B8F7-59A64434B0BD} = {96BC24AD-7D18-4834-B241-B1CFA8CB9FF6}
+		{69BA3CD7-9A9E-4F0B-9FF3-2AA557549915} = {96BC24AD-7D18-4834-B241-B1CFA8CB9FF6}
 	EndGlobalSection
 EndGlobal

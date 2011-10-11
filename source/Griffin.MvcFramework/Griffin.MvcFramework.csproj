@@ -71,6 +71,7 @@
     <Compile Include="Providers\RavenDbRoleRepository.cs" />
     <Compile Include="Providers\Role.cs" />
     <Compile Include="Providers\UserAccount.cs" />
+    <Compile Include="RegisterServiceAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Readme.txt" />

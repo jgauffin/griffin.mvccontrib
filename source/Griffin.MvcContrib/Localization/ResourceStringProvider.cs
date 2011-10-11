@@ -99,6 +99,18 @@ namespace Griffin.MvcContrib.Localization
             return GetString(name);
         }
 
+        /// <summary>
+        /// Gets a enum string
+        /// </summary>
+        /// <param name="enumType">Type of enum</param>
+        /// <param name="name">Name of the value to translation for</param>
+        /// <returns>Translated name</returns>
+        /// <remarks>enums has the same format as models: EnumTypeName_ValueName</remarks>
+        public string GetEnumString(Type enumType, string name)
+        {
+            return GetString(Format(enumType, name));
+        }
+
         #endregion
 
         /// <summary>

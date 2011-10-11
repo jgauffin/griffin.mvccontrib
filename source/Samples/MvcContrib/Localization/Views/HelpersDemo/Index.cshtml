@@ -1,0 +1,53 @@
+﻿@using Localization.Models
+@model Localization.Models.HelperDemoModel
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
+
+@using (Html.BeginForm()) {
+    @Html.ValidationSummary(true)
+    <fieldset>
+        <legend>T(HelperDemoModel)</legend>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Age)
+        </div>
+        <div class="editor-field">
+            @Html2.TextBoxFor(model => model.Age)
+            @Html.ValidationMessageFor(model => model.Age)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.InputType)
+        </div>
+        <div class="editor-field">
+            @Html2.CheckBoxesFor(model => model.InputType) <br />
+            @Html2.RadioButtonsFor(model => model.InputType) <br />
+            @Html2.DropdownFor(model => model.InputType) <br />
+            @Html.ValidationMessageFor(model => model.Age)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.User)
+        </div>
+        <div class="editor-field">
+            @Html2.DropdownFor(model => model.User, Select.From<UserFormatter>(Model.Users))
+            @Html2.DropdownFor(model => model.User, Select.From<UserCustomFormatter>(Model.Users))
+            @Html.ValidationMessageFor(model => model.Age)
+        </div>
+
+        <p>
+            <input type="submit" value="Save" />
+        </p>
+    </fieldset>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>

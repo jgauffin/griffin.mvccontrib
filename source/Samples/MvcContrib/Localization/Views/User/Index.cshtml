@@ -28,7 +28,7 @@
             @Html.LabelFor(model => model.LastName)
         </div>
         <div class="editor-field">
-            @Html.EditorFor(model => model.LastName)
+            @Html2.TextAreaFor(model => model.LastName, rows: 20)
             @Html.ValidationMessageFor(model => model.LastName)
         </div>
 
