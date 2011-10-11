@@ -61,7 +61,7 @@
     <Compile Include="Html\IdTitleFormatter.cs" />
     <Compile Include="Html\IFormItemAdapter.cs" />
     <Compile Include="Html\ISelectFormatter.cs" />
-    <Compile Include="Html\InputHtmlHelper.cs" />
+    <Compile Include="Html\FormHtmlHelper.cs" />
     <Compile Include="Html\NestedTagBuilder.cs" />
     <Compile Include="Html\Generators\RadioButtonGenerator.cs" />
     <Compile Include="Html\ReflectiveSelectItemFormatter.cs" />

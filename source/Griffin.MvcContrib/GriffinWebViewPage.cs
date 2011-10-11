@@ -11,7 +11,7 @@ namespace Griffin.MvcContrib
     /// </summary>
     public abstract class GriffinWebViewPage<TModel> : WebViewPage<TModel> 
     {
-        private InputHtmlHelper<TModel> _inputHelper;
+        private FormHtmlHelper<TModel> _formHelper;
         private TextHtmlHelper<TModel> _textHelper;
         private IViewLocalizer _viewLocalizer;
 
@@ -28,9 +28,9 @@ namespace Griffin.MvcContrib
         /// <summary>
         /// Gets the new HTML helpers.
         /// </summary>
-        public InputHtmlHelper<TModel> Html2
+        public FormHtmlHelper<TModel> Html2
         {
-            get { return _inputHelper; }
+            get { return _formHelper; }
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace Griffin.MvcContrib
         public override void InitHelpers()
         {
             base.InitHelpers();
-            _inputHelper = new InputHtmlHelper<TModel>(Html);
+            _formHelper = new FormHtmlHelper<TModel>(Html);
             _textHelper = new TextHtmlHelper<TModel>(Html);
             _viewLocalizer = DependencyResolver.Current.GetService<IViewLocalizer>() ?? new NoLocalization();
         }

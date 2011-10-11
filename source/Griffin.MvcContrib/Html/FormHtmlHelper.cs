@@ -16,7 +16,7 @@ namespace Griffin.MvcContrib.Html
     /// <typeparam name="TModel"></typeparam>
     // All enumerations are safe to be executed multiple times.
     // ReSharper disable PossibleMultipleEnumeration
-    public class InputHtmlHelper<TModel> : HtmlHelperFor<TModel>
+    public class FormHtmlHelper<TModel> : HtmlHelperFor<TModel>
     {
         private readonly CheckBoxGenerator _checkBoxGenerator;
         private readonly RadioButtonGenerator _radioButtonGenerator;
@@ -28,10 +28,10 @@ namespace Griffin.MvcContrib.Html
 
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="InputHtmlHelper&lt;TModel&gt;"/> class.
+        /// Initializes a new instance of the <see cref="FormHtmlHelper{TModel}"/> class.
         /// </summary>
         /// <param name="helper">The helper.</param>
-        public InputHtmlHelper(HtmlHelper<TModel> helper)
+        public FormHtmlHelper(HtmlHelper<TModel> helper)
             : base(helper)
         {
             var resolver = DependencyResolver.Current;

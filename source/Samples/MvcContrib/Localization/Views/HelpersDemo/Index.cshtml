@@ -37,8 +37,6 @@
             @Html.LabelFor(model => model.User)
         </div>
         <div class="editor-field">
-            @Html2.DropdownFor(model => model.User, Select.From<UserFormatter>(Model.Users))
-            @Html2.DropdownFor(model => model.User, Select.From<UserCustomFormatter>(Model.Users))
             @Html.ValidationMessageFor(model => model.Age)
         </div>
 
