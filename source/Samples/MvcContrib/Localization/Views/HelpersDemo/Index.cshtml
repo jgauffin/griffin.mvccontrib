@@ -13,7 +13,7 @@
 @using (Html.BeginForm()) {
     @Html.ValidationSummary(true)
     <fieldset>
-        <legend>T(HelperDemoModel)</legend>
+        <legend>@T("Helper demo model")</legend>
 
         <div class="editor-label">
             @Html.LabelFor(model => model.Age)
@@ -41,11 +41,11 @@
         </div>
 
         <p>
-            <input type="submit" value="Save" />
+            <input type="submit" value="@T("Spara")" />
         </p>
     </fieldset>
 }
 
 <div>
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink(T("Back to List"), "Index")
 </div>

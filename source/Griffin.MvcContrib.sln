@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MvcContrib", "MvcContrib", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HtmlHelpersDemo", "samples\mvccontrib\HtmlHelpersDemo\HtmlHelpersDemo.csproj", "{69BA3CD7-9A9E-4F0B-9FF3-2AA557549915}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Griffin.MvcContrib.Admin", "Griffin.MvcContrib.Admin\Griffin.MvcContrib.Admin.csproj", "{0596FB0B-582B-4E50-A98F-8B79D82E6748}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{69BA3CD7-9A9E-4F0B-9FF3-2AA557549915}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69BA3CD7-9A9E-4F0B-9FF3-2AA557549915}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{69BA3CD7-9A9E-4F0B-9FF3-2AA557549915}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0596FB0B-582B-4E50-A98F-8B79D82E6748}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0596FB0B-582B-4E50-A98F-8B79D82E6748}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0596FB0B-582B-4E50-A98F-8B79D82E6748}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0596FB0B-582B-4E50-A98F-8B79D82E6748}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

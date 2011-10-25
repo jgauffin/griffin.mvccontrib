@@ -1,0 +1,95 @@
+﻿@using System.Globalization
+@using LocalizationAdmin.Models
+@model ListModel
+
+@{
+    ViewBag.Title = "Index";
+}
+@Html.ActionLink("View localization", "Index", "LocalizeViews") |
+@Html.ActionLink("Type localization", "Index", "LocalizeTypes")
+<h2>@CultureInfo.CurrentUICulture.DisplayName</h2>
+@using (Html.BeginForm("CreateLanguage", "LocalizeViews"))
+{
+    @Html.ValidationSummary(true)
+    <div style="float: right">
+        Change language:
+        @Html.DropDownList("Lang", Model.Languages, new{id="changelanguage"})
+    </div>
+	<div>Create language (should be a lang code like "sv-se")
+
+        <input type="text" name="lang" />
+        <input type="submit" value="Create"/>
+    </div>
+    <div>
+        <label>@Html.CheckBoxFor(model => model.ShowMetadata) Show metadata</label>
+    </div>
+}
+
+
+
+<table>
+    <tr>
+        <th>
+            Typename
+        </th>
+        <th>
+            TextName
+        </th>
+        <th>
+            TranslatedText
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model.Prompts)
+{
+    <tr>
+        <td>
+            <span style="color:#cccccc">@Html.DisplayFor(modelItem => item.Namespace)</span>.
+            @Html.DisplayFor(modelItem => item.ModelName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TextName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TranslatedText)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id = item.TextKey })
+        </td>
+    </tr>
+}
+
+</table>
+
+
+<script type="text/javascript">
+    
+    function setCookie(name, value, exdays) {
+        var exdate = new Date();
+        exdate.setDate(exdate.getDate() + exdays);
+        var contents = escape(value) + ((exdays == null) ? "" : "; expires=" + exdate.toUTCString());
+        document.cookie = name + "=" + contents;
+    }
+    function getCookie(name) {
+        var i, x, y, cookies = document.cookie.split(";");
+        for (i = 0; i < cookies.length; i++) {
+            x = cookies[i].substr(0, cookies[i].indexOf("="));
+            y = cookies[i].substr(cookies[i].indexOf("=") + 1);
+            x = x.replace(/^\s+|\s+$/g, "");
+            if (x == name) {
+                return unescape(y);
+            }
+        }
+    }
+
+    $(function () {
+        $('#ShowMetadata').click(function () {
+            var show = this.checked ? 1 : 0;
+            setCookie('ShowMetadata', show, 365);
+            window.location.reload();
+        });
+
+    });
+
+</script>

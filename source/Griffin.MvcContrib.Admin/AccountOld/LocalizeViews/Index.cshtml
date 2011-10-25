@@ -1,0 +1,69 @@
+﻿@using System.Globalization
+@using Griffin.MvcContrib.Admin.Models
+@model IEnumerable<ViewPrompt>
+
+@{
+    ViewBag.Title = "Index";
+}
+@Html.ActionLink("View localization", "Index", "LocalizeViews") |
+@Html.ActionLink("Type localization", "Index", "LocalizeTypes")
+
+<h2>@CultureInfo.CurrentUICulture.DisplayName</h2>
+@using (Html.BeginForm("CreateLanguage", "LocalizeViews"))
+{
+    @Html.ValidationSummary(true)
+    <div style="float: right">
+        Change language:
+        <select id="changelanguage">
+
+        </select>
+    </div>
+	<div>Create language (should be a lang code like "sv-se")
+
+        <input type="text" name="lang" />
+        <input type="submit" value="Create"/>
+    </div>
+    
+}
+
+
+
+<table>
+    <tr>
+        <th>
+            ControllerName
+        </th>
+        <th>
+            ActionName
+        </th>
+        <th>
+            TextName
+        </th>
+        <th>
+            TranslatedText
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model)
+{
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.ControllerName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ActionName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TextName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TranslatedText)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id = item.TextKey })
+        </td>
+    </tr>
+}
+
+</table>

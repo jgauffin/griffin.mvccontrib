@@ -37,6 +37,7 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
@@ -48,8 +49,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Areas\Controller\LocalizationController.cs" />
+    <Compile Include="Areas\GriffinArea.cs" />
+    <Compile Include="Areas\Models\ViewTranslationEntry.cs" />
     <Compile Include="Caching\NamespaceDoc.cs" />
     <Compile Include="Caching\NoCacheAttribute.cs" />
+    <Compile Include="GriffinVirtualPathProvider.cs" />
     <Compile Include="GriffinWebViewPage.cs" />
     <Compile Include="Html\FormItemAdapterContext.cs" />
     <Compile Include="Html\Generators\CheckBoxGenerator.cs" />
@@ -78,15 +83,23 @@
     <Compile Include="Json\JsonResponse.cs" />
     <Compile Include="Json\MessageBox.cs" />
     <Compile Include="Json\NamespaceDoc.cs" />
+    <Compile Include="Localization\Types\FileStringProvider.cs" />
+    <Compile Include="Localization\ILocalizedStringRepository.cs" />
+    <Compile Include="Localization\Types\TextPrompt.cs" />
+    <Compile Include="Localization\Types\TextPromptCollection.cs" />
+    <Compile Include="Localization\Views\ViewStringFileRepository.cs" />
     <Compile Include="Localization\MetadataLanguageProvider.cs" />
     <Compile Include="Localization\ILocalizedStringProvider.cs" />
-    <Compile Include="Localization\IViewLocalizer.cs" />
     <Compile Include="Localization\LocalizedAttribute.cs" />
     <Compile Include="Localization\LocalizedCacheAttribute.cs" />
     <Compile Include="Localization\LocalizedMetadataProvider.cs" />
     <Compile Include="Localization\LocalizedModelValidatorProvider.cs" />
     <Compile Include="Localization\NamespaceDoc.cs" />
     <Compile Include="Localization\ResourceStringProvider.cs" />
+    <Compile Include="Localization\Views\IViewStringsRepository.cs" />
+    <Compile Include="Localization\Views\TextPrompt.cs" />
+    <Compile Include="Localization\Views\TextPromptCollection.cs" />
+    <Compile Include="Localization\Views\ViewLocalizer.cs" />
     <Compile Include="NamespaceDoc.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\Membership\IAccountPasswordInfo.cs" />
@@ -113,6 +126,27 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Html\SelectLists\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Areas\Views\Localization\Index.cshtml">
+      <Generator>MvcRazorClassGenerator</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

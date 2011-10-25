@@ -1,8 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Web.Mvc;
 using Griffin.MvcContrib.Html;
 using Griffin.MvcContrib.Localization;
+using Griffin.MvcContrib.Localization.Views;
 
 namespace Griffin.MvcContrib
 {
@@ -13,7 +15,6 @@ namespace Griffin.MvcContrib
     {
         private FormHtmlHelper<TModel> _formHelper;
         private TextHtmlHelper<TModel> _textHelper;
-        private IViewLocalizer _viewLocalizer;
 
         /// <summary>
         /// Gets the text helper.
@@ -41,7 +42,6 @@ namespace Griffin.MvcContrib
             base.InitHelpers();
             _formHelper = new FormHtmlHelper<TModel>(Html);
             _textHelper = new TextHtmlHelper<TModel>(Html);
-            _viewLocalizer = DependencyResolver.Current.GetService<IViewLocalizer>() ?? new NoLocalization();
         }
 
 
@@ -50,9 +50,9 @@ namespace Griffin.MvcContrib
         /// </summary>
         /// <param name="text"></param>
         /// <returns></returns>
-        public string T(string text)
+        public MvcHtmlString T(string text)
         {
-            return _viewLocalizer.Translate((string)ViewContext.RouteData.Values["Controller"], (string)ViewContext.RouteData.Values["Action"], text);
+            return MvcHtmlString.Create(ViewLocalizer.Current.Translate((string)ViewContext.RouteData.Values["Controller"], (string)ViewContext.RouteData.Values["Action"], text));
         }
 
         public SelectHelper Select
@@ -60,16 +60,6 @@ namespace Griffin.MvcContrib
             get{return new SelectHelper();}
         }
 
-        /// <summary>
-        /// No translation supported.
-        /// </summary>
-        class NoLocalization : IViewLocalizer
-        {
-            public string Translate(string controllerName, string actionName, string text)
-            {
-                return text;
-            }
-        }
     }
 
     /// <summary>

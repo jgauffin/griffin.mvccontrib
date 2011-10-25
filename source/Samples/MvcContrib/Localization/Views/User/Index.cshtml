@@ -14,7 +14,7 @@
 {
     @Html.ValidationSummary(true)
     <fieldset>
-        <legend>UserViewModel</legend>
+        <legend>@T("User view model")</legend>
 
         <div class="editor-label">
             @Html.LabelFor(model => model.FirstName)
@@ -33,11 +33,11 @@
         </div>
 
         <p>
-            <input type="submit" value="Create" />
+            <input type="submit" value="@("Create")" />
         </p>
     </fieldset>
 }
 
 <div>
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink(@T("Back to List"), "Index")
 </div>

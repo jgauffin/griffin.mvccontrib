@@ -42,7 +42,7 @@ namespace Griffin.MvcContrib.Localization
     /// </example>
     public class LocalizedAttribute : ActionFilterAttribute
     {
-        private const string CookieName = "theLanguage";
+        private const string CookieName = "GriffinLanguageSwitcher";
 
         /// <summary>
         /// Called by the ASP.NET MVC framework before the action method executes.
@@ -50,42 +50,40 @@ namespace Griffin.MvcContrib.Localization
         /// <param name="filterContext">The filter context.</param>
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            HttpCookie cookie = null;
-            var language = "";
+			if (filterContext.HttpContext.Request.QueryString["lang"] != null)
+			{
+				var lang = filterContext.HttpContext.Request.QueryString["lang"];
+				Thread.CurrentThread.CurrentCulture =
+					Thread.CurrentThread.CurrentUICulture =
+						new CultureInfo(lang);
 
-            if (filterContext.HttpContext.Request.QueryString["lang"] != null)
-            {
-                language = filterContext.HttpContext.Request.QueryString["lang"];
-            }
-            else
-            {
-                cookie = filterContext.HttpContext.Request.Cookies[CookieName];
-                if (cookie != null)
-                    language = cookie.Value;
-                else if (filterContext.HttpContext.Request.UserLanguages != null)
-                    language = filterContext.HttpContext.Request.UserLanguages[0];
-                filterContext.RouteData.Values["lang"] = language;
-            }
+				SetCookie(filterContext.HttpContext.Response, lang);
+			}
+			else if (filterContext.RouteData.Values["lang"] != null)
+			{
+				var lang = filterContext.RouteData.Values["lang"].ToString();
+				Thread.CurrentThread.CurrentCulture =
+					Thread.CurrentThread.CurrentUICulture =
+						new CultureInfo(lang);
 
-            SwitchLanguage(language);
+				SetCookie(filterContext.HttpContext.Response, lang);
+			}
 
-            if (cookie != null && cookie.Value == language)
-                return;
+			else if (filterContext.HttpContext.Request.Cookies[CookieName] != null)
+			{
+				Thread.CurrentThread.CurrentCulture =
+					Thread.CurrentThread.CurrentUICulture = 
+						new CultureInfo(filterContext.HttpContext.Request.Cookies[CookieName].Value);
 
-            cookie = new HttpCookie(CookieName, Thread.CurrentThread.CurrentUICulture.Name)
-                         {Expires = DateTime.Now.AddYears(1)};
-            filterContext.HttpContext.Response.SetCookie(cookie);
+			}
         }
 
-        private static void SwitchLanguage(string name)
-        {
-            try
-            {
-                Thread.CurrentThread.CurrentUICulture = CultureInfo.CreateSpecificCulture(name);
-            }
-            catch
-            {
-            }
-        }
+    	private static void SetCookie(HttpResponseBase response, string language)
+    	{
+    		response.Cookies.Add(new HttpCookie(CookieName, language)
+    		                     	{
+    		                     		Expires = DateTime.Now.AddYears(1),
+    		                     	});
+    	}
     }
 }

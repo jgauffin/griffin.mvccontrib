@@ -1,0 +1,9 @@
+﻿@using System.Web.Mvc
+@using System.Web.Mvc.Html
+@inherits System.Web.Mvc.WebViewPage<Griffin.MvcContrib.Areas.Models.ViewTranslationEntry>
+@{
+    ViewBag.Title = "Index";
+}
+
+Hello world.
+@Html.EditorFor(model => model.TextName)

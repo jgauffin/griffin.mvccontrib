@@ -9,8 +9,9 @@ using System.Web.Mvc;
 namespace Griffin.MvcContrib.Localization
 {
     /// <summary>
-    /// Is not localizing but using the existing metadata.
+    /// Just returns specified meta data
     /// </summary>
+    /// <remarks>Is used when nothing else have been configured.</remarks>
     public class MetadataLanguageProvider : ILocalizedStringProvider
     {
         /// <summary>

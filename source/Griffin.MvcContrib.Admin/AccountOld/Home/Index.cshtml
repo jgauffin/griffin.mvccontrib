@@ -1,0 +1,17 @@
+﻿@using Griffin.MvcContrib.Admin.Models
+@model LogOnModel
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<h2>@ViewBag.Message</h2>
+<p>
+    @T(@"To learn more about ASP.NET MVC visit <a href=""http://asp.net/mvc"" title=""ASP.NET MVC Website"">http://asp.net/mvc</a>.")
+</p>
+
+<div>
+    @T("This text will be localized. All strings are return as MvcHtmlString and are therefore interpreted as SAFE.")
+</div>
+
+<!-- the following will be added for localization -->
+@Html.DisplayFor(model => model.UserName)
