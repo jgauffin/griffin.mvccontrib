@@ -20,6 +20,7 @@
 using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
+using Griffin.MvcContrib.Localization.Types;
 
 namespace Griffin.MvcContrib.Localization
 {
@@ -46,7 +47,7 @@ namespace Griffin.MvcContrib.Localization
     /// </example>
     public class LocalizedModelMetadataProvider : DataAnnotationsModelMetadataProvider
     {
-        private readonly ILocalizedStringProvider _stringProvider;
+		private readonly ILocalizedStringProvider _stringProviderDontUseDirectly;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LocalizedModelMetadataProvider"/> class.
@@ -54,10 +55,23 @@ namespace Griffin.MvcContrib.Localization
         /// <param name="stringProvider">The string provider.</param>
         public LocalizedModelMetadataProvider(ILocalizedStringProvider stringProvider)
         {
-            _stringProvider = stringProvider;
+            _stringProviderDontUseDirectly = stringProvider;
         }
 
-        /// <summary>
+		/// <summary>
+		/// Initializes a new instance of the <see cref="LocalizedModelMetadataProvider"/> class.
+		/// </summary>
+		/// <remarks>you need to register <see cref="ILocalizedStringProvider"/> in your IoC container.</remarks>
+		public LocalizedModelMetadataProvider()
+		{
+		}
+
+    	private ILocalizedStringProvider Provider
+    	{
+    		get { return _stringProviderDontUseDirectly ?? DependencyResolver.Current.GetService<ILocalizedStringProvider>(); }
+    	}
+
+    	/// <summary>
         /// Gets the metadata for the specified property.
         /// </summary>
         /// <param name="attributes">The attributes.</param>
@@ -101,7 +115,7 @@ namespace Griffin.MvcContrib.Localization
         /// <returns>Translated string</returns>
         protected virtual string Translate(Type type, string propertyName)
         {
-            return _stringProvider.GetModelString(type, propertyName);
+            return Provider.GetModelString(type, propertyName);
         }
 
         /// <summary>
@@ -113,7 +127,7 @@ namespace Griffin.MvcContrib.Localization
         /// <returns>Translated string</returns>
         protected virtual string Translate(Type type, string propertyName, string metadataName)
         {
-            return _stringProvider.GetModelString(type, propertyName, metadataName);
+            return Provider.GetModelString(type, propertyName, metadataName);
         }
     }
 }

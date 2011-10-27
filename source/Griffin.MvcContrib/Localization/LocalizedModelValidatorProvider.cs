@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web.Mvc;
+using Griffin.MvcContrib.Localization.Types;
 
 namespace Griffin.MvcContrib.Localization
 {
@@ -46,7 +47,7 @@ namespace Griffin.MvcContrib.Localization
     /// </example>
     public class LocalizedModelValidatorProvider : DataAnnotationsModelValidatorProvider
     {
-        private readonly ILocalizedStringProvider _stringProvider;
+        private readonly ILocalizedStringProvider _stringProviderDontUsedirectly;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LocalizedModelValidatorProvider"/> class.
@@ -54,8 +55,18 @@ namespace Griffin.MvcContrib.Localization
         /// <param name="stringProvider">The string provider.</param>
         public LocalizedModelValidatorProvider(ILocalizedStringProvider stringProvider)
         {
-            _stringProvider = stringProvider;
+			_stringProviderDontUsedirectly = stringProvider;
         }
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="LocalizedModelValidatorProvider"/> class.
+		/// </summary>
+		/// <remarks>you need to register <see cref="ILocalizedStringProvider"/> in your IoC container or use
+		/// the other constructor.</remarks>
+		public LocalizedModelValidatorProvider()
+		{
+			
+		}
 
         /// <summary>
         /// Gets a list of validators.
@@ -70,8 +81,13 @@ namespace Griffin.MvcContrib.Localization
                                                                      IEnumerable<Attribute> attributes)
         {
             foreach (var attr in attributes.OfType<ValidationAttribute>())
-                attr.ErrorMessage = _stringProvider.GetValidationString(attr.GetType());
+                attr.ErrorMessage = Provider.GetValidationString(attr.GetType());
             return base.GetValidators(metadata, context, attributes);
         }
+
+    	protected ILocalizedStringProvider Provider
+    	{
+			get { return _stringProviderDontUsedirectly ?? DependencyResolver.Current.GetService<ILocalizedStringProvider>(); }
+    	}
     }
 }

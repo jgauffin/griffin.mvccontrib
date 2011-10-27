@@ -56,7 +56,7 @@ namespace Localization
 			var builder = new ContainerBuilder();
 			builder.RegisterControllers(Assembly.GetExecutingAssembly());
 
-			builder.RegisterType<ViewStringFileRepository>().AsImplementedInterfaces();
+			builder.RegisterType<ViewLocalizationFileRepository>().AsImplementedInterfaces();
 			builder.RegisterType<LocalizationController>().As<Controller>().AsSelf();
 			builder.RegisterType<CustomControllerActivator>().AsImplementedInterfaces().SingleInstance();
 			_container = builder.Build();

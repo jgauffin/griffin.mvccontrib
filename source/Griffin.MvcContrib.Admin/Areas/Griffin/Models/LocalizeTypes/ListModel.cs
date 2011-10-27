@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Web.Mvc;
 
-namespace Griffin.MvcContrib.Admin.Models
+namespace Griffin.MvcContrib.Areas.Griffin.Models.LocalizeTypes
 {
 	public class ListModel
 	{

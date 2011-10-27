@@ -24,14 +24,14 @@ namespace Griffin.MvcContrib.Localization.Views
 	/// <see cref="Serialize"/> and <see cref="Deserialize"/>.
 	/// </para>
 	/// </remarks>
-	public class ViewStringFileRepository : IViewStringsRepository
+	public class ViewLocalizationFileRepository : IViewLocalizationRepository
 	{
 		private static readonly object _writeLock = new object();
 
 		private readonly Dictionary<CultureInfo, TextPromptCollection> _languages =
 			new Dictionary<CultureInfo, TextPromptCollection>();
 
-		#region IViewStringsRepository Members
+		#region IViewLocalizationRepository Members
 
 		public IEnumerable<TextPrompt> GetAllPrompts(CultureInfo culture)
 		{

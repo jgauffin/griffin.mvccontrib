@@ -6,7 +6,7 @@ namespace Griffin.MvcContrib.Localization.Views
 	/// <summary>
 	/// Repository used to handle localized strings
 	/// </summary>
-	public interface IViewStringsRepository
+	public interface IViewLocalizationRepository
 	{
 		/// <summary>
 		/// Get all prompts that have been created for an language

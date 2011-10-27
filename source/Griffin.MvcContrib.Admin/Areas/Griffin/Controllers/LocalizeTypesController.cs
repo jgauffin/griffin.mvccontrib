@@ -1,23 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using System.Xml.Linq;
+using Griffin.MvcContrib.Areas.Griffin.Models.LocalizeTypes;
 using Griffin.MvcContrib.Localization;
-using Griffin.MvcContrib.Localization.Views;
-using Griffin.MvcContrib.Admin.Models;
+using Griffin.MvcContrib.Localization.Types;
 
-namespace Griffin.MvcContrib.Admin.Controllers
+namespace Griffin.MvcContrib.Areas.Griffin.Controllers
 {
 	[Localized]
-    public class LocalizeTypesController : Controller
+    public class LocalizeTypesController : System.Web.Mvc.Controller
     {
-    	private readonly ILocalizedStringRepository _repository;
+    	private readonly ILocalizedTypesRepository _repository;
 
-    	public LocalizeTypesController(ILocalizedStringRepository repository)
+    	public LocalizeTypesController(ILocalizedTypesRepository repository)
         {
         	_repository = repository;
         }

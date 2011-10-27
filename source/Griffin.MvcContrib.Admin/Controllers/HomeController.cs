@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Threading;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using Griffin.MvcContrib.Localization;
-using Griffin.MvcContrib.Admin.Models;
+using Griffin.MvcContrib.Models;
 
-namespace Griffin.MvcContrib.Admin.Controllers
+namespace Griffin.MvcContrib.Controllers
 {
 	[Localized]
 	public class HomeController : Controller

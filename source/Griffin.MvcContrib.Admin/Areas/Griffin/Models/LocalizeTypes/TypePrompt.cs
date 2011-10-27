@@ -1,17 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Globalization;
-using System.Linq;
-using System.Web;
-using Griffin.MvcContrib.Localization.Views;
+using Griffin.MvcContrib.Localization.Types;
 
-namespace Griffin.MvcContrib.Admin.Models
+namespace Griffin.MvcContrib.Areas.Griffin.Models.LocalizeTypes
 {
-	public class ViewPrompt
+	public class TypePrompt
 	{
 		private readonly TextPrompt _prompt;
 
-		public ViewPrompt(TextPrompt prompt)
+		public TypePrompt()
+		{
+		}
+
+
+		public TypePrompt(TextPrompt prompt)
 		{
 			_prompt = prompt;
 		}
@@ -26,17 +28,18 @@ namespace Griffin.MvcContrib.Admin.Models
 		/// <summary>
 		/// Gets or sets controller that the text is for
 		/// </summary>
-		public string ControllerName { get { return _prompt.ControllerName; } }
+		public string TypeName { get { return _prompt.Subject.FullName; } }
+
+		public string FullTypeName { get { return _prompt.Subject.AssemblyQualifiedName; } }
+
+		public string ModelName {get { return _prompt.Subject.Name; }}
+		public string Namespace {get { return _prompt.Subject.Namespace; }}
 
 		/// <summary>
 		/// Gets or sets view name (unique in combination with controller name=
 		/// </summary>
-		public string ActionName { get { return _prompt.ActionName; } }
-
-		/// <summary>
-		/// Gets or sets the text to translate
-		/// </summary>
 		public string TextName { get { return _prompt.TextName; } }
+
 
 		/// <summary>
 		/// Gets or sets translated text
@@ -45,5 +48,13 @@ namespace Griffin.MvcContrib.Admin.Models
 		public string TranslatedText { get { return _prompt.TranslatedText; } }
 
 		public CultureInfo Culture { get { return new CultureInfo(_prompt.LocaleId); } }
+	}
+
+	public class TypeEditModel
+	{
+		[Required]
+		public string TextKey { get; set; }
+		[Required]
+		public string TranslatedText { get; set; }
 	}
 }

@@ -10,7 +10,7 @@
     <ProjectTypeGuids>{E53F8FEA-EAE0-44A6-8774-FFD645390401};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Griffin.MvcContrib.Admin</RootNamespace>
+    <RootNamespace>Griffin.MvcContrib</RootNamespace>
     <AssemblyName>Griffin.MvcContrib.Admin</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
@@ -71,17 +71,21 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Areas\Griffin\Controllers\AccountController.cs" />
+    <Compile Include="Areas\Griffin\Controllers\LocalizeTypesController.cs" />
+    <Compile Include="Areas\Griffin\Controllers\LocalizeViewsController.cs" />
+    <Compile Include="Areas\Griffin\GriffinAreaRegistration.cs" />
+    <Compile Include="Models\AccountModels.cs" />
+    <Compile Include="Areas\Griffin\Models\Account\ListModel.cs" />
+    <Compile Include="Areas\Griffin\Models\Account\SearchModel.cs" />
+    <Compile Include="Areas\Griffin\Models\LocalizeTypes\ListModel.cs" />
+    <Compile Include="Areas\Griffin\Models\LocalizeTypes\TypePrompt.cs" />
+    <Compile Include="Areas\Griffin\Models\LocalizeViews\ViewPrompt.cs" />
     <Compile Include="Controllers\AccountOldController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Models\ListModel.cs" />
-    <Compile Include="Controllers\LocalizeTypesController.cs" />
-    <Compile Include="Controllers\LocalizeViewsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\AccountModels.cs" />
-    <Compile Include="Models\TypePrompt.cs" />
-    <Compile Include="Models\ViewPrompt.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -156,6 +160,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Areas\Griffin\Views\Account\" />
+    <Folder Include="Areas\Griffin\Views\Shared\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
@@ -164,6 +170,10 @@
     <ProjectReference Include="..\Griffin.MvcContrib\Griffin.MvcContrib.csproj">
       <Project>{0D102D58-4D79-444D-B633-F7ACD3B6D749}</Project>
       <Name>Griffin.MvcContrib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Griffin.MvcFramework\Griffin.MvcContrib.RavenDb.csproj">
+      <Project>{328FA67F-1F5E-4020-BBE5-440F50E097FC}</Project>
+      <Name>Griffin.MvcContrib.RavenDb</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -177,6 +187,15 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="AccountOld\LocalizeTypes\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Griffin\Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Griffin\Views\LocalizeTypes\Edit.cshtml" />
+    <Content Include="Areas\Griffin\Views\LocalizeTypes\Index.cshtml" />
+    <Content Include="Areas\Griffin\Views\LocalizeViews\Edit.cshtml" />
+    <Content Include="Areas\Griffin\Views\LocalizeViews\Index.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

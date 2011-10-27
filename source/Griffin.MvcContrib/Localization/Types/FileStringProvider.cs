@@ -13,7 +13,7 @@ namespace Griffin.MvcContrib.Localization.Types
 	/// <summary>
 	/// Uses to localize everything for <see cref="ILocalizedStringProvider"/> in files that are placed in the AppData folder.
 	/// </summary>
-	public class FileStringProvider : ILocalizedStringProvider, ILocalizedStringRepository
+	public class FileStringProvider : ILocalizedStringProvider, ILocalizedTypesRepository
 	{
 		private static readonly object _writeLock = new object();
 
@@ -159,7 +159,7 @@ namespace Griffin.MvcContrib.Localization.Types
 
 		}
 
-		public TextPromptCollection GetPrompts(CultureInfo cultureInfo)
+		public IEnumerable<TextPrompt> GetPrompts(CultureInfo cultureInfo)
 		{
 			return GetLanguage(cultureInfo);
 		}

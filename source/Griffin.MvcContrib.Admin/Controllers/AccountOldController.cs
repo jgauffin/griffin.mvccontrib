@@ -5,9 +5,9 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using System.Web.Security;
-using Griffin.MvcContrib.Admin.Models;
+using Griffin.MvcContrib.Models;
 
-namespace Griffin.MvcContrib.Admin.Controllers
+namespace Griffin.MvcContrib.Controllers
 {
 	public class AccountOldController : Controller
 	{

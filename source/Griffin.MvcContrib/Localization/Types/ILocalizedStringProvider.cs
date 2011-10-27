@@ -20,7 +20,7 @@
 using System;
 using System.Web.Mvc;
 
-namespace Griffin.MvcContrib.Localization
+namespace Griffin.MvcContrib.Localization.Types
 {
     /// <summary>
     /// Used to be able to provide localized strings from any source.

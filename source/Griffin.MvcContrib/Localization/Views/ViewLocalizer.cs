@@ -7,12 +7,12 @@ namespace Griffin.MvcContrib.Localization.Views
 	/// Used to localize views
 	/// </summary>
 	/// <remarks>
-	/// Create a class and implement <see cref="IViewStringsRepository"/> and register it in your container to use an own repository for the view localization. 
+	/// Create a class and implement <see cref="IViewLocalizationRepository"/> and register it in your container to use an own repository for the view localization. 
 	/// </remarks>
 	public class ViewLocalizer
 	{
 		private static ViewLocalizer _current;
-		private IViewStringsRepository _repositoryDontUseDirectly;
+		private IViewLocalizationRepository _repositoryDontUseDirectly;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ViewLocalizer"/> class.
@@ -41,16 +41,16 @@ namespace Griffin.MvcContrib.Localization.Views
 		/// Gets repository used to fetch strings
 		/// </summary>
 		/// <remarks>
-		/// Uses <see cref="DependencyResolver"/> to find <see cref="IViewStringsRepository"/>.
+		/// Uses <see cref="DependencyResolver"/> to find <see cref="IViewLocalizationRepository"/>.
 		/// </remarks>
-		protected IViewStringsRepository Repository
+		protected IViewLocalizationRepository Repository
 		{
 			get
 			{
 				if (_repositoryDontUseDirectly == null)
 				{
-					_repositoryDontUseDirectly = DependencyResolver.Current.GetService<IViewStringsRepository>() ??
-					                             new ViewStringFileRepository();
+					_repositoryDontUseDirectly = DependencyResolver.Current.GetService<IViewLocalizationRepository>() ??
+					                             new ViewLocalizationFileRepository();
 				}
 
 				return _repositoryDontUseDirectly;

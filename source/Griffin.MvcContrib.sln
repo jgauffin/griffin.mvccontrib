@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Griffin.MvcContrib", "Griffin.MvcContrib\Griffin.MvcContrib.csproj", "{0D102D58-4D79-444D-B633-F7ACD3B6D749}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Griffin.MvcFramework", "Griffin.MvcFramework\Griffin.MvcFramework.csproj", "{328FA67F-1F5E-4020-BBE5-440F50E097FC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Griffin.MvcContrib.RavenDb", "Griffin.MvcFramework\Griffin.MvcContrib.RavenDb.csproj", "{328FA67F-1F5E-4020-BBE5-440F50E097FC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Localization", "Samples\MvcContrib\Localization\Localization.csproj", "{B5949D64-4C2B-4FEB-B8F7-59A64434B0BD}"
 EndProject

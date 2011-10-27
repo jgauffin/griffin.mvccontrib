@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Reflection;
-using System.Web;
+﻿using System.Reflection;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Autofac;
 using Autofac.Integration.Mvc;
-using Griffin.MvcContrib.Areas.Controller;
 using Griffin.MvcContrib.Localization;
-using Griffin.MvcContrib.Localization.Types;
-using Griffin.MvcContrib.Localization.Views;
+using Griffin.MvcContrib.RavenDb.Localization;
 
-namespace Griffin.MvcContrib.Admin
+namespace Griffin.MvcContrib
 {
 	// Note: For instructions on enabling IIS6 or IIS7 classic mode, 
 	// visit http://go.microsoft.com/?LinkId=9394801
@@ -42,20 +35,24 @@ namespace Griffin.MvcContrib.Admin
 		protected void Application_Start()
 		{
 			AreaRegistration.RegisterAllAreas();
+			CreateContainer();
 
-			var stringProvider = new FileStringProvider();
-
-			var builder = new ContainerBuilder();
-			builder.RegisterControllers(Assembly.GetExecutingAssembly());
-			builder.RegisterType<ViewStringFileRepository>().AsImplementedInterfaces();
-			builder.RegisterInstance(stringProvider).AsImplementedInterfaces();
-			_container = builder.Build();
-			DependencyResolver.SetResolver(new AutofacDependencyResolver(_container));
-
-			ModelMetadataProviders.Current = new LocalizedModelMetadataProvider(stringProvider);
+			ModelMetadataProviders.Current = new LocalizedModelMetadataProvider();
+			ModelValidatorProviders.Providers.Clear();
+			ModelValidatorProviders.Providers.Add(new LocalizedModelValidatorProvider());
 
 			RegisterGlobalFilters(GlobalFilters.Filters);
 			RegisterRoutes(RouteTable.Routes);
+		}
+
+		private void CreateContainer()
+		{
+			var builder = new ContainerBuilder();
+			builder.RegisterControllers(Assembly.GetExecutingAssembly());
+			builder.RegisterType<ViewLocalizationRepository>().AsImplementedInterfaces();
+			builder.RegisterType<TypeLocalizationRepository>().AsImplementedInterfaces();
+			_container = builder.Build();
+			DependencyResolver.SetResolver(new AutofacDependencyResolver(_container));
 		}
 	}
 }

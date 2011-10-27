@@ -2,6 +2,7 @@
 using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Text;
+using System.Web;
 
 namespace Griffin.MvcContrib.Localization.Types
 {
@@ -64,6 +65,11 @@ namespace Griffin.MvcContrib.Localization.Types
 		/// <remarks>The id should be the same in all languages</remarks>
 		[DataMember]
 		public string TextKey { get; set; }
+
+		/// <summary>
+		/// Gets or sets user id (using current identity <see cref="HttpContext.User"/>).
+		/// </summary>
+		public string UpdatedBy { get; set; }
 
 		/// <summary>
 		/// Generate a key
