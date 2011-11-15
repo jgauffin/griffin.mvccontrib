@@ -8,17 +8,18 @@ namespace Griffin.MvcContrib.Areas.Griffin
 		{
 			get
 			{
-				return "Griffin";
+				return "griffin";
 			}
 		}
 
 		public override void RegisterArea(AreaRegistrationContext context)
 		{
 			context.MapRoute(
-				"Griffin_default",
-				"Griffin/{controller}/{action}/{id}",
-				new { action = "Index", id = UrlParameter.Optional }
-			);
+				"griffin_default",
+				"griffin/{controller}/{action}/{id}",
+				new {controller = "griffinhome", action = "Index", id = UrlParameter.Optional},
+				new[] {GetType().Namespace + ".Controllers"}
+				);
 		}
 	}
 }

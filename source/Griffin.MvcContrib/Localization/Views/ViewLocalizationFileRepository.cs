@@ -60,19 +60,23 @@ namespace Griffin.MvcContrib.Localization.Views
 		/// Create a new language
 		/// </summary>
 		/// <param name="culture">Language to create</param>
-		/// <param name="sourceLanguage">Language to use as a template</param>
+		/// <param name="sourceCulture">Language used as a template.</param>
 		/// <remarks>
 		/// Will add empty entries for all known entries. Entries are added automatically to the default language when views
 		/// are visited. This is NOT done for any other language.
 		/// </remarks>
-		public void CreateForLanguage(CultureInfo culture, CultureInfo sourceLanguage)
+		public void CreateForLanguage(CultureInfo culture, CultureInfo sourceCulture)
 		{
 			var prompts = new TextPromptCollection(culture);
-			var sourcePrompts = GetLanguage(sourceLanguage);
-			prompts.AddRange(sourcePrompts.Select(p => new TextPrompt(p) {TranslatedText = ""}));
+			var sourcePrompts = GetLanguage(sourceCulture);
+			if (sourcePrompts != null)
+				prompts.AddRange(sourcePrompts.Select(p => new TextPrompt(p) { TranslatedText = "" }));
 
 			SaveLanguage(culture, prompts);
-			_languages.Add(culture, prompts);
+			lock (_languages)
+			{
+				_languages[culture] = prompts;
+			}
 		}
 
 		/// <summary>
@@ -125,7 +129,13 @@ namespace Griffin.MvcContrib.Localization.Views
 			             		LocaleId = culture.LCID,
 			             		TranslatedText = translatedText
 			             	};
-			var language = GetLanguage(culture) ?? CreateForLanguage(culture);
+			var language = GetLanguage(culture);
+			if (language == null)
+			{
+				CreateForLanguage(culture, culture);
+				language = _languages[culture];
+			}
+
 			language.Add(prompt);
 			SaveLanguage(culture, language);
 		}
@@ -219,14 +229,6 @@ namespace Griffin.MvcContrib.Localization.Views
 					          		LocaleId = culture.LCID,
 					          		TranslatedText = ""
 					          	}).ToList();
-		}
-
-		public TextPromptCollection CreateForLanguage(CultureInfo culture)
-		{
-			var prompts = new TextPromptCollection(culture);
-			SaveLanguage(culture, prompts);
-			_languages.Add(culture, prompts);
-			return prompts;
 		}
 	}
 }

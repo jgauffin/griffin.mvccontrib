@@ -13,8 +13,9 @@ namespace Griffin.MvcContrib.Localization.Types
 		/// Get all prompts
 		/// </summary>
 		/// <param name="cultureInfo">Culture to get prompts for</param>
+		/// <param name="defaultCulture">Culture used as template to be able to include all non-translated prompts</param>
 		/// <returns>Collection of translations</returns>
-		IEnumerable<TextPrompt> GetPrompts(CultureInfo cultureInfo);
+		IEnumerable<TextPrompt> GetPrompts(CultureInfo cultureInfo, CultureInfo defaultCulture = null);
 
 		/// <summary>
 		/// Get a specific prompt

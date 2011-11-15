@@ -24,6 +24,10 @@ namespace Griffin.MvcContrib.Providers.Membership
     /// <summary>
     /// Account information for a user 
     /// </summary>
+    /// <remarks>Note that all fields are get/set. The motivation is that this interface (or any implementation) should not be considered
+    /// as a first class citizen, but as a DTO. It's solely purpose it to be able to fetch/store information
+    /// in any datasource in a simple way (just implement this class and the repository interface). It should not be used
+    /// for anything else.</remarks>
     public interface IMembershipAccount
     {
         /// <summary>

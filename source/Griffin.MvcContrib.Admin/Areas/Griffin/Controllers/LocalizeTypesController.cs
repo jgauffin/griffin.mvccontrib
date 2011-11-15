@@ -23,20 +23,18 @@ namespace Griffin.MvcContrib.Areas.Griffin.Controllers
     		var cookie = Request.Cookies["ShowMetadata"];
     		var showMetadata = cookie != null && cookie.Value == "1";
 
-    		var languges =
-    			_repository.GetAvailableLanguages().Select(
-    				p =>
-    				new SelectListItem
-    					{Value = p.Name, Text = p.DisplayName, Selected = p.LCID == CultureInfo.CurrentUICulture.LCID});
+    		var languges =_repository.GetAvailableLanguages();
 
-    		var prompts = _repository.GetPrompts(CultureInfo.CurrentUICulture).Select(p => new TypePrompt(p)).OrderBy(p => p.TypeName).ToList();
+    		var prompts =
+    			_repository.GetPrompts(CultureInfo.CurrentUICulture).Select(p => new TypePrompt(p)).OrderBy(p => p.TypeName).
+    				ToList();
 			if (!showMetadata)
 				prompts = prompts.Where(p => !p.TextName.Contains("_")).ToList();
 
-    		var model = new ListModel
+    		var model = new IndexModel
     		            	{
     		            		Prompts = prompts,
-    		            		Languages = languges,
+    		            		Cultures = languges,
 								ShowMetadata = showMetadata
     		            	};
             return View(model);

@@ -1,6 +1,6 @@
 ﻿using Griffin.MvcContrib.Providers.Roles;
 
-namespace Griffin.MvcFramework.Providers
+namespace Griffin.MvcContrib.RavenDb.Providers
 {
     using System;
     using System.Collections.Generic;

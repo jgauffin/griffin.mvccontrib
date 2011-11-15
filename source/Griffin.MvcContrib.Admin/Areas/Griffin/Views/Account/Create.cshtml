@@ -1,0 +1,75 @@
+﻿@model Griffin.MvcContrib.Areas.Griffin.Models.Account.CreateModel
+
+@{
+    ViewBag.Title = "Create";
+}
+
+<h2>Create a new account</h2>
+
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
+
+@using (Html.BeginForm()) {
+    @Html.ValidationSummary(true)
+    <fieldset>
+        <legend>Account</legend>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.UserName)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.UserName)
+            @Html.ValidationMessageFor(model => model.UserName)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Password) (leave empty to set an auto-generated one)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Password)
+            @Html.ValidationMessageFor(model => model.Password)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Email)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Email)
+            @Html.ValidationMessageFor(model => model.Email)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.IsApproved)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.IsApproved)
+            @Html.ValidationMessageFor(model => model.IsApproved)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.PasswordQuestion)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.PasswordQuestion)
+            @Html.ValidationMessageFor(model => model.PasswordQuestion)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.PasswordAnswer)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.PasswordAnswer)
+            @Html.ValidationMessageFor(model => model.PasswordAnswer)
+        </div>
+
+
+
+        <p>
+            <input type="submit" value="Create" />
+        </p>
+    </fieldset>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>

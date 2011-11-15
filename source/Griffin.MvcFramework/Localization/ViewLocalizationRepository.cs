@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Threading;
 using Griffin.MvcContrib.Localization.Views;
 using Raven.Client;
 
@@ -11,9 +10,15 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 	/// <summary>
 	/// RavenDB repository for view localizations
 	/// </summary>
-	public class ViewLocalizationRepository : IViewLocalizationRepository
+	public class ViewLocalizationRepository : IViewLocalizationRepository, IDisposable
 	{
+		private static readonly Dictionary<int, ViewLocalizationDocument> _cache =
+			new Dictionary<int, ViewLocalizationDocument>();
+
 		private readonly IDocumentSession _documentSession;
+
+		private readonly ILogger _logger = LogProvider.Current.GetLogger<ViewLocalizationRepository>();
+		private readonly LinkedList<ViewLocalizationDocument> _modifiedDocuments = new LinkedList<ViewLocalizationDocument>();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ViewLocalizationRepository"/> class.
@@ -22,7 +27,11 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 		public ViewLocalizationRepository(IDocumentSession documentSession)
 		{
 			_documentSession = documentSession;
+			if (DefaultCulture == null)
+				DefaultCulture = new CultureInfo(1033);
 		}
+
+		public static CultureInfo DefaultCulture { get; set; }
 
 		#region Implementation of IViewLocalizationRepository
 
@@ -33,9 +42,166 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 		/// <returns>A collection of prompts</returns>
 		public IEnumerable<TextPrompt> GetAllPrompts(CultureInfo culture)
 		{
-			return (from p in _documentSession.Query<ViewPrompt>()
-			        where p.LocaleId == culture.LCID
-			        select CreatePrompt(p)).ToList();
+			return GetOrCreateLanguage(culture, culture).Prompts.Select(CreatePrompt);
+		}
+
+		/// <summary>
+		/// Get all languages that have translations
+		/// </summary>
+		/// <returns>Collection of languages</returns>
+		public IEnumerable<CultureInfo> GetAvailableLanguages()
+		{
+			var languages = from p in _documentSession.Query<ViewLocalizationDocument>()
+			                select p.LanguageCode;
+			return languages.ToList().Select(p => new CultureInfo(p));
+		}
+
+		/// <summary>
+		/// Get all prompts that have not been translated
+		/// </summary>
+		/// <param name="culture">Culture to get translation for</param>
+		/// <param name="defaultCulture">Default language</param>
+		/// <returns>A collection of prompts</returns>
+		/// <remarks>
+		/// Default language will typically have more translated prompts than any other language
+		/// and is therefore used to detect missing prompts.
+		/// </remarks>
+		public IEnumerable<TextPrompt> GetNotLocalizedPrompts(CultureInfo culture, CultureInfo defaultCulture)
+		{
+			var sourceLanguage = GetOrCreateLanguage(defaultCulture, defaultCulture);
+			var ourLanguage = GetLanguage(culture) ?? new ViewLocalizationDocument {LanguageCode = culture.Name};
+			return sourceLanguage.Prompts.Except(ourLanguage.Prompts.Where(p => p.Text != "")).Select(CreatePrompt).ToList();
+		}
+
+		/// <summary>
+		/// Create a new language
+		/// </summary>
+		/// <param name="culture">Language to create</param>
+		/// <param name="defaultCulture">The default culture.</param>
+		/// <remarks>
+		/// Will add empty entries for all known entries. Entries are added automatically to the default language when views
+		/// are visited. This is NOT done for any other language.
+		/// </remarks>
+		public void CreateForLanguage(CultureInfo culture, CultureInfo defaultCulture)
+		{
+			GetOrCreateLanguage(culture, defaultCulture);
+		}
+
+		/// <summary>
+		/// Get a text using it's name.
+		/// </summary>
+		/// <param name="culture">Culture to get prompt for</param>
+		/// <param name="id">Id of the prompt</param>
+		/// <returns>Prompt if found; otherwise null.</returns>
+		public TextPrompt GetPrompt(CultureInfo culture, string id)
+		{
+			var language = GetLanguage(culture);
+			if (language == null)
+				return null;
+
+			return language.Prompts.Where(p => p.TextKey == id).Select(CreatePrompt).FirstOrDefault();
+		}
+
+		/// <summary>
+		/// Save/Update a text prompt
+		/// </summary>
+		/// <param name="prompt">Prompt to update</param>
+		public void Save(TextPrompt prompt)
+		{
+			var ourCulture = new CultureInfo(prompt.LocaleId);
+			var language = GetOrCreateLanguage(ourCulture, ourCulture);
+			var dbPrompt = language.Prompts.Where(p => p.TextKey == prompt.TextKey).FirstOrDefault();
+			if (dbPrompt != null)
+				dbPrompt.Text = prompt.TranslatedText;
+			else
+			{
+				dbPrompt = new ViewPrompt(prompt);
+				language.Prompts.Add(dbPrompt);
+			}
+
+			_logger.Debug("Saving prompt " + prompt.ControllerName + "." + prompt.ActionName + "." + prompt.TextName);
+			_documentSession.Store(language);
+			_documentSession.SaveChanges();
+		}
+
+		public bool Exists(CultureInfo cultureInfo)
+		{
+			return GetLanguage(cultureInfo) != null;
+		}
+
+		/// <summary>
+		/// Create a new prompt in the specified language
+		/// </summary>
+		/// <param name="culture">Language that the translation is for</param>
+		/// <param name="source">Prompt to use as source</param>
+		/// <param name="translatedText">Translated text</param>
+		public void CreatePrompt(CultureInfo culture, TextPrompt source, string translatedText)
+		{
+			if (source.TextKey == null)
+				throw new InvalidOperationException("TextKey must be specified for all prompts.");
+
+			var language = GetOrCreateLanguage(culture, culture);
+			var dbPrompt = language.Prompts.Where(p => p.TextKey == source.TextKey).FirstOrDefault();
+			if (dbPrompt == null)
+			{
+				_logger.Debug("Created prompt " + source.ControllerName + "." + source.ActionName + "." + source.TextName);
+				dbPrompt = new ViewPrompt(source)
+				           	{
+				           		Text = translatedText,
+				           		LocaleId = culture.LCID,
+				           	};
+				language.Prompts.Add(dbPrompt);
+			}
+			else
+			{
+				dbPrompt.Text = translatedText;
+			}
+			lock (_modifiedDocuments)
+			{
+				if (!_modifiedDocuments.Contains(language))
+					_modifiedDocuments.AddLast(language);
+			}
+		}
+
+		private ViewLocalizationDocument GetOrCreateLanguage(CultureInfo culture, CultureInfo defaultCulture)
+		{
+			var document = GetLanguage(culture);
+			if (document == null)
+			{
+				_logger.Debug("Failed to find language " + culture.Name + ", creating it using " + defaultCulture.Name +
+				              " as a template.");
+				var defaultLang = culture.LCID == defaultCulture.LCID
+				                  	? new ViewLocalizationDocument {LanguageCode = culture.Name, Prompts = new List<ViewPrompt>()}
+				                  	: GetOrCreateLanguage(defaultCulture, defaultCulture);
+
+				document = defaultLang.Clone(culture);
+				_documentSession.Store(document);
+				_documentSession.SaveChanges();
+				lock (_cache)
+					_cache[culture.LCID] = document;
+			}
+
+			return document;
+		}
+
+		private ViewLocalizationDocument GetLanguage(CultureInfo culture)
+		{
+			ViewLocalizationDocument document;
+			lock (_cache)
+			{
+				if (_cache.TryGetValue(culture.LCID, out document))
+					return document;
+			}
+
+			document = (from p in _documentSession.Query<ViewLocalizationDocument>()
+			            where p.LanguageCode == culture.Name
+			            select p).FirstOrDefault();
+			lock (_cache)
+			{
+				_cache[culture.LCID] = document;
+			}
+
+			return document;
 		}
 
 		private TextPrompt CreatePrompt(ViewPrompt prompt)
@@ -51,118 +217,28 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 			       	};
 		}
 
-		/// <summary>
-		/// Get all languages that have translations
-		/// </summary>
-		/// <returns>Collection of languages</returns>
-		public IEnumerable<CultureInfo> GetAvailableLanguages()
-		{
-			var languages = from p in _documentSession.Query<TypePrompt>()
-							group p by p.LocaleId
-								into g
-								select new CultureInfo(g.Key);
-			return languages.ToList();
-		}
+		#endregion
+
+		#region IDisposable Members
 
 		/// <summary>
-		/// Get all prompts that have not been translated
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 		/// </summary>
-		/// <param name="culture">Culture to get translation for</param>
-		/// <param name="defaultLanguage">Default language</param>
-		/// <returns>A collection of prompts</returns>
-		/// <remarks>
-		/// Default language will typically have more translated prompts than any other language
-		/// and is therefore used to detect missing prompts.
-		/// </remarks>
-		public IEnumerable<TextPrompt> GetNotLocalizedPrompts(CultureInfo culture, CultureInfo defaultLanguage)
+		/// <filterpriority>2</filterpriority>
+		public void Dispose()
 		{
-			var sourceLanguage = GetAllPrompts(defaultLanguage);
-			var ourLanguage = GetAllPrompts(culture);
-			return sourceLanguage.Except(ourLanguage.Where(p => p.TranslatedText != "")).ToList();
-
-		}
-
-		/// <summary>
-		/// Create a new language
-		/// </summary>
-		/// <param name="culture">Language to create</param>
-		/// <param name="sourceLanguage">Language to use as a template</param>
-		/// <remarks>
-		/// Will add empty entries for all known entries. Entries are added automatically to the default language when views
-		/// are visited. This is NOT done for any other language.
-		/// </remarks>
-		public void CreateForLanguage(CultureInfo culture, CultureInfo sourceLanguage)
-		{
-			var prompts = from p in _documentSession.Query<ViewPrompt>()
-			             where p.LocaleId == culture.LCID
-			             select new ViewPrompt
-			                    	{
-			                    		ActionName = p.ActionName,
-			                    		ControllerName = p.ControllerName,
-			                    		LocaleId = culture.LCID,
-			                    		TextName = p.TextName,
-			                    		TextKey = p.TextKey,
-			                    		Text = "",
-			                    		UpdatedAt = DateTime.Now,
-			                    		UpdatedBy = Thread.CurrentPrincipal.Identity.Name
-			                    	};
-
-			var i = 0;
-			foreach (var prompt in prompts)
+			lock (_modifiedDocuments)
 			{
-				_documentSession.Store(prompt);
-				i++;
-				if (i % 20 == 0)
-					_documentSession.SaveChanges();
+				if (_modifiedDocuments.Count > 0)
+					_logger.Debug("Writing cache");
+
+				foreach (var document in _modifiedDocuments)
+				{
+					_documentSession.Store(document);
+				}
+				_modifiedDocuments.Clear();
+				_documentSession.SaveChanges();
 			}
-			_documentSession.SaveChanges();
-		}
-
-		/// <summary>
-		/// Get a text using it's name.
-		/// </summary>
-		/// <param name="culture">Culture to get prompt for</param>
-		/// <param name="id">Id of the prompt</param>
-		/// <returns>Prompt if found; otherwise null.</returns>
-		public TextPrompt GetPrompt(CultureInfo culture, string id)
-		{
-			return (from p in _documentSession.Query<ViewPrompt>()
-			        where p.LocaleId == culture.LCID && p.TextKey == id
-			        select CreatePrompt(p)).FirstOrDefault();
-
-		}
-
-		/// <summary>
-		/// Save/Update a text prompt
-		/// </summary>
-		/// <param name="prompt">Prompt to update</param>
-		public void Save(TextPrompt prompt)
-		{
-			var doc = new ViewPrompt(prompt);
-			_documentSession.Store(doc);
-			_documentSession.SaveChanges();
-		}
-
-		public bool Exists(CultureInfo cultureInfo)
-		{
-			return _documentSession.Query<ViewPrompt>().Any(p => p.LocaleId == cultureInfo.LCID);
-		}
-
-		/// <summary>
-		/// Create a new prompt in the specified language
-		/// </summary>
-		/// <param name="culture">Language that the translation is for</param>
-		/// <param name="source">Prompt to use as source</param>
-		/// <param name="translatedText">Translated text</param>
-		public void CreatePrompt(CultureInfo culture, TextPrompt source, string translatedText)
-		{
-			var prompt = new ViewPrompt(source)
-			             	{
-			             		Text = translatedText,
-			             		LocaleId = culture.LCID,
-			             	};
-			_documentSession.Store(prompt);
-			_documentSession.SaveChanges();
 		}
 
 		#endregion

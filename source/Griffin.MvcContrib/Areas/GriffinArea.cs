@@ -2,6 +2,7 @@
 
 namespace Griffin.MvcContrib.Areas
 {
+	/*
 	/// <summary>
 	/// TODO: Update summary.
 	/// </summary>
@@ -32,5 +33,5 @@ namespace Griffin.MvcContrib.Areas
 		{
 			get { return "Griffin"; }
 		}
-	}
+	}*/
 }

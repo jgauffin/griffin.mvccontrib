@@ -24,6 +24,17 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 			TextName = prompt.TextName;
 			Text = prompt.TranslatedText;
 		}
+		public ViewPrompt(ViewPrompt prompt)
+		{
+			ActionName = prompt.ActionName;
+			ControllerName = prompt.ControllerName;
+			TextName = prompt.TextName;
+			TextKey = prompt.TextKey;
+			LocaleId = prompt.LocaleId;
+			UpdatedAt = prompt.UpdatedAt;
+			UpdatedBy = prompt.UpdatedBy;
+			Text = prompt.Text;
+		}
 
 		public string ControllerName { get; set; }
 

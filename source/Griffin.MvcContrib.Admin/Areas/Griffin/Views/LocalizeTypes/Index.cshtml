@@ -1,10 +1,11 @@
 ﻿@using System.Globalization
-@using Griffin.MvcContrib.Admin.Models
-@model ListModel
+@using Griffin.MvcContrib.Areas.Griffin.Models.LocalizeTypes
+@model IndexModel
 
 @{
     ViewBag.Title = "Index";
 }
+<script type="text/javascript" src="@Url.Content("~/areas/griffin/scripts/griffin.js")"></script>
 @Html.ActionLink("View localization", "Index", "LocalizeViews") |
 @Html.ActionLink("Type localization", "Index", "LocalizeTypes")
 <h2>@CultureInfo.CurrentUICulture.DisplayName</h2>
@@ -13,7 +14,7 @@
 	@Html.ValidationSummary(true)
 	<div style="float: right">
 		Change language:
-		@Html.DropDownList("Lang", Model.Languages, new{id="changelanguage"})
+		@Html.DropDownList("changeLanguage", Model.CultureItems)
 	</div>
 	<div>Create language (should be a lang code like "sv-se")
 
@@ -65,29 +66,16 @@
 
 <script type="text/javascript">
     
-    function setCookie(name, value, exdays) {
-        var exdate = new Date();
-        exdate.setDate(exdate.getDate() + exdays);
-        var contents = escape(value) + ((exdays == null) ? "" : "; expires=" + exdate.toUTCString());
-        document.cookie = name + "=" + contents;
-    }
-    function getCookie(name) {
-        var i, x, y, cookies = document.cookie.split(";");
-        for (i = 0; i < cookies.length; i++) {
-            x = cookies[i].substr(0, cookies[i].indexOf("="));
-            y = cookies[i].substr(cookies[i].indexOf("=") + 1);
-            x = x.replace(/^\s+|\s+$/g, "");
-            if (x == name) {
-                return unescape(y);
-            }
-        }
-    }
+
 
     $(function () {
         $('#ShowMetadata').click(function () {
             var show = this.checked ? 1 : 0;
             setCookie('ShowMetadata', show, 365);
             window.location.reload();
+        });
+        $('#changeLanguage').change(function () {
+            window.location = '@Url.Action("Index")?lang=' + $('#changeLanguage').val();
         });
 
     });

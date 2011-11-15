@@ -1,10 +1,18 @@
-﻿using System.Web.Mvc;
+﻿using System;
+using System.Web.Mvc;
 using System.Web.Security;
 using Griffin.MvcContrib.Areas.Griffin.Models.Account;
 using Griffin.MvcContrib.Providers.Membership;
+using MembershipProvider = System.Web.Security.MembershipProvider;
 
 namespace Griffin.MvcContrib.Areas.Griffin.Controllers
 {
+	public class DumpUser : System.Web.Security.MembershipUser
+	{
+		
+	}
+
+	[Authorize]
     public class AccountController : System.Web.Mvc.Controller
     {
     	private readonly IAccountRepository _repository;
@@ -17,27 +25,46 @@ namespace Griffin.MvcContrib.Areas.Griffin.Controllers
     	public ActionResult Index(int pageNumber = 1)
     	{
     		var totalRecords = 0;
-    		var users = Membership.GetAllUsers(pageNumber, 50, out totalRecords);
+    		var users = _repository.FindNewAccounts(pageNumber, 50, out totalRecords);
     		return View(new ListModel {Accounts = users, TotalCount = totalRecords});
     	}
 
 		public ActionResult ByEmail(string part, int pageNumber = 1)
 		{
 			var totalRecords = 0;
-			var users = Membership.FindUsersByEmail(part, pageNumber, 50, out totalRecords);
+			var users = _repository.FindByEmail(part, pageNumber, 50, out totalRecords);
 			return View(new SearchModel { Accounts = users, TotalCount = totalRecords });
 		}
 
 		public ActionResult ByName(string part, int pageNumber = 1)
 		{
 			var totalRecords = 0;
-			var users = Membership.FindUsersByName(part, pageNumber, 50, out totalRecords);
+			var users = _repository.FindByUserName(part, pageNumber, 50, out totalRecords);
 			return View(new SearchModel { Accounts = users, TotalCount = totalRecords });
 		}
 
-		public ActionResult Details(int id)
-        {
-            return View();
+		public ActionResult List(int pageNumber = 1)
+		{
+			var totalRecords = 0;
+			var users = _repository.FindAll(pageNumber, 50, out totalRecords);
+			return View(new ListModel { Accounts = users, TotalCount = totalRecords });
+			
+		}
+
+		[HttpPost]
+		public ActionResult Approve(string id)
+		{
+			var account = _repository.GetById(id);
+			account.IsApproved = true;
+			_repository.Update(account);
+			return Redirect(Request.UrlReferrer.AbsolutePath);
+		}
+
+		public ActionResult Details(string id)
+		{
+			var account = _repository.GetById(id);
+
+            return View(account);
         }
 
         public ActionResult Create()
@@ -46,19 +73,28 @@ namespace Griffin.MvcContrib.Areas.Griffin.Controllers
         } 
 
         [HttpPost]
-        public ActionResult Create(FormCollection collection)
+        public ActionResult Create(CreateModel model)
         {
-            try
-            {
-                // TODO: Add insert logic here
+			if (!ModelState.IsValid)
+				return View(model);
 
-                return RedirectToAction("Index");
-            }
-            catch
+			try
+			{
+				MembershipCreateStatus status;
+				var user = Membership.CreateUser(model.UserName, model.Password, model.Email, model.PasswordQuestion, model.PasswordAnswer,
+				                      model.IsApproved, out status);
+				if (status == MembershipCreateStatus.Success)
+					return RedirectToAction("Details", new {id = user.ProviderUserKey});
+
+				ModelState.AddModelError("", status.ToString());
+			}
+            catch (Exception err)
             {
-                return View();
+				ModelState.AddModelError("", err.Message);
             }
-        }
+
+			return View(model);
+		}
         
         public ActionResult Edit(int id)
         {

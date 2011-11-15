@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
 using Griffin.MvcContrib.Localization.Types;
 using Raven.Client;
 
@@ -12,11 +10,20 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 	/// <summary>
 	/// Used to translate different types (and their properties) 
 	/// </summary>
-	public class TypeLocalizationRepository : ILocalizedStringProvider, ILocalizedTypesRepository
+	/// <remarks>
+	/// <para>You might want to specify <see cref="DefaultCulture"/>, en-us is used per default.</para>
+	/// <para>
+	/// Class is not thread safe and are expected to have a short lifetime (per scope)
+	/// </para></remarks>
+	public class TypeLocalizationRepository : ILocalizedStringProvider, ILocalizedTypesRepository, IDisposable
 	{
+		private static readonly Dictionary<int, TypeLocalizationDocument> _cache =
+			new Dictionary<int, TypeLocalizationDocument>();
+
 		private readonly IDocumentSession _documentSession;
 
-		public CultureInfo DefaultCulture { get; set; }
+		private readonly ILogger _logger = LogProvider.Current.GetLogger<TypeLocalizationRepository>();
+		private readonly LinkedList<TypeLocalizationDocument> _modifiedDocuments = new LinkedList<TypeLocalizationDocument>();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TypeLocalizationRepository"/> class.
@@ -26,7 +33,6 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 		{
 			_documentSession = documentSession;
 			DefaultCulture = new CultureInfo(1033);
-			
 		}
 
 		#region Implementation of ILocalizedStringProvider
@@ -39,9 +45,8 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 		/// <returns>Translated string if found; otherwise null.</returns>
 		public string GetModelString(Type model, string propertyName)
 		{
-			return Translate(model, propertyName);
+			return Translate(model, propertyName, null);
 		}
-
 
 		/// <summary>
 		/// Get a localized metadata for a model property
@@ -55,7 +60,7 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 		/// </remarks>
 		public string GetModelString(Type model, string propertyName, string metadataName)
 		{
-			return Translate(model, propertyName + "_" + metadataName);
+			return Translate(model, propertyName, metadataName);
 		}
 
 		/// <summary>
@@ -69,7 +74,7 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 		/// </remarks>
 		public string GetValidationString(Type attributeType)
 		{
-			return Translate(attributeType, "");
+			return Translate(attributeType, "", null);
 		}
 
 		/// <summary>
@@ -80,7 +85,37 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 		/// <returns>Translated name if found; otherwise null.</returns>
 		public string GetEnumString(Type enumType, string name)
 		{
-			return Translate(enumType, name);
+			return Translate(enumType, name, null);
+		}
+
+		private TypeLocalizationDocument GetOrCreateLanguage(CultureInfo culture)
+		{
+			TypeLocalizationDocument document;
+			lock (_cache)
+			{
+				if (_cache.TryGetValue(culture.LCID, out document))
+					return document;
+			}
+
+			document = (from p in _documentSession.Query<TypeLocalizationDocument>()
+			            where p.LanguageCode == culture.Name
+			            select p).FirstOrDefault();
+			if (document == null)
+			{
+				_logger.Debug("Failed to find document for " + culture.Name + ", creating it.");
+				var defaultLang = DefaultCulture.LCID == culture.LCID
+				                  	? new TypeLocalizationDocument {LanguageCode = culture.Name, Prompts = new List<TypePrompt>()}
+				                  	: GetOrCreateLanguage(DefaultCulture);
+
+				document = defaultLang.Clone(culture);
+				_documentSession.Store(document);
+				_documentSession.SaveChanges();
+			}
+
+			lock (_cache)
+				_cache[culture.LCID] = document;
+
+			return document;
 		}
 
 		#endregion
@@ -92,26 +127,27 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 		/// </summary>
 		/// <param name="cultureInfo">Culture to get prompts for</param>
 		/// <returns>Collection of translations</returns>
-		public IEnumerable<TextPrompt> GetPrompts(CultureInfo cultureInfo)
+		public IEnumerable<TextPrompt> GetPrompts(CultureInfo cultureInfo, CultureInfo defaultCulture)
 		{
-			return (from p in _documentSession.Query<TypePrompt>()
-					where p.LocaleId == cultureInfo.LCID
-					select CreateTextPrompt(p)).ToList();
+			var ourDocument = GetOrCreateLanguage(cultureInfo);
+			if (defaultCulture == null || defaultCulture == cultureInfo)
+				return ourDocument.Prompts.Select(CreateTextPrompt);
+
+			// get all prompts including not localized ones
+			var defaultDocument = GetOrCreateLanguage(defaultCulture);
+			var defaultPrompts =
+				defaultDocument.Prompts.Except(ourDocument.Prompts, new PromptEqualityComparer()).Select(p => new TypePrompt(p)
+				                                                                                              	{
+				                                                                                              		LocaleId =
+				                                                                                              			cultureInfo.LCID,
+				                                                                                              		Text = "",
+				                                                                                              		UpdatedAt =
+				                                                                                              			DateTime.MinValue,
+				                                                                                              		UpdatedBy = ""
+				                                                                                              	});
+			return ourDocument.Prompts.Union(defaultPrompts).Select(CreateTextPrompt);
 		}
 
-		private static TextPrompt CreateTextPrompt(TypePrompt p)
-		{
-			return new TextPrompt
-			       	{
-			       		LocaleId = p.LocaleId,
-			       		Subject = Type.GetType(string.Format("{0}, {1}", p.FullTypeName,p.AssemblyName)),
-			       		TextName = p.TextName,
-			       		TextKey = p.TextKey,
-			       		TranslatedText = p.Text,
-			       		UpdatedAt = p.UpdatedAt,
-			       		UpdatedBy = p.UpdatedBy
-			       	};
-		}
 
 		/// <summary>
 		/// Get a specific prompt
@@ -121,7 +157,8 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 		/// <returns>Prompt if found; otherwise <c>null</c>.</returns>
 		public TextPrompt GetPrompt(CultureInfo culture, string key)
 		{
-			return (from p in _documentSession.Query<TypePrompt>()
+			var language = GetOrCreateLanguage(culture);
+			return (from p in language.Prompts
 			        where p.LocaleId == culture.LCID && p.TextKey == key
 			        select CreateTextPrompt(p)).FirstOrDefault();
 		}
@@ -134,13 +171,16 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 		/// <param name="translatedText">Translated text string</param>
 		public void Update(CultureInfo culture, string key, string translatedText)
 		{
-			var prompt= (from p in _documentSession.Query<TypePrompt>()
-			        where p.LocaleId == culture.LCID && p.TextKey == key
-			        select p).FirstOrDefault();
+			var language = GetOrCreateLanguage(culture);
+			var prompt = (from p in language.Prompts
+			              where p.LocaleId == culture.LCID && p.TextKey == key
+			              select p).FirstOrDefault();
 			if (prompt == null)
 				throw new InvalidOperationException("Prompt " + key + " do not exist.");
+
 			prompt.Text = translatedText;
-			_documentSession.Store(prompt);
+			_logger.Debug("Updating text for " + prompt.TypeName + "." + prompt.TextName + " to " + translatedText);
+			_documentSession.Store(language);
 			_documentSession.SaveChanges();
 		}
 
@@ -150,33 +190,104 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 		/// <returns>Cultures corresponding to the translations</returns>
 		public IEnumerable<CultureInfo> GetAvailableLanguages()
 		{
-			var languages = from p in _documentSession.Query<TypePrompt>()
-			                group p by p.LocaleId
-			                into g
-			                select new CultureInfo(g.Key);
-			return languages.ToList();
+			var languages = from p in _documentSession.Query<TypeLocalizationDocument>()
+			                select p.LanguageCode;
+			return languages.ToList().Select(p => new CultureInfo(p));
+		}
+
+		private static TextPrompt CreateTextPrompt(TypePrompt p)
+		{
+			return new TextPrompt
+			       	{
+			       		LocaleId = p.LocaleId,
+			       		Subject = Type.GetType(string.Format("{0}, {1}", p.FullTypeName, p.AssemblyName)),
+			       		TextName = p.TextName,
+			       		TextKey = p.TextKey,
+			       		TranslatedText = p.Text,
+			       		UpdatedAt = p.UpdatedAt,
+			       		UpdatedBy = p.UpdatedBy
+			       	};
+		}
+
+		private class PromptEqualityComparer : IEqualityComparer<TypePrompt>
+		{
+			#region IEqualityComparer<TypePrompt> Members
+
+			/// <summary>
+			/// Determines whether the specified objects are equal.
+			/// </summary>
+			/// <returns>
+			/// true if the specified objects are equal; otherwise, false.
+			/// </returns>
+			/// <param name="x">The first object of type <paramref name="T"/> to compare.</param><param name="y">The second object of type <paramref name="T"/> to compare.</param>
+			public bool Equals(TypePrompt x, TypePrompt y)
+			{
+				return x.TextKey == y.TextKey;
+			}
+
+			/// <summary>
+			/// Returns a hash code for the specified object.
+			/// </summary>
+			/// <returns>
+			/// A hash code for the specified object.
+			/// </returns>
+			/// <param name="obj">The <see cref="T:System.Object"/> for which a hash code is to be returned.</param><exception cref="T:System.ArgumentNullException">The type of <paramref name="obj"/> is a reference type and <paramref name="obj"/> is null.</exception>
+			public int GetHashCode(TypePrompt obj)
+			{
+				return obj.TextKey.GetHashCode();
+			}
+
+			#endregion
 		}
 
 		#endregion
 
-		private string Translate(Type model, string propertyName)
+		public static CultureInfo DefaultCulture { get; set; }
+
+		#region IDisposable Members
+
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
+		/// <filterpriority>2</filterpriority>
+		public void Dispose()
 		{
-			var prompt = GetPrompt(CultureInfo.CurrentUICulture, model, propertyName);
-			if (prompt != null)
-				return prompt.Text;
-
-			prompt = GetPrompt(DefaultCulture, model, propertyName);
-			if (prompt != null)
-				return prompt.Text;
-
-			return propertyName;
+			lock (_modifiedDocuments)
+			{
+				if (_modifiedDocuments.Count > 0)
+					_logger.Debug("Writing cache");
+				foreach (var document in _modifiedDocuments)
+				{
+					_documentSession.Store(document);
+				}
+				_modifiedDocuments.Clear();
+				_documentSession.SaveChanges();
+			}
 		}
 
-		private TypePrompt GetPrompt(CultureInfo culture, Type model, string propertyName)
+		#endregion
+
+		private string Translate(Type model, string propertyName, string metaName)
 		{
-			return (from p in _documentSession.Query<TypePrompt>()
-						  where p.FullTypeName == model.FullName
-						  select p).FirstOrDefault();
+			var key = string.IsNullOrEmpty(metaName)
+			          	? propertyName
+			          	: string.Format("{0}_{1}", propertyName, metaName);
+			var language = GetOrCreateLanguage(CultureInfo.CurrentUICulture);
+			var prompt = language.Get(model, key);
+			if (prompt == null)
+			{
+				_logger.Debug("Prompt for " + model.Name + "." + propertyName + "." + metaName + " did not exist.");
+				language.AddPrompt(new TypePrompt(model, key, CultureInfo.CurrentUICulture));
+				language = GetOrCreateLanguage(DefaultCulture);
+				prompt = language.Get(model, key);
+				lock (_modifiedDocuments)
+				{
+					if (!_modifiedDocuments.Contains(language))
+						_modifiedDocuments.AddLast(language);
+				}
+			}
+
+			return prompt == null ? null : prompt.Text;
 		}
 	}
 }

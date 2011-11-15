@@ -1,6 +1,6 @@
 ﻿@using System.Globalization
-@using Griffin.MvcContrib.Admin.Models
-@model IEnumerable<ViewPrompt>
+@using Griffin.MvcContrib.Areas.Griffin.Models.LocalizeViews
+@model IndexModel
 
 @{
     ViewBag.Title = "Index";
@@ -14,9 +14,7 @@
 	@Html.ValidationSummary(true)
 	<div style="float: right">
 		Change language:
-		<select id="changelanguage">
-
-		</select>
+        @Html.DropDownList("changeLanguage", Model.CultureItems)
 	</div>
 	<div>Create language (should be a lang code like "sv-se")
 
@@ -45,7 +43,7 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model)
+@foreach (var item in Model.Prompts)
 {
     <tr>
         <td>
@@ -67,3 +65,10 @@
 }
 
 </table>
+<script type="text/javascript">
+    $(function () {
+        $('#changeLanguage').change(function() {
+            window.location = '@Url.Action("Index")?lang=' + $('#changeLanguage').val();
+        });
+    })
+</script>

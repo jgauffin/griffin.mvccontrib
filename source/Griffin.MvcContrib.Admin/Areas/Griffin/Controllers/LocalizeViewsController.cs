@@ -37,13 +37,19 @@ namespace Griffin.MvcContrib.Areas.Griffin.Controllers
 
 		public ActionResult Index()
 		{
-			var allPrompts = _repository.GetAllPrompts(CultureInfo.CurrentUICulture);
-			return View(allPrompts.Select(p => new ViewPrompt(p)));
+			var model = new IndexModel
+			            	{
+			            		Cultures = _repository.GetAvailableLanguages(),
+			            		Prompts = _repository.GetAllPrompts(CultureInfo.CurrentUICulture).Select(p => new ViewPrompt(p))
+			            	};
+			return View(model);
 		}
 
 		public ActionResult Edit(string id)
 		{
 			var prompt = _repository.GetPrompt(CultureInfo.CurrentUICulture, id);
+			if (prompt == null)
+				throw new InvalidOperationException("Failed to find " + id);
 			return View(new ViewPrompt(prompt));
 		}
 

@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Web.Mvc;
 
 namespace Griffin.MvcContrib.Localization.Views
@@ -47,13 +48,9 @@ namespace Griffin.MvcContrib.Localization.Views
 		{
 			get
 			{
-				if (_repositoryDontUseDirectly == null)
-				{
-					_repositoryDontUseDirectly = DependencyResolver.Current.GetService<IViewLocalizationRepository>() ??
-					                             new ViewLocalizationFileRepository();
-				}
-
-				return _repositoryDontUseDirectly;
+				return _repositoryDontUseDirectly ??
+				       (_repositoryDontUseDirectly = DependencyResolver.Current.GetService<IViewLocalizationRepository>() ??
+				                                     new ViewLocalizationFileRepository());
 			}
 		}
 
@@ -66,9 +63,17 @@ namespace Griffin.MvcContrib.Localization.Views
 		/// <returns></returns>
 		public virtual string Translate(string controllerName, string actionName, string text)
 		{
+			if (string.IsNullOrEmpty(controllerName))
+				throw new ArgumentNullException("controllerName");
+			if (string.IsNullOrEmpty(text))
+				throw new ArgumentNullException("text");
+
+			if (actionName == null)
+				actionName = "Index";
+
 			if (!Repository.Exists(CultureInfo.CurrentUICulture))
 			{
-				Repository.CreateForLanguage(CultureInfo.CurrentUICulture, DefaultCulture);
+				Repository.CreateForLanguage(CultureInfo.CurrentUICulture, new CultureInfo(1033)); //use english as default
 			}
 
 			string textToSay = "";

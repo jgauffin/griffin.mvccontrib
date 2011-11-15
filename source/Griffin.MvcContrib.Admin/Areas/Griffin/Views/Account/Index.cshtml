@@ -1,0 +1,24 @@
+﻿@using Griffin.MvcContrib.Areas.Griffin.Models.Account
+@model ListModel
+@{
+    ViewBag.Title = "Account administration";
+}
+
+<h2>@ViewBag.Title</h2>
+<p>User account administration</p>
+
+@using (Html.BeginForm("ByName", null))
+{
+    <text>Search by name</text>
+	<input type="text" name="value" id="byname" />
+    <input type="submit" value="Search" />
+}
+@using (Html.BeginForm("ByEmail", null))
+{
+    <text>Search by email</text>
+	<input type="text" name="value" id="byemail" />
+    <input type="submit" value="Search" />
+}
+
+<h3>Unauthorized accounts:</h3>
+@Html.Partial("_list", Model)

@@ -1,13 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Web.Security;
 using Griffin.MvcContrib.Providers.Membership;
 using Griffin.MvcContrib.Providers.Roles;
 using Newtonsoft.Json;
 
-namespace Griffin.MvcFramework.Providers
+namespace Griffin.MvcContrib.RavenDb.Providers
 {
     public class UserAccount : IMembershipAccount, IUserWithRoles
     {
+		public UserAccount()
+		{
+			
+		}
+		public UserAccount(MembershipUser user)
+		{
+			UserName = user.UserName;
+			Email = user.Email;
+			PasswordQuestion = user.PasswordQuestion;
+			
+		}
         public string UserName { get; set; }
         public string ApplicationName { get; set; }
         public string Email { get; set; }

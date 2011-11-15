@@ -1,0 +1,106 @@
+﻿@model Griffin.MvcContrib.Providers.Membership.IMembershipAccount
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+<fieldset>
+    <legend>Account information</legend>
+
+    <div class="display-label">ApplicationName</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.ApplicationName)
+    </div>
+
+    <div class="display-label">Email</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.Email)
+    </div>
+
+    <div class="display-label">PasswordQuestion</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.PasswordQuestion)
+    </div>
+
+    <div class="display-label">PasswordAnswer</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.PasswordAnswer)
+    </div>
+
+    <div class="display-label">Comment</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.Comment)
+    </div>
+
+    <div class="display-label">LastLoginAt</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.LastLoginAt)
+    </div>
+
+    <div class="display-label">IsApproved</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.IsApproved)
+    </div>
+
+    <div class="display-label">LastPasswordChangeAt</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.LastPasswordChangeAt)
+    </div>
+
+    <div class="display-label">IsLockedOut</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.IsLockedOut)
+    </div>
+
+    <div class="display-label">IsOnline</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.IsOnline)
+    </div>
+
+    <div class="display-label">LastLockedOutAt</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.LastLockedOutAt)
+    </div>
+
+    <div class="display-label">FailedPasswordWindowStartedAt</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.FailedPasswordWindowStartedAt)
+    </div>
+
+    <div class="display-label">FailedPasswordWindowAttemptCount</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.FailedPasswordWindowAttemptCount)
+    </div>
+
+    <div class="display-label">FailedPasswordAnswerWindowStartedAt</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.FailedPasswordAnswerWindowStartedAt)
+    </div>
+
+    <div class="display-label">FailedPasswordAnswerWindowAttemptCount</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.FailedPasswordAnswerWindowAttemptCount)
+    </div>
+
+    <div class="display-label">CreatedAt</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.CreatedAt)
+    </div>
+
+    <div class="display-label">LastActivityAt</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.LastActivityAt)
+    </div>
+
+    <div class="display-label">UserName</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.UserName)
+    </div>
+</fieldset>
+@using (Html.BeginForm()) {
+    <p>
+        <input type="submit" value="Delete" /> |
+        @Html.ActionLink("Back to List", "Index")
+    </p>
+}

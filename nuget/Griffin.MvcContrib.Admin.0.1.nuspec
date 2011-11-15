@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>Griffin.MvcContrib.Admin</id>
+    <version>0.1</version>
+    <title>Griffin.MvcContrib.Admin (beta)</title>
+    <authors>jgauffin</authors>
+    <owners>jgauffin</owners>
+    <projectUrl>https://github.com/jgauffin/griffin.mvccontrib</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Adds an administration area used to handle localization of views, models and validation messages.
+
+By installing it, you get zero-code localization of your project.</description>
+    <summary>Administration area for Griffin.MvcContrib</summary>
+    <releaseNotes>First public package.</releaseNotes>
+    <copyright>(c) 2011 Jonas Gauffin.</copyright>
+  </metadata>
+  <files />
+</package>

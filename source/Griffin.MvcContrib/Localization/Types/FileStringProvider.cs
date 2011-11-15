@@ -159,9 +159,48 @@ namespace Griffin.MvcContrib.Localization.Types
 
 		}
 
-		public IEnumerable<TextPrompt> GetPrompts(CultureInfo cultureInfo)
+		public IEnumerable<TextPrompt> GetPrompts(CultureInfo cultureInfo, CultureInfo defaultCulture)
 		{
-			return GetLanguage(cultureInfo);
+			var ourLanguage = GetLanguage(cultureInfo);
+			if (defaultCulture == null || cultureInfo==defaultCulture)
+				return ourLanguage;
+
+			var defaultLanguage = GetLanguage(defaultCulture);
+			var missing = defaultLanguage.Except(ourLanguage, new PromptEqualityComparer())
+				.Select(p => new TextPrompt(p)
+				             	{
+				             		LocaleId =
+				             			cultureInfo.LCID,
+				             		TranslatedText = null
+				             	});
+			return ourLanguage.Union(missing);
+		}
+
+		private class PromptEqualityComparer : IEqualityComparer<TextPrompt>
+		{
+			/// <summary>
+			/// Determines whether the specified objects are equal.
+			/// </summary>
+			/// <returns>
+			/// true if the specified objects are equal; otherwise, false.
+			/// </returns>
+			/// <param name="x">The first object of type <paramref name="T"/> to compare.</param><param name="y">The second object of type <paramref name="T"/> to compare.</param>
+			public bool Equals(TextPrompt x, TextPrompt y)
+			{
+				return x.TextKey == y.TextKey;
+			}
+
+			/// <summary>
+			/// Returns a hash code for the specified object.
+			/// </summary>
+			/// <returns>
+			/// A hash code for the specified object.
+			/// </returns>
+			/// <param name="obj">The <see cref="T:System.Object"/> for which a hash code is to be returned.</param><exception cref="T:System.ArgumentNullException">The type of <paramref name="obj"/> is a reference type and <paramref name="obj"/> is null.</exception>
+			public int GetHashCode(TextPrompt obj)
+			{
+				return obj.TextKey.GetHashCode();
+			}
 		}
 
 		public TextPrompt GetPrompt(CultureInfo culture, string key)

@@ -6,7 +6,7 @@ using System.Text;
 using Griffin.MvcContrib.Providers.Roles;
 using Raven.Client;
 
-namespace Griffin.MvcFramework.Providers
+namespace Griffin.MvcContrib.RavenDb.Providers
 {
     public class RavenDbRoleRepository : IRoleRepository
     {

@@ -1,0 +1,12 @@
+﻿@using Griffin.MvcContrib.Areas.Griffin.Models.Account
+@model ListModel
+@{
+    ViewBag.Title = "List";
+}
+
+<h2>List users</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+@Html.Partial("_list", Model)

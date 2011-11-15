@@ -1,0 +1,62 @@
+﻿@using Griffin.MvcContrib.Areas.Griffin
+@using Griffin.MvcContrib.Areas.Griffin.Models.Account
+@model ListModel
+           
+<script src="@Url.Content("~/Griffin/Scripts/griffin.js")" type="text/javascript"></script>
+<table>
+    <tr>
+        <th>
+            UserName
+        </th>
+        <th>
+            Email
+        </th>
+        <th>
+            Status
+        </th>
+        <th>
+            CreationDate
+        </th>
+        <th>
+            LastLoginDate
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model.Accounts) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.UserName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Email)
+        </td>
+        <td>
+            @(item.IsLockedOut ? "Locked out" : "")
+            @(!item.IsApproved ? "Not approved" : "")
+            @(item.IsOnline ? "Online" : "")
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CreatedAt)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.LastLoginAt)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new {  id=item.Id  }) |
+            @Html.ActionLink("Details", "Details", new {  id=item.Id  }) |
+            @Html.ActionLink("Delete", "Delete", new {  id=item.Id  })
+            @if (!item.IsApproved)
+			{
+				@Html.ConfirmLink("Approve", "Do you really want to approve " + item.UserName + "?", "Approve", id: item.Id);
+                <text> | </text>
+            }
+            @if (!item.IsLockedOut)
+            {
+				@Html.ConfirmLink("Unlock", "Do you really want to unlock " + item.UserName + "?", "Unlock", id: item.Id);
+            }
+        </td>
+    </tr>
+}
+
+</table>

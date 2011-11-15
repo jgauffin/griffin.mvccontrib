@@ -4,7 +4,10 @@ using System.Web.Routing;
 using Autofac;
 using Autofac.Integration.Mvc;
 using Griffin.MvcContrib.Localization;
+using Griffin.MvcContrib.Providers.Membership;
 using Griffin.MvcContrib.RavenDb.Localization;
+using Raven.Client;
+using Raven.Client.Embedded;
 
 namespace Griffin.MvcContrib
 {
@@ -27,13 +30,15 @@ namespace Griffin.MvcContrib
 			routes.MapRoute(
 				"Default", // Route name
 				"{controller}/{action}/{id}", // URL with parameters
-				new { controller = "Home", action = "Index", id = UrlParameter.Optional } // Parameter defaults
+				new { controller = "Home", action = "Index", id = UrlParameter.Optional }, // Parameter defaults
+				new[] { typeof(MvcApplication).Namespace + ".Controllers" }
 			);
 
 		}
 
 		protected void Application_Start()
 		{
+			LogProvider.UseDebugWindow();
 			AreaRegistration.RegisterAllAreas();
 			CreateContainer();
 
@@ -49,8 +54,24 @@ namespace Griffin.MvcContrib
 		{
 			var builder = new ContainerBuilder();
 			builder.RegisterControllers(Assembly.GetExecutingAssembly());
+
+			//localization
 			builder.RegisterType<ViewLocalizationRepository>().AsImplementedInterfaces();
 			builder.RegisterType<TypeLocalizationRepository>().AsImplementedInterfaces();
+
+			//membership
+			builder.RegisterType<RavenDb.Providers.RavenDbAccountRepository>().AsImplementedInterfaces();
+			builder.RegisterType<RavenDb.Providers.RavenDbRoleRepository>().AsImplementedInterfaces();
+			builder.RegisterType<Providers.Membership.PasswordStrategies.HashPasswordStrategy>().AsImplementedInterfaces();
+			builder.RegisterType<PasswordPolicy>().AsImplementedInterfaces();
+
+			// database
+			var docStore = new EmbeddableDocumentStore();
+			docStore.Initialize();
+			builder.Register(p => docStore.OpenSession()).As<IDocumentSession>().InstancePerLifetimeScope();
+
+			// 
+
 			_container = builder.Build();
 			DependencyResolver.SetResolver(new AutofacDependencyResolver(_container));
 		}

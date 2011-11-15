@@ -25,24 +25,24 @@ namespace Griffin.MvcContrib.Localization.Views
 		/// Get all prompts that have not been translated
 		/// </summary>
 		/// <param name="culture">Culture to get translation for</param>
-		/// <param name="defaultLanguage">Default language</param>
+		/// <param name="defaultCulture">Default language</param>
 		/// <returns>A collection of prompts</returns>
 		/// <remarks>
 		/// Default language will typically have more translated prompts than any other language
 		/// and is therefore used to detect missing prompts.
 		/// </remarks>
-		IEnumerable<TextPrompt> GetNotLocalizedPrompts(CultureInfo culture, CultureInfo defaultLanguage);
+		IEnumerable<TextPrompt> GetNotLocalizedPrompts(CultureInfo culture, CultureInfo defaultCulture);
 
 		/// <summary>
 		/// Create a new language
 		/// </summary>
 		/// <param name="culture">Language to create</param>
-		/// <param name="sourceLanguage">Language to use as a template</param>
+		/// <param name="defaultCulture">Culture to copy prompts from</param>
 		/// <remarks>
 		/// Will add empty entries for all known entries. Entries are added automatically to the default language when views
 		/// are visited. This is NOT done for any other language.
 		/// </remarks>
-		void CreateForLanguage(CultureInfo culture, CultureInfo sourceLanguage);
+		void CreateForLanguage(CultureInfo culture, CultureInfo defaultCulture);
 
 		/// <summary>
 		/// Get a text using it's name.
