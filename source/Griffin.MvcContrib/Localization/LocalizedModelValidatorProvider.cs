@@ -90,6 +90,8 @@ namespace Griffin.MvcContrib.Localization
 			return base.GetValidators(metadata, context, items);
 		}
 
+		
+
 		protected ILocalizedStringProvider Provider
 		{
 			get { return _stringProviderDontUsedirectly ?? DependencyResolver.Current.GetService<ILocalizedStringProvider>(); }
