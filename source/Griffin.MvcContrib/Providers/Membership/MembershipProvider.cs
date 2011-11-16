@@ -351,6 +351,7 @@ namespace Griffin.MvcContrib.Providers.Membership
             ValidatePassword(username, newPassword);
 
             account.Password = newPassword;
+            pwInfo = account.CreatePasswordInfo();
             account.Password = PasswordStrategy.Encrypt(pwInfo);
             AccountRepository.Update(account);
             return true;
