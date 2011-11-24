@@ -49,11 +49,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Areas\Controller\LocalizationController.cs" />
-    <Compile Include="Areas\GriffinArea.cs" />
-    <Compile Include="Areas\Models\ViewTranslationEntry.cs" />
     <Compile Include="Caching\NamespaceDoc.cs" />
     <Compile Include="Caching\NoCacheAttribute.cs" />
+    <Compile Include="CompositeVirtualPathProvider.cs" />
     <Compile Include="GriffinVirtualPathProvider.cs" />
     <Compile Include="GriffinWebViewPage.cs" />
     <Compile Include="Html\FormItemAdapterContext.cs" />
@@ -65,6 +63,7 @@
     <Compile Include="Html\IdNameFormatter.cs" />
     <Compile Include="Html\IdTitleFormatter.cs" />
     <Compile Include="Html\IFormItemAdapter.cs" />
+    <Compile Include="Html\IHtmlTagAdapter.cs" />
     <Compile Include="Html\ISelectFormatter.cs" />
     <Compile Include="Html\FormHtmlHelper.cs" />
     <Compile Include="Html\NestedTagBuilder.cs" />
@@ -126,15 +125,8 @@
     <Compile Include="Providers\Roles\RoleProvider.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Areas\Griffin\" />
     <Folder Include="Html\SelectLists\" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Areas\Views\Localization\Index.cshtml">
-      <Generator>MvcRazorClassGenerator</Generator>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Areas\Views\Web.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Web.config" />

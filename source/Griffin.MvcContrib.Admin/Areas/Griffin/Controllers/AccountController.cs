@@ -3,7 +3,6 @@ using System.Web.Mvc;
 using System.Web.Security;
 using Griffin.MvcContrib.Areas.Griffin.Models.Account;
 using Griffin.MvcContrib.Providers.Membership;
-using MembershipProvider = System.Web.Security.MembershipProvider;
 
 namespace Griffin.MvcContrib.Areas.Griffin.Controllers
 {

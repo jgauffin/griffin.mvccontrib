@@ -1,0 +1,21 @@
+Griffin.MvcContrib v0.1
+======================================================
+
+This is the first release of Griffin.MvcContrib and is more of a 
+request of feedback version. All kind of feedback is very welcome.
+
+https://github.com/jgauffin/griffin.mvccontrib
+
+
+
+Installation - HtmlHelpers
+======================================================
+
+
+To use the new HtmlHelpers, simply open Views\Web.config and change
+pageBaseType:
+
+<pages pageBaseType="Griffin.MvcContrib.GriffinWebViewPage">
+
+Implement one of the following classes to be able to modify the HTML that the helpers generate:
+

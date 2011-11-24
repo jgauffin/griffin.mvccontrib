@@ -8,7 +8,6 @@ using System.Web.Routing;
 using Autofac;
 using Autofac.Integration.Mvc;
 using Griffin.MvcContrib;
-using Griffin.MvcContrib.Areas.Controller;
 using Griffin.MvcContrib.Localization;
 using Griffin.MvcContrib.Localization.Views;
 using Localization.Resources;
@@ -57,7 +56,6 @@ namespace Localization
 			builder.RegisterControllers(Assembly.GetExecutingAssembly());
 
 			builder.RegisterType<ViewLocalizationFileRepository>().AsImplementedInterfaces();
-			builder.RegisterType<LocalizationController>().As<Controller>().AsSelf();
 			builder.RegisterType<CustomControllerActivator>().AsImplementedInterfaces().SingleInstance();
 			_container = builder.Build();
 			DependencyResolver.SetResolver(new AutofacDependencyResolver(_container));

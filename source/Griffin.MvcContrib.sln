@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Griffin.MvcContrib", "Griffin.MvcContrib\Griffin.MvcContrib.csproj", "{0D102D58-4D79-444D-B633-F7ACD3B6D749}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Griffin.MvcContrib.RavenDb", "Griffin.MvcFramework\Griffin.MvcContrib.RavenDb.csproj", "{328FA67F-1F5E-4020-BBE5-440F50E097FC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Griffin.MvcContrib.RavenDb", "Griffin.MvcContrib.RavenDb\Griffin.MvcContrib.RavenDb.csproj", "{328FA67F-1F5E-4020-BBE5-440F50E097FC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Localization", "Samples\MvcContrib\Localization\Localization.csproj", "{B5949D64-4C2B-4FEB-B8F7-59A64434B0BD}"
 EndProject
@@ -13,9 +13,25 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MvcContrib", "MvcContrib", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HtmlHelpersDemo", "samples\mvccontrib\HtmlHelpersDemo\HtmlHelpersDemo.csproj", "{69BA3CD7-9A9E-4F0B-9FF3-2AA557549915}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Griffin.MvcContrib.Admin", "Griffin.MvcContrib.Admin\Griffin.MvcContrib.Admin.csproj", "{0596FB0B-582B-4E50-A98F-8B79D82E6748}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Griffin.MvcContrib.Tests", "Griffin.MvcContrib.Tests\Griffin.MvcContrib.Tests.csproj", "{E3BDE58B-700C-44C8-989D-3C8DE329BAB5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{33DEDCE3-F263-4CAE-825B-258E035F7381}"
+	ProjectSection(SolutionItems) = preProject
+		Griffin.MvcContrib.vsmdi = Griffin.MvcContrib.vsmdi
+		Local.testsettings = Local.testsettings
+		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Griffin.MvcContrib.Admin", "Griffin.MvcContrib.Admin\Griffin.MvcContrib.Admin.csproj", "{431800A1-72C3-42F1-A679-6642B577576C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminTest", "Samples\MvcContrib.Admin\AdminTest\AdminTest.csproj", "{0B9132E5-3BF0-4E4F-82C4-F6FE820ECCDE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MvcContrib.Admin", "MvcContrib.Admin", "{6027658D-9BBB-4868-BE43-28CCF7CE5208}"
 EndProject
 Global
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = Griffin.MvcContrib.vsmdi
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -37,17 +53,27 @@ Global
 		{69BA3CD7-9A9E-4F0B-9FF3-2AA557549915}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69BA3CD7-9A9E-4F0B-9FF3-2AA557549915}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{69BA3CD7-9A9E-4F0B-9FF3-2AA557549915}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0596FB0B-582B-4E50-A98F-8B79D82E6748}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0596FB0B-582B-4E50-A98F-8B79D82E6748}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0596FB0B-582B-4E50-A98F-8B79D82E6748}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0596FB0B-582B-4E50-A98F-8B79D82E6748}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3BDE58B-700C-44C8-989D-3C8DE329BAB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3BDE58B-700C-44C8-989D-3C8DE329BAB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3BDE58B-700C-44C8-989D-3C8DE329BAB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3BDE58B-700C-44C8-989D-3C8DE329BAB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{431800A1-72C3-42F1-A679-6642B577576C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{431800A1-72C3-42F1-A679-6642B577576C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{431800A1-72C3-42F1-A679-6642B577576C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{431800A1-72C3-42F1-A679-6642B577576C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B9132E5-3BF0-4E4F-82C4-F6FE820ECCDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B9132E5-3BF0-4E4F-82C4-F6FE820ECCDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B9132E5-3BF0-4E4F-82C4-F6FE820ECCDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B9132E5-3BF0-4E4F-82C4-F6FE820ECCDE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{96BC24AD-7D18-4834-B241-B1CFA8CB9FF6} = {6D9911B1-ACD1-4848-95FB-D4922B38E787}
+		{6027658D-9BBB-4868-BE43-28CCF7CE5208} = {6D9911B1-ACD1-4848-95FB-D4922B38E787}
 		{B5949D64-4C2B-4FEB-B8F7-59A64434B0BD} = {96BC24AD-7D18-4834-B241-B1CFA8CB9FF6}
 		{69BA3CD7-9A9E-4F0B-9FF3-2AA557549915} = {96BC24AD-7D18-4834-B241-B1CFA8CB9FF6}
+		{0B9132E5-3BF0-4E4F-82C4-F6FE820ECCDE} = {6027658D-9BBB-4868-BE43-28CCF7CE5208}
 	EndGlobalSection
 EndGlobal

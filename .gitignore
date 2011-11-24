@@ -48,3 +48,6 @@ _vti_cnf
 *.docstates
 documentation/mvccontrib.shfbproj_jgauffin
 source/Griffin.MvcContrib.Admin/Data
+source/Griffin.MvcContrib.Admin/App_Data/*.dat
+source/Griffin.MvcContrib.Admin/App_Data/*.dat
+source/Samples/MvcContrib.Admin/AdminTest/Data/

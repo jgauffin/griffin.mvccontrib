@@ -5,7 +5,6 @@ using System.Web;
 using System.Web.Security;
 using Griffin.MvcContrib.Areas.Griffin.Controllers;
 using Griffin.MvcContrib.Providers.Membership;
-using Griffin.MvcContrib.RavenDb.Providers;
 
 namespace Griffin.MvcContrib.Areas.Griffin.Adapters
 {
