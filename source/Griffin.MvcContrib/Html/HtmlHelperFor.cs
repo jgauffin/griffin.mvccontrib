@@ -109,12 +109,12 @@ namespace Griffin.MvcContrib.Html
             ModelState modelState;
             if (ViewContext.ViewData.ModelState.TryGetValue(name, out modelState) && modelState.Value != null)
             {
-                return Convert.ToString(modelState.Value, CultureInfo.CurrentCulture);
+                return Convert.ToString(modelState.Value, CultureInfo.CurrentUICulture);
             }
 
             return !string.IsNullOrEmpty(metadata.EditFormatString)
                        ? string.Format(metadata.EditFormatString, metadata.Model)
-                       : Convert.ToString(metadata.Model, CultureInfo.CurrentCulture);
+                       : Convert.ToString(metadata.Model, CultureInfo.CurrentUICulture);
         }
 
         /// <summary>

@@ -48,6 +48,9 @@ namespace Griffin.MvcContrib.Localization
 	public class LocalizedModelValidatorProvider : DataAnnotationsModelValidatorProvider
 	{
 		private readonly ILocalizedStringProvider _stringProviderDontUsedirectly;
+		private ILogger _logger = LogProvider.Current.GetLogger<LocalizedModelValidatorProvider>();
+
+		ValidationAttributeAdapterFactory _adapterFactory = new ValidationAttributeAdapterFactory();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="LocalizedModelValidatorProvider"/> class.
@@ -68,6 +71,49 @@ namespace Griffin.MvcContrib.Localization
 
 		}
 
+		class MyValidator : ModelValidator
+		{
+			private readonly ValidationAttribute _attribute;
+			private readonly string _errorMsg;
+			private readonly IEnumerable<ModelClientValidationRule> _create;
+
+			public MyValidator(ValidationAttribute attribute, string errorMsg, ModelMetadata metadata, ControllerContext controllerContext, IEnumerable<ModelClientValidationRule> create)
+				: base(metadata, controllerContext)
+			{
+				_attribute = attribute;
+				_errorMsg = errorMsg;
+				_create = create;
+			}
+
+			public override bool IsRequired
+			{
+				get
+				{
+					return _attribute is RequiredAttribute;
+				}
+			}
+
+			public override IEnumerable<ModelClientValidationRule> GetClientValidationRules()
+			{
+				return _create;
+			}
+
+			public override IEnumerable<ModelValidationResult> Validate(object container)
+			{
+				if (_attribute.IsValid(Metadata.Model))
+					yield break;
+
+				string errorMsg;
+				lock (_attribute)
+				{
+					_attribute.ErrorMessage = _errorMsg;
+					errorMsg = _attribute.FormatErrorMessage(Metadata.GetDisplayName());
+					_attribute.ErrorMessage = null;
+				}
+				yield return new ModelValidationResult { Message = errorMsg };
+			}
+		}
+
 		/// <summary>
 		/// Gets a list of validators.
 		/// </summary>
@@ -80,17 +126,39 @@ namespace Griffin.MvcContrib.Localization
 		protected override IEnumerable<ModelValidator> GetValidators(ModelMetadata metadata, ControllerContext context,
 																	 IEnumerable<Attribute> attributes)
 		{
+			
 			var items = attributes.ToList();
-			foreach (var attr in items.OfType<ValidationAttribute>().Where(p => string.IsNullOrEmpty(p.ErrorMessageResourceName) && string.IsNullOrEmpty(p.ErrorMessage)))
+			if (AddImplicitRequiredAttributeForValueTypes && metadata.IsRequired && !items.Any(a => a is RequiredAttribute))
+				items.Add(new RequiredAttribute());
+
+			var validators = new List<ModelValidator>();
+			foreach (var attr in items.OfType<ValidationAttribute>())
 			{
+				if (string.IsNullOrEmpty(attr.ErrorMessageResourceName) && string.IsNullOrEmpty(attr.ErrorMessage))
+				{
+					var value = Provider.GetValidationString(attr.GetType());
+					validators.Add(new MyValidator(attr, value, metadata, context, _adapterFactory.Create(attr, value)));
+				}
+				else
+					validators.Add(new DataAnnotationsModelValidator(metadata, context, attr));
+			}
+
+			return validators;
+			// */
+			/*
+			var items = base.GetValidators(metadata, context);
+			foreach (var attr in items.OfType<ValidationAttribute>().Where(p => string.IsNullOrEmpty(p.ErrorMessageResourceName)))
+			{
+				if (attr.ErrorMessage != null)
+					_logger.Debug("Current message: " + attr.ErrorMessage);
 				var value = Provider.GetValidationString(attr.GetType());
+				_logger.Debug("Localized: " + value);
 				if (!string.IsNullOrEmpty(value))
 					attr.ErrorMessage = value;
 			}
-			return base.GetValidators(metadata, context, items);
+			return items;
+			*/
 		}
-
-		
 
 		protected ILocalizedStringProvider Provider
 		{

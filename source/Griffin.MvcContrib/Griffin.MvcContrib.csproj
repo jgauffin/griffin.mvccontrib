@@ -86,6 +86,7 @@
     <Compile Include="Localization\Types\ILocalizedTypesRepository.cs" />
     <Compile Include="Localization\Types\TextPrompt.cs" />
     <Compile Include="Localization\Types\TextPromptCollection.cs" />
+    <Compile Include="Localization\ValidationAttributeAdapterFactory.cs" />
     <Compile Include="Localization\Views\ViewLocalizationFileRepository.cs" />
     <Compile Include="Localization\MetadataLanguageProvider.cs" />
     <Compile Include="Localization\Types\ILocalizedStringProvider.cs" />

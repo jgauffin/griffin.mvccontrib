@@ -16,19 +16,19 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 		{
 			
 		}
-		public TypePrompt(Type modelType, string propertyName, CultureInfo culture)
+		public TypePrompt(string key, Type modelType, string propertyName, CultureInfo culture)
 		{
-			AssemblyName = modelType.Assembly.GetName().Name;
+			TextKey = key;
+			AssemblyQualifiedName = modelType.AssemblyQualifiedName;
 			FullTypeName = modelType.FullName;
 			TypeName = modelType.Name;
 			TextName = propertyName;
-			TextKey = propertyName;
 			LocaleId = culture.LCID;
 		}
 
 		public TypePrompt(TextPrompt prompt)
 		{
-			AssemblyName = prompt.Subject.Assembly.GetName().Name;
+			AssemblyQualifiedName = prompt.Subject.Assembly.GetName().Name;
 			FullTypeName = prompt.Subject.FullName;
 			TypeName = prompt.Subject.Name;
 			TextName = prompt.TextName;
@@ -41,7 +41,7 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 
 		public TypePrompt(TypePrompt prompt)
 		{
-			AssemblyName = prompt.AssemblyName;
+			AssemblyQualifiedName = prompt.AssemblyQualifiedName;
 			FullTypeName = prompt.FullTypeName;
 			TypeName = prompt.TypeName;
 			TextName = prompt.TextName;
@@ -52,7 +52,7 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 			Text = prompt.Text;
 		}
 
-		public string AssemblyName { get; set; }
+		public string AssemblyQualifiedName { get; set; }
 
 		public string FullTypeName { get; set; }
 

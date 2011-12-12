@@ -64,7 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Readme\ReadMe.txt" />
-    <Content Include="Areas\Griffin\Scripts\griffin.js" />
+    <EmbeddedResource Include="Areas\Griffin\Scripts\griffin.js" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Areas\Griffin\Views\Account\_list.cshtml" />

@@ -52,7 +52,7 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 		public IEnumerable<CultureInfo> GetAvailableLanguages()
 		{
 			var languages = from p in _documentSession.Query<ViewLocalizationDocument>()
-			                select p.LanguageCode;
+			                select p.Id;
 			return languages.ToList().Select(p => new CultureInfo(p));
 		}
 
@@ -69,7 +69,7 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 		public IEnumerable<TextPrompt> GetNotLocalizedPrompts(CultureInfo culture, CultureInfo defaultCulture)
 		{
 			var sourceLanguage = GetOrCreateLanguage(defaultCulture, defaultCulture);
-			var ourLanguage = GetLanguage(culture) ?? new ViewLocalizationDocument {LanguageCode = culture.Name};
+			var ourLanguage = GetLanguage(culture) ?? new ViewLocalizationDocument {Id = culture.Name};
 			return sourceLanguage.Prompts.Except(ourLanguage.Prompts.Where(p => p.Text != "")).Select(CreatePrompt).ToList();
 		}
 
@@ -118,6 +118,10 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 				dbPrompt = new ViewPrompt(prompt);
 				language.Prompts.Add(dbPrompt);
 			}
+
+			// Can't figure out a better way.
+			if (prompt.ActionName == null)
+				prompt.ActionName = "Index";
 
 			_logger.Debug("Saving prompt " + prompt.ControllerName + "." + prompt.ActionName + "." + prompt.TextName);
 			_documentSession.Store(language);
@@ -171,7 +175,7 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 				_logger.Debug("Failed to find language " + culture.Name + ", creating it using " + defaultCulture.Name +
 				              " as a template.");
 				var defaultLang = culture.LCID == defaultCulture.LCID
-				                  	? new ViewLocalizationDocument {LanguageCode = culture.Name, Prompts = new List<ViewPrompt>()}
+				                  	? new ViewLocalizationDocument {Id = culture.Name, Prompts = new List<ViewPrompt>()}
 				                  	: GetOrCreateLanguage(defaultCulture, defaultCulture);
 
 				document = defaultLang.Clone(culture);
@@ -194,7 +198,7 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 			}
 
 			document = (from p in _documentSession.Query<ViewLocalizationDocument>()
-			            where p.LanguageCode == culture.Name
+			            where p.Id == culture.Name
 			            select p).FirstOrDefault();
 			lock (_cache)
 			{

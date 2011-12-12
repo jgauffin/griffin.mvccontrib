@@ -78,7 +78,7 @@ namespace Griffin.MvcContrib.Localization.Views
 
 			string textToSay = "";
 			var id = TextPrompt.CreateKey(controllerName, actionName, text);
-			var prompt = Repository.GetPrompt(CultureInfo.CurrentCulture, id);
+			var prompt = Repository.GetPrompt(CultureInfo.CurrentUICulture, id);
 			if (prompt == null)
 			{
 				var templatePrompt = new TextPrompt

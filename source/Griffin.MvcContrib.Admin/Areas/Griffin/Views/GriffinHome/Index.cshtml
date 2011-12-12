@@ -2,11 +2,11 @@
     ViewBag.Title = "Welcome to Griffin.MvcContribs administration area";
 }
 
-<h2>Welcome to Griffin.MvcContribs administration area</h2>
+<h2>@("Welcome to Griffin.MvcContribs administration area")</h2>
 
 <p>Select one of the following features</p>
 <ul>
     <li>@Html.ActionLink("Type localization", "Index", "LocalizeTypes")</li>
     <li>@Html.ActionLink("View localization", "Index", "LocalizeViews")</li>
-    <li>@Html.ActionLink("Account administration", "Index", "Account")</li>
+    <li>@Html.ActionLink("Account administration", "Index", "AccountAdmin")</li>
 </ul>

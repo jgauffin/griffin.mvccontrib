@@ -32,6 +32,9 @@ namespace Griffin.MvcContrib.Localization.Types
 		/// <remarks>Might be a enum, validation attribute or model type</remarks>
 		public Type Subject { get; set; }
 
+		/// <summary>
+		/// Gets or sets assembly qualified name
+		/// </summary>
 		[DataMember]
 		public string SubjectTypeName
 		{

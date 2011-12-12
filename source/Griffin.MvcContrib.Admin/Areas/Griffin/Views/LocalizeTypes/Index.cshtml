@@ -4,7 +4,7 @@
 @{
     ViewBag.Title = "Index";
 }
-<script type="text/javascript" src="@Url.Content("~/areas/griffin/scripts/griffin.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Areas/Griffin/Scripts/griffin.js")"></script>
 @Html.ActionLink("View localization", "Index", "LocalizeViews") |
 @Html.ActionLink("Type localization", "Index", "LocalizeTypes")
 <h2>@CultureInfo.CurrentUICulture.DisplayName</h2>
@@ -13,7 +13,7 @@
 	@Html.ValidationSummary(true)
 	<div style="float: right">
 		Change language:
-		@Html.DropDownList("changeLanguage", Model.CultureItems)
+		@Html.DropDownList("changeLanguage", Model.CultureItems, "",CultureInfo.CurrentUICulture.Name)
 	</div>
 	<div>Create language (should be a lang code like "sv-se")
 

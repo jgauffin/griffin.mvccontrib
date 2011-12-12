@@ -120,6 +120,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountModels.cs" />
+    <Compile Include="Models\MoModel.cs" />
     <Compile Include="Modules\AutofacExtensions.cs" />
     <Compile Include="Modules\LocalizationModule.cs" />
     <Compile Include="Modules\MembershipModule.cs" />

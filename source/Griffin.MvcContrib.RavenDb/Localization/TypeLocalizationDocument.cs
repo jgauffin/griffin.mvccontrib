@@ -9,7 +9,14 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 {
 	class TypeLocalizationDocument 
 	{
-		public string LanguageCode { get; set; }
+		/// <summary>
+		/// Gets or sets language code.
+		/// </summary>
+		public string Id { get; set; }
+
+		/// <summary>
+		/// Gets or sets localized prompts
+		/// </summary>
 		public List<TypePrompt> Prompts { get; set; }
 
 		public TypeLocalizationDocument Clone(CultureInfo newCulture)
@@ -26,7 +33,7 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 
 			return new TypeLocalizationDocument
 					{
-						LanguageCode = newCulture.Name,
+						Id = newCulture.Name,
 						Prompts = ourPrompts
 					};
 

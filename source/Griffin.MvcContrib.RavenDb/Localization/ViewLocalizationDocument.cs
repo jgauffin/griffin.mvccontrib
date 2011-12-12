@@ -11,7 +11,10 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 	[Serializable]
 	class ViewLocalizationDocument
 	{
-		public string LanguageCode { get; set; }
+		/// <summary>
+		/// Gets or set language code (en-us)
+		/// </summary>
+		public string Id { get; set; }
 		public List<ViewPrompt> Prompts { get; set; }
 
 
@@ -29,7 +32,7 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 
 			return new ViewLocalizationDocument
 			{
-				LanguageCode = newCulture.Name,
+				Id = newCulture.Name,
 				Prompts = ourPrompts
 			};
 

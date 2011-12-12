@@ -29,7 +29,7 @@ namespace Griffin.MvcContrib.Areas.Griffin.Controllers
     			_repository.GetPrompts(CultureInfo.CurrentUICulture).Select(p => new TypePrompt(p)).OrderBy(p => p.TypeName).
     				ToList();
 			if (!showMetadata)
-				prompts = prompts.Where(p => !p.TextName.Contains("_")).ToList();
+				prompts = prompts.Where(p => p.TextName == null || !p.TextName.Contains("_")).ToList();
 
     		var model = new IndexModel
     		            	{

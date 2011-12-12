@@ -47,7 +47,7 @@ namespace Griffin.MvcContrib.Localization
     /// </example>
     public class LocalizedModelMetadataProvider : DataAnnotationsModelMetadataProvider
     {
-		private readonly ILocalizedStringProvider _stringProviderDontUseDirectly;
+        private readonly ILocalizedStringProvider _stringProviderDontUseDirectly;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LocalizedModelMetadataProvider"/> class.
@@ -58,20 +58,20 @@ namespace Griffin.MvcContrib.Localization
             _stringProviderDontUseDirectly = stringProvider;
         }
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="LocalizedModelMetadataProvider"/> class.
-		/// </summary>
-		/// <remarks>you need to register <see cref="ILocalizedStringProvider"/> in your IoC container.</remarks>
-		public LocalizedModelMetadataProvider()
-		{
-		}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LocalizedModelMetadataProvider"/> class.
+        /// </summary>
+        /// <remarks>you need to register <see cref="ILocalizedStringProvider"/> in your IoC container.</remarks>
+        public LocalizedModelMetadataProvider()
+        {
+        }
 
-    	private ILocalizedStringProvider Provider
-    	{
-    		get { return _stringProviderDontUseDirectly ?? DependencyResolver.Current.GetService<ILocalizedStringProvider>(); }
-    	}
+        private ILocalizedStringProvider Provider
+        {
+            get { return _stringProviderDontUseDirectly ?? DependencyResolver.Current.GetService<ILocalizedStringProvider>(); }
+        }
 
-    	/// <summary>
+        /// <summary>
         /// Gets the metadata for the specified property.
         /// </summary>
         /// <param name="attributes">The attributes.</param>

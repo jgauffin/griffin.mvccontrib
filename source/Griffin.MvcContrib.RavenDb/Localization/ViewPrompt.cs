@@ -16,6 +16,7 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 		}
 		public ViewPrompt(TextPrompt prompt)
 		{
+			ActionName = prompt.ActionName;
 			ControllerName = prompt.ControllerName;
 			UpdatedAt = DateTime.Now;
 			UpdatedBy = Thread.CurrentPrincipal.Identity.Name;

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using Griffin.MvcContrib.Localization.Types;
 using Raven.Client;
 
@@ -33,6 +35,27 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 		{
 			_documentSession = documentSession;
 			DefaultCulture = new CultureInfo(1033);
+			CheckValidationPrompts();
+		}
+
+		private void CheckValidationPrompts()
+		{
+			var language = GetOrCreateLanguage(DefaultCulture);
+			var prompt = language.Get(typeof (RequiredAttribute), null);
+			if (prompt != null)
+				return;
+
+			var baseAttribte = typeof (ValidationAttribute);
+			var attributes =
+				typeof (RequiredAttribute).Assembly.GetTypes().Where(p => baseAttribte.IsAssignableFrom(p) && !p.IsAbstract).ToList();
+			foreach (var type in attributes)
+			{
+				var key = TextPrompt.CreateKey(type, "");
+				var typePrompt = new TypePrompt(key, type, null, DefaultCulture);
+				language.AddPrompt(typePrompt);
+			}
+
+			_documentSession.Store(language);
 		}
 
 		#region Implementation of ILocalizedStringProvider
@@ -74,7 +97,7 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 		/// </remarks>
 		public string GetValidationString(Type attributeType)
 		{
-			return Translate(attributeType, "", null);
+			return Translate(attributeType, null, null);
 		}
 
 		/// <summary>
@@ -98,13 +121,13 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 			}
 
 			document = (from p in _documentSession.Query<TypeLocalizationDocument>()
-			            where p.LanguageCode == culture.Name
+			            where p.Id == culture.Name
 			            select p).FirstOrDefault();
 			if (document == null)
 			{
 				_logger.Debug("Failed to find document for " + culture.Name + ", creating it.");
 				var defaultLang = DefaultCulture.LCID == culture.LCID
-				                  	? new TypeLocalizationDocument {LanguageCode = culture.Name, Prompts = new List<TypePrompt>()}
+				                  	? new TypeLocalizationDocument {Id = culture.Name, Prompts = new List<TypePrompt>()}
 				                  	: GetOrCreateLanguage(DefaultCulture);
 
 				document = defaultLang.Clone(culture);
@@ -191,21 +214,24 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 		public IEnumerable<CultureInfo> GetAvailableLanguages()
 		{
 			var languages = from p in _documentSession.Query<TypeLocalizationDocument>()
-			                select p.LanguageCode;
+			                select p.Id;
 			return languages.ToList().Select(p => new CultureInfo(p));
 		}
 
 		private static TextPrompt CreateTextPrompt(TypePrompt p)
 		{
+			var type = Type.GetType(p.AssemblyQualifiedName);
+			//var type = Type.GetType(string.Format("{0}, {1}", p.FullTypeName, p.AssemblyName), true);
 			return new TextPrompt
 			       	{
 			       		LocaleId = p.LocaleId,
-			       		Subject = Type.GetType(string.Format("{0}, {1}", p.FullTypeName, p.AssemblyName)),
+			       		Subject = type,
 			       		TextName = p.TextName,
 			       		TextKey = p.TextKey,
 			       		TranslatedText = p.Text,
 			       		UpdatedAt = p.UpdatedAt,
 			       		UpdatedBy = p.UpdatedBy
+						
 			       	};
 		}
 
@@ -269,17 +295,18 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 
 		private string Translate(Type model, string propertyName, string metaName)
 		{
-			var key = string.IsNullOrEmpty(metaName)
+			var textName = string.IsNullOrEmpty(metaName)
 			          	? propertyName
 			          	: string.Format("{0}_{1}", propertyName, metaName);
 			var language = GetOrCreateLanguage(CultureInfo.CurrentUICulture);
-			var prompt = language.Get(model, key);
+			var prompt = language.Get(model, propertyName);
 			if (prompt == null)
 			{
 				_logger.Debug("Prompt for " + model.Name + "." + propertyName + "." + metaName + " did not exist.");
-				language.AddPrompt(new TypePrompt(model, key, CultureInfo.CurrentUICulture));
+				var key = TextPrompt.CreateKey(model, textName);
+				language.AddPrompt(new TypePrompt(key, model, textName, CultureInfo.CurrentUICulture));
 				language = GetOrCreateLanguage(DefaultCulture);
-				prompt = language.Get(model, key);
+				prompt = language.Get(model, propertyName);
 				lock (_modifiedDocuments)
 				{
 					if (!_modifiedDocuments.Contains(language))

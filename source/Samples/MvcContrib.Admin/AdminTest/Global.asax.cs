@@ -12,6 +12,7 @@ using Autofac.Integration.Mvc;
 using Griffin.MvcContrib;
 using Griffin.MvcContrib.Areas.Griffin.Controllers;
 using Griffin.MvcContrib.Localization;
+using Griffin.MvcContrib.Localization.Types;
 using Griffin.MvcContrib.Providers.Membership;
 using Griffin.MvcContrib.RavenDb.Localization;
 using Raven.Client.Embedded;
@@ -51,6 +52,13 @@ namespace AdminTest
 			RegisterContainer();
 			HostingEnvironment.RegisterVirtualPathProvider(
 				new GriffinVirtualPathProvider(new NamespaceMapping(typeof(GriffinHomeController).Assembly, "Griffin.MvcContrib")));
+
+			var stringProvider = _container.Resolve<ILocalizedStringProvider>();
+			ModelMetadataProviders.Current = new LocalizedModelMetadataProvider(stringProvider);
+
+			ModelValidatorProviders.Providers.Clear();
+			ModelValidatorProviders.Providers.Add(new LocalizedModelValidatorProvider(stringProvider));
+
 		}
 
 		private void RegisterContainer()

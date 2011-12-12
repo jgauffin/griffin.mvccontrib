@@ -12,11 +12,11 @@ namespace Griffin.MvcContrib.Areas.Griffin.Controllers
 	}
 
 	[Authorize]
-    public class AccountController : System.Web.Mvc.Controller
+    public class AccountAdminController : System.Web.Mvc.Controller
     {
     	private readonly IAccountRepository _repository;
 
-    	public AccountController(IAccountRepository repository)
+    	public AccountAdminController(IAccountRepository repository)
 		{
 			_repository = repository;
 		}

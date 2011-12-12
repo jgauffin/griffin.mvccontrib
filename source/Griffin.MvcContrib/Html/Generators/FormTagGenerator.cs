@@ -152,12 +152,12 @@ namespace Griffin.MvcContrib.Html.Generators
             ModelState modelState;
             if (_viewContext.ViewData.ModelState.TryGetValue(Context.Name, out modelState) && modelState.Value != null)
             {
-                return Convert.ToString(modelState.Value, CultureInfo.CurrentCulture);
+                return Convert.ToString(modelState.Value, CultureInfo.CurrentUICulture);
             }
 
             return !string.IsNullOrEmpty(Context.Metadata.EditFormatString)
                        ? string.Format(Context.Metadata.EditFormatString, Context.Metadata.Model)
-                       : Convert.ToString(Context.Metadata.Model, CultureInfo.CurrentCulture);
+                       : Convert.ToString(Context.Metadata.Model, CultureInfo.CurrentUICulture);
         }
 
         protected string GetFullHtmlFieldName(string name)

@@ -6,9 +6,11 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using System.Web.Security;
 using AdminTest.Models;
+using Griffin.MvcContrib.Localization;
 
 namespace AdminTest.Controllers
 {
+	[Localized]
 	public class AccountController : Controller
 	{
 
