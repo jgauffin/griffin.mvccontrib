@@ -136,8 +136,20 @@ namespace Griffin.MvcContrib.Localization
 			{
 				if (string.IsNullOrEmpty(attr.ErrorMessageResourceName) && string.IsNullOrEmpty(attr.ErrorMessage))
 				{
-					var value = Provider.GetValidationString(attr.GetType());
-					validators.Add(new MyValidator(attr, value, metadata, context, _adapterFactory.Create(attr, value)));
+					var errorMessage = Provider.GetValidationString(attr.GetType());
+
+					string formattedError = "";
+					try
+					{
+						attr.ErrorMessage = errorMessage;
+						formattedError = attr.FormatErrorMessage(metadata.GetDisplayName());
+						attr.ErrorMessage = null;
+					}
+					catch (Exception err)
+					{
+						formattedError = err.Message;
+					}
+					validators.Add(new MyValidator(attr, errorMessage, metadata, context, _adapterFactory.Create(attr, formattedError)));
 				}
 				else
 					validators.Add(new DataAnnotationsModelValidator(metadata, context, attr));
