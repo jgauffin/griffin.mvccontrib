@@ -96,7 +96,7 @@ namespace Griffin.MvcContrib.Localization
         /// </remarks>
         public string GetValidationString(Type attributeType)
         {
-            var name = attributeType.Name.Replace("Attribute", "");
+            var name = Format(attributeType);
             return GetString(name);
         }
 
@@ -125,6 +125,16 @@ namespace Griffin.MvcContrib.Localization
         {
             var baseStr = string.Format("{0}_{1}", type.Name, propertyName);
             return extras.Aggregate(baseStr, (current, extra) => current + ("_" + extra));
+        }
+
+        /// <summary>
+        /// Format the attribute type information into a StringTable key
+        /// </summary>
+        /// <param name="attributeType">Attribute type</param>
+        /// <returns>String Table key</returns>
+        protected virtual string Format(Type attributeType)
+        {
+            return attributeType.Name.Replace("Attribute", "");
         }
 
         /// <summary>
