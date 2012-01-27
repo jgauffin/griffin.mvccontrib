@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Web.Mvc;
+using System.Web.Routing;
 
 namespace Griffin.MvcContrib.Localization.Views
 {
@@ -57,39 +58,31 @@ namespace Griffin.MvcContrib.Localization.Views
 		/// <summary>
 		/// Translate a text prompt
 		/// </summary>
-		/// <param name="controllerName"></param>
-		/// <param name="actionName"></param>
-		/// <param name="text"></param>
+		/// <param name="routeData">Used to lookup the controller location</param>
+		/// <param name="text">Text to translate</param>
 		/// <returns></returns>
-		public virtual string Translate(string controllerName, string actionName, string text)
+		public virtual string Translate(RouteData routeData, string text)
 		{
-			if (string.IsNullOrEmpty(controllerName))
-				throw new ArgumentNullException("controllerName");
+			if (routeData == null) throw new ArgumentNullException("routeData");
 			if (string.IsNullOrEmpty(text))
 				throw new ArgumentNullException("text");
 
-			if (actionName == null)
-				actionName = "Index";
-
 			if (!Repository.Exists(CultureInfo.CurrentUICulture))
 			{
-				Repository.CreateForLanguage(CultureInfo.CurrentUICulture, new CultureInfo(1033)); //use english as default
+				//use english as default
+				var phrases = Repository.GetAllPrompts(CultureInfo.CurrentUICulture, new CultureInfo(1033), new SearchFilter());
+				foreach (var phrase in phrases)
+				{
+					Repository.Save(CultureInfo.CurrentUICulture, phrase.ViewPath, phrase.TextName, phrase.TranslatedText);
+				}
 			}
 
 			string textToSay = "";
-			var id = TextPrompt.CreateKey(controllerName, actionName, text);
+			var uri = ViewPromptKey.GetViewPath(routeData);
+			var id = new ViewPromptKey(uri, text);
 			var prompt = Repository.GetPrompt(CultureInfo.CurrentUICulture, id);
 			if (prompt == null)
-			{
-				var templatePrompt = new TextPrompt
-				                     	{
-				                     		TextKey = id,
-				                     		ControllerName = controllerName,
-				                     		ActionName = actionName,
-				                     		TextName = text
-				                     	};
-				Repository.CreatePrompt(CultureInfo.CurrentUICulture, templatePrompt, "");
-			}
+				Repository.CreatePrompt(CultureInfo.CurrentUICulture, uri, text, "");
 			else
 				textToSay = prompt.TranslatedText;
 

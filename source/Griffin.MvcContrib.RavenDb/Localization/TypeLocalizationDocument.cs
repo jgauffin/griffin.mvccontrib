@@ -22,9 +22,8 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 		public TypeLocalizationDocument Clone(CultureInfo newCulture)
 		{
 			var ourPrompts = (from p in Prompts
-			                  select new TypePrompt(p)
+			                  select new TypePrompt(newCulture, p)
 			                         	{
-			                         		LocaleId = newCulture.LCID,
 			                         		UpdatedAt = DateTime.Now,
 			                         		UpdatedBy =
 			                         			Thread.CurrentPrincipal.Identity.Name,

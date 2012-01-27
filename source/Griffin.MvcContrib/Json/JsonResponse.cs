@@ -6,15 +6,15 @@
     /// <seealso cref="IJsonResponseContent"/>
     public class JsonResponse
     {
-        private readonly IJsonResponseContent _content;
+        private readonly IJsonResponseContent _body;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonResponse"/> class.
         /// </summary>
-        /// <param name="content">Actual content.</param>
-        public JsonResponse(IJsonResponseContent content)
+        /// <param name="body">Actual content.</param>
+        public JsonResponse(IJsonResponseContent body)
         {
-            _content = content;
+            _body = body;
         }
 
         /// <summary>
@@ -22,15 +22,15 @@
         /// </summary>
         public string ContentType
         {
-            get { return _content.GetType().Name; }
+            get { return _body.GetType().Name; }
         }
 
         /// <summary>
         /// Gets content
         /// </summary>
-        public IJsonResponseContent Content
+        public IJsonResponseContent Body
         {
-            get { return _content; }
+            get { return _body; }
         }
     }
 }

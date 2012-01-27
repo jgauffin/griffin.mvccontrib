@@ -82,11 +82,15 @@
     <Compile Include="Json\JsonResponse.cs" />
     <Compile Include="Json\MessageBox.cs" />
     <Compile Include="Json\NamespaceDoc.cs" />
-    <Compile Include="Localization\Types\FileStringProvider.cs" />
+    <Compile Include="Localization\Types\FileLocalizedTypeRepository.cs" />
     <Compile Include="Localization\Types\ILocalizedTypesRepository.cs" />
+    <Compile Include="Localization\Types\LocalizedStringProvider.cs" />
+    <Compile Include="Localization\SearchFilter.cs" />
     <Compile Include="Localization\Types\TextPrompt.cs" />
     <Compile Include="Localization\Types\TextPromptCollection.cs" />
-    <Compile Include="Localization\ValidationAttributeAdapterFactory.cs" />
+    <Compile Include="Localization\Types\ViewPromptKey.cs" />
+    <Compile Include="Localization\Views\ViewPromptKey.cs" />
+    <Compile Include="Providers\ValidationAttributeAdapterFactory.cs" />
     <Compile Include="Localization\Views\ViewLocalizationFileRepository.cs" />
     <Compile Include="Localization\MetadataLanguageProvider.cs" />
     <Compile Include="Localization\Types\ILocalizedStringProvider.cs" />
@@ -126,7 +130,6 @@
     <Compile Include="Providers\Roles\RoleProvider.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Areas\Griffin\" />
     <Folder Include="Html\SelectLists\" />
   </ItemGroup>
   <ItemGroup>

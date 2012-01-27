@@ -24,30 +24,37 @@ namespace Griffin.MvcContrib.Areas.Griffin.Controllers
 			try
 			{
 				var culture = new CultureInfo(lang);
-				_repository.CreateForLanguage(culture, new CultureInfo(1033));
+				_repository.CreateLanguage(culture, new CultureInfo(1033));
 				return RedirectToAction("Index", new {lang = lang});
 			}
 			catch(Exception err)
 			{
 				ModelState.AddModelError("", err.Message);
-				var allPrompts = _repository.GetAllPrompts(CultureInfo.CurrentUICulture);
-				return View("Index", allPrompts.Select(p => new ViewPrompt(p)));
+				var allPrompts = _repository.GetAllPrompts(CultureInfo.CurrentUICulture, new CultureInfo(1033), new SearchFilter());
+				var model = new IndexModel
+				            	{
+				            		Cultures = _repository.GetAvailableLanguages(),
+				            		Prompts = allPrompts.Select(p => new ViewPrompt(p))
+				            	};
+				return View("Index", model);
 			}
 		}
 
 		public ActionResult Index()
 		{
-			var model = new IndexModel
-			            	{
-			            		Cultures = _repository.GetAvailableLanguages(),
-			            		Prompts = _repository.GetAllPrompts(CultureInfo.CurrentUICulture).Select(p => new ViewPrompt(p))
-			            	};
+		    var model = new IndexModel
+		                    {
+		                        Cultures = _repository.GetAvailableLanguages(),
+		                        Prompts =
+		                            _repository.GetAllPrompts(CultureInfo.CurrentUICulture, new CultureInfo(1033),
+		                                                      new SearchFilter()).Select(p => new ViewPrompt(p))
+		                    };
 			return View(model);
 		}
 
 		public ActionResult Edit(string id)
 		{
-			var prompt = _repository.GetPrompt(CultureInfo.CurrentUICulture, id);
+			var prompt = _repository.GetPrompt(CultureInfo.CurrentUICulture, new ViewPromptKey(id));
 			if (prompt == null)
 				throw new InvalidOperationException("Failed to find " + id);
 			return View(new ViewPrompt(prompt));
@@ -56,9 +63,8 @@ namespace Griffin.MvcContrib.Areas.Griffin.Controllers
 		[HttpPost]
 		public ActionResult Edit(string textKey, string translatedText)
 		{
-			var prompt = _repository.GetPrompt(CultureInfo.CurrentUICulture, textKey);
-			prompt.TranslatedText = translatedText;
-			_repository.Save(prompt);
+			var prompt = _repository.GetPrompt(CultureInfo.CurrentUICulture, new ViewPromptKey(textKey));
+			_repository.Save(CultureInfo.CurrentUICulture, prompt.ViewPath, prompt.TextName, translatedText);
 			return RedirectToAction("Index");
 		}
 	}

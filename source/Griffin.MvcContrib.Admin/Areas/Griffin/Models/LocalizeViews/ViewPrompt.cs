@@ -12,7 +12,7 @@ namespace Griffin.MvcContrib.Areas.Griffin.Models.LocalizeViews
 			_prompt = prompt;
 		}
 
-		public string TextKey { get { return _prompt.TextKey; } }
+		public string TextKey { get { return _prompt.Key.ToString(); } }
 
 		/// <summary>
 		/// Gets or sets locale id (refer to MSDN)
@@ -22,12 +22,7 @@ namespace Griffin.MvcContrib.Areas.Griffin.Models.LocalizeViews
 		/// <summary>
 		/// Gets or sets controller that the text is for
 		/// </summary>
-		public string ControllerName { get { return _prompt.ControllerName; } }
-
-		/// <summary>
-		/// Gets or sets view name (unique in combination with controller name=
-		/// </summary>
-		public string ActionName { get { return _prompt.ActionName; } }
+		public string ViewPath { get { return _prompt.ViewPath; } }
 
 		/// <summary>
 		/// Gets or sets the text to translate

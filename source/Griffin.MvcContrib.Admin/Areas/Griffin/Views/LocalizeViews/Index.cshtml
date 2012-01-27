@@ -11,16 +11,16 @@
 <h2>@CultureInfo.CurrentUICulture.DisplayName</h2>
 @using (Html.BeginForm("CreateLanguage", "LocalizeViews"))
 {
-	@Html.ValidationSummary(true)
-	<div style="float: right">
-		Change language:
+    @Html.ValidationSummary(true)
+    <div style="float: right">
+        Change language:
         @Html.DropDownList("changeLanguage", Model.CultureItems, "", CultureInfo.CurrentUICulture.Name)
-	</div>
-	<div>Create language (should be a lang code like "sv-se")
+    </div>
+    <div>Create language (should be a lang code like "sv-se")
 
-		<input type="text" name="lang" />
-		<input type="submit" value="Create"/>
-	</div>
+        <input type="text" name="lang" />
+        <input type="submit" value="Create"/>
+    </div>
     
 }
 
@@ -29,10 +29,7 @@
 <table>
     <tr>
         <th>
-            ControllerName
-        </th>
-        <th>
-            ActionName
+            ViewPath
         </th>
         <th>
             TextName
@@ -47,10 +44,7 @@
 {
     <tr>
         <td>
-            @Html.DisplayFor(modelItem => item.ControllerName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.ActionName)
+            @Html.DisplayFor(modelItem => item.ViewPath)
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.TextName)

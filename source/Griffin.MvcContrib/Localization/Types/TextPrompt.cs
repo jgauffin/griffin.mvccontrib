@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using System.Security.Cryptography;
-using System.Text;
 using System.Web;
 
 namespace Griffin.MvcContrib.Localization.Types
@@ -10,21 +8,34 @@ namespace Griffin.MvcContrib.Localization.Types
 	/// Used to store translated prompts.
 	/// </summary>
 	[DataContract]
-	public class TextPrompt
+	public class TextPrompt : IEquatable<TextPrompt>
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TextPrompt"/> class.
+		/// </summary>
 		public TextPrompt()
 		{
 			UpdatedAt = DateTime.Now;
 		}
-		public TextPrompt(TextPrompt source)
+
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TextPrompt"/> class.
+		/// </summary>
+		/// <param name="localeId">New locale </param>
+		/// <param name="source">Copies all but translated text.</param>
+		public TextPrompt(int localeId, TextPrompt source)
 		{
+			if (source == null) throw new ArgumentNullException("source");
+
 			UpdatedAt = DateTime.Now;
 			LocaleId = source.LocaleId;
-			this.Subject = source.Subject;
-			this.TextKey = source.TextKey;
+			Subject = source.Subject;
+			Key = source.Key;
 			TextName = source.TextName;
-			TranslatedText = source.TranslatedText;
+			TranslatedText = "";
 		}
+
 
 		/// <summary>
 		/// Gets or sets target class
@@ -41,6 +52,7 @@ namespace Griffin.MvcContrib.Localization.Types
 			get { return Subject.AssemblyQualifiedName; }
 			set { Subject = Type.GetType(value); }
 		}
+
 		/// <summary>
 		/// Gets or sets text name
 		/// </summary>
@@ -54,8 +66,12 @@ namespace Griffin.MvcContrib.Localization.Types
 		[DataMember]
 		public string TranslatedText { get; set; }
 
+		/// <summary>
+		/// Gets when the prompt was updated.
+		/// </summary>
 		[DataMember]
 		public DateTime UpdatedAt { get; set; }
+
 		/// <summary>
 		/// Ges or sets LCID identifier.
 		/// </summary>
@@ -67,7 +83,7 @@ namespace Griffin.MvcContrib.Localization.Types
 		/// </summary>
 		/// <remarks>The id should be the same in all languages</remarks>
 		[DataMember]
-		public string TextKey { get; set; }
+		public TypePromptKey Key { get; set; }
 
 		/// <summary>
 		/// Gets or sets user id (using current identity <see cref="HttpContext.User"/>).
@@ -75,21 +91,15 @@ namespace Griffin.MvcContrib.Localization.Types
 		public string UpdatedBy { get; set; }
 
 		/// <summary>
-		/// Generate a key
+		/// Indicates whether the current object is equal to another object of the same type. (language not taken into account)
 		/// </summary>
-		/// <param name="controllerName"></param>
-		/// <param name="actionName"></param>
-		/// <param name="textName"></param>
-		/// <returns></returns>
-		public static string CreateKey(Type subject, string name)
+		/// <returns>
+		/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+		/// </returns>
+		/// <param name="other">An object to compare with this object.</param>
+		public bool Equals(TextPrompt other)
 		{
-			var md5 = new MD5CryptoServiceProvider();
-			var retVal = md5.ComputeHash(Encoding.UTF8.GetBytes(subject.FullName + name));
-			var sb = new StringBuilder();
-			for (var i = 0; i < retVal.Length; i++)
-				sb.Append(retVal[i].ToString("x2"));
-			return sb.ToString();
+			return other.Key.Equals(Key);
 		}
-
 	}
 }

@@ -52,7 +52,8 @@ namespace Griffin.MvcContrib
         /// <returns></returns>
         public MvcHtmlString T(string text)
         {
-            return MvcHtmlString.Create(ViewLocalizer.Current.Translate((string)ViewContext.RouteData.Values["Controller"], (string)ViewContext.RouteData.Values["Action"], text));
+
+            return MvcHtmlString.Create(ViewLocalizer.Current.Translate(ViewContext.RouteData, text));
         }
 
         public SelectHelper Select

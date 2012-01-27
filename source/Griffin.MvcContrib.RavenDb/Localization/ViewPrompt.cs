@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using Griffin.MvcContrib.Localization.Views;
 
@@ -14,21 +11,21 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 			UpdatedAt = DateTime.Now;
 			UpdatedBy = Thread.CurrentPrincipal.Identity.Name;
 		}
+
 		public ViewPrompt(TextPrompt prompt)
 		{
-			ActionName = prompt.ActionName;
-			ControllerName = prompt.ControllerName;
+			ViewPath = prompt.ViewPath;
 			UpdatedAt = DateTime.Now;
 			UpdatedBy = Thread.CurrentPrincipal.Identity.Name;
 			LocaleId = prompt.LocaleId;
-			TextKey = prompt.TextKey;
+			TextKey = prompt.Key.ToString();
 			TextName = prompt.TextName;
 			Text = prompt.TranslatedText;
 		}
+
 		public ViewPrompt(ViewPrompt prompt)
 		{
-			ActionName = prompt.ActionName;
-			ControllerName = prompt.ControllerName;
+			ViewPath = prompt.ViewPath;
 			TextName = prompt.TextName;
 			TextKey = prompt.TextKey;
 			LocaleId = prompt.LocaleId;
@@ -37,14 +34,12 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 			Text = prompt.Text;
 		}
 
-		public string ControllerName { get; set; }
-
 		public DateTime UpdatedAt { get; set; }
 		public string UpdatedBy { get; set; }
 		public int LocaleId { get; set; }
 		public string TextKey { get; set; }
 		public string TextName { get; set; }
-		public string ActionName { get; set; }
+		public string ViewPath { get; set; }
 		public string Text { get; set; }
 	}
 }

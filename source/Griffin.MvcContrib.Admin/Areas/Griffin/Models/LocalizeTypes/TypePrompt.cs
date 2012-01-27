@@ -18,7 +18,7 @@ namespace Griffin.MvcContrib.Areas.Griffin.Models.LocalizeTypes
 			_prompt = prompt;
 		}
 
-		public string TextKey { get { return _prompt.TextKey; } }
+		public string TextKey { get { return _prompt.Key.ToString(); } }
 
 		/// <summary>
 		/// Gets or sets locale id (refer to MSDN)

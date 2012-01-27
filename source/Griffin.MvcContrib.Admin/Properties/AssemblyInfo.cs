@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Griffin.MvcContrib.Admin")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Administration area for Griffin.MvcContrib")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
+[assembly: AssemblyCompany("Gauffin Telecom AB")]
 [assembly: AssemblyProduct("Griffin.MvcContrib.Admin")]
-[assembly: AssemblyCopyright("Copyright © Microsoft 2011")]
+[assembly: AssemblyCopyright("Copyright © Jonas Gauffin  2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

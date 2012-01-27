@@ -18,11 +18,11 @@ namespace Griffin.MvcContrib.Html
     // ReSharper disable PossibleMultipleEnumeration
     public class FormHtmlHelper<TModel> : HtmlHelperFor<TModel>
     {
-        private readonly CheckBoxGenerator _checkBoxGenerator;
-        private readonly RadioButtonGenerator _radioButtonGenerator;
-        private readonly SelectGenerator _selectGenerator;
-        private readonly TextAreaGenerator _textAreaGenerator;
-        private readonly TextBoxGenerator _textBoxGenerator;
+        private static CheckBoxGenerator _checkBoxGenerator;
+        private static RadioButtonGenerator _radioButtonGenerator;
+        private static SelectGenerator _selectGenerator;
+        private static TextAreaGenerator _textAreaGenerator;
+        private static TextBoxGenerator _textBoxGenerator;
         private HiddenInputGenerator _hiddenInputGenerator;
         private PasswordInputGenerator _passwordInputGenerator;
 
@@ -35,13 +35,21 @@ namespace Griffin.MvcContrib.Html
             : base(helper)
         {
             var resolver = DependencyResolver.Current;
-            _textBoxGenerator = resolver.GetService<TextBoxGenerator>() ?? new TextBoxGenerator(helper.ViewContext);
-            _textAreaGenerator = resolver.GetService<TextAreaGenerator>() ?? new TextAreaGenerator(helper.ViewContext);
-            _checkBoxGenerator = resolver.GetService<CheckBoxGenerator>() ?? new CheckBoxGenerator(helper.ViewContext);
-            _radioButtonGenerator = resolver.GetService<RadioButtonGenerator>() ??
+            if (_textBoxGenerator != null)
+                _textBoxGenerator = resolver.GetService<TextBoxGenerator>() ?? new TextBoxGenerator(helper.ViewContext);
+
+            if (_textAreaGenerator != null)
+                _textAreaGenerator = resolver.GetService<TextAreaGenerator>() ?? new TextAreaGenerator(helper.ViewContext);
+            if (_checkBoxGenerator != null)
+                _checkBoxGenerator = resolver.GetService<CheckBoxGenerator>() ?? new CheckBoxGenerator(helper.ViewContext);
+            if (_radioButtonGenerator != null)
+                _radioButtonGenerator = resolver.GetService<RadioButtonGenerator>() ??
                                     new RadioButtonGenerator(helper.ViewContext);
-            _selectGenerator = resolver.GetService<SelectGenerator>() ?? new SelectGenerator(helper.ViewContext);
+            if (_selectGenerator != null)
+                _selectGenerator = resolver.GetService<SelectGenerator>() ?? new SelectGenerator(helper.ViewContext);
         }
+
+
 
         public virtual MvcForm BeginForm(string actionName = null, string controllerName = null,
                                          FormMethod method = FormMethod.Post, object routeValues = null,
@@ -56,7 +64,7 @@ namespace Griffin.MvcContrib.Html
             tagBuilder.MergeAttributes(attributes);
             tagBuilder.MergeAttribute("action", url);
             tagBuilder.MergeAttribute("method", HtmlHelper.GetFormMethodString(method), true);
-            var item = InvokeHtmlTagAdapters(new[] {tagBuilder}).First();
+            var item = InvokeHtmlTagAdapters(new[] { tagBuilder }).First();
 
             var httpResponse = ViewContext.HttpContext.Response;
             httpResponse.Write(item.ToString(TagRenderMode.StartTag));
@@ -108,7 +116,7 @@ namespace Griffin.MvcContrib.Html
             var context = CreateInputContext(property, htmlAttributes);
             var generatedTags = _textBoxGenerator.Generate(context);
             return InvokeFormItemAdapters(context.Metadata, generatedTags).ToMvcString();
-            
+
         }
 
         public virtual MvcHtmlString TextBoxFor<TProperty>(Expression<Func<TModel, TProperty>> property,
@@ -117,7 +125,7 @@ namespace Griffin.MvcContrib.Html
             var context = CreateInputContext(property, htmlAttributes);
             var generatedTags = _textBoxGenerator.Generate(context);
             return InvokeFormItemAdapters(context.Metadata, generatedTags).ToMvcString();
-            
+
         }
 
         public virtual MvcHtmlString TextAreaFor<TProperty>(Expression<Func<TModel, TProperty>> property, int rows = 5,
@@ -128,21 +136,21 @@ namespace Griffin.MvcContrib.Html
             context.HtmlAttributes.Add("cols", columns);
             var generatedTags = _textAreaGenerator.Generate(context);
             return InvokeFormItemAdapters(context.Metadata, generatedTags).ToMvcString();
-            
+
         }
-/*
-        public virtual MvcHtmlString DropdownFor<TProperty>(Expression<Func<TModel, TProperty>> property,
-                                                                        IEnumerable<TProperty> items,
-                                                                        object selectedItem = null,
-                                                                        object htmlAttributes = null)
-            where TFormatter : ISelectItemFormatter, new()
-        {
-            var ctx = CreateInputContext(property, htmlAttributes);
-            var context = new SelectContext(ctx, new TFormatter(), items);
-            var generatedTags = _selectGenerator.Generate(context);
-            return InvokeFormItemAdapters(context.Metadata, generatedTags).ToMvcString();
+        /*
+                public virtual MvcHtmlString DropdownFor<TProperty>(Expression<Func<TModel, TProperty>> property,
+                                                                                IEnumerable<TProperty> items,
+                                                                                object selectedItem = null,
+                                                                                object htmlAttributes = null)
+                    where TFormatter : ISelectItemFormatter, new()
+                {
+                    var ctx = CreateInputContext(property, htmlAttributes);
+                    var context = new SelectContext(ctx, new TFormatter(), items);
+                    var generatedTags = _selectGenerator.Generate(context);
+                    return InvokeFormItemAdapters(context.Metadata, generatedTags).ToMvcString();
             
-        }*/
+                }*/
 
         public virtual MvcHtmlString DropdownFor<TProperty>(Expression<Func<TModel, TProperty>> property, object htmlAttributes = null)
             where TProperty : struct, IConvertible, IFormattable, IComparable
@@ -172,7 +180,7 @@ namespace Griffin.MvcContrib.Html
             var context = new SelectContext(ctx, null, items);
             var generatedTags = _selectGenerator.Generate(context);
             return InvokeFormItemAdapters(context.Metadata, generatedTags).ToMvcString();
-            
+
         }
 
         /// <summary>
@@ -188,7 +196,7 @@ namespace Griffin.MvcContrib.Html
             var context = CreateInputContext(property, htmlAttributes);
             var generatedTags = _checkBoxGenerator.Generate(context);
             return InvokeFormItemAdapters(context.Metadata, generatedTags).ToMvcString();
-            
+
         }
 
 
@@ -208,7 +216,7 @@ namespace Griffin.MvcContrib.Html
             context.HtmlAttributes.Add("value", value);
             var generatedTags = _radioButtonGenerator.Generate(context);
             return InvokeFormItemAdapters(context.Metadata, generatedTags).ToMvcString();
-            
+
         }
 
         /// <summary>
@@ -225,7 +233,7 @@ namespace Griffin.MvcContrib.Html
             var context = CreateInputContext(property, htmlAttributes);
             var generatedTags = _radioButtonGenerator.Generate(context);
             return InvokeFormItemAdapters(context.Metadata, generatedTags).ToMvcString();
-            
+
         }
 
         /// <summary>
@@ -243,7 +251,7 @@ namespace Griffin.MvcContrib.Html
             var context = CreateInputContext(property, htmlAttributes);
             var generatedTags = _radioButtonGenerator.Generate(context);
             return InvokeFormItemAdapters(context.Metadata, generatedTags).ToMvcString();
-            
+
         }
 
         /// <summary>
@@ -260,7 +268,7 @@ namespace Griffin.MvcContrib.Html
             var context = CreateInputContext(property, htmlAttributes);
             var generatedTags = _checkBoxGenerator.Generate(context);
             return InvokeFormItemAdapters(context.Metadata, generatedTags).ToMvcString();
-            
+
         }
 
         /// <summary>

@@ -6,38 +6,52 @@ using System.Linq;
 
 namespace Griffin.MvcContrib.Localization.Types
 {
-
 	/// <summary>
-	/// TODO: Update summary.
+	/// All prompts for a specific language
 	/// </summary>
 	public class TextPromptCollection : IEnumerable<TextPrompt>
 	{
 		private readonly CultureInfo _culture;
-		private List<TextPrompt> _prompts = new List<TextPrompt>();
+		private readonly List<TextPrompt> _prompts = new List<TextPrompt>();
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TextPromptCollection"/> class.
+		/// </summary>
+		/// <param name="culture">The culture that all prompts are for.</param>
 		public TextPromptCollection(CultureInfo culture)
 		{
 			_culture = culture;
 		}
 
+		/// <summary>
+		/// Gets culture that the prompt is for
+		/// </summary>
 		public CultureInfo Culture
 		{
 			get { return _culture; }
 		}
 
+		/// <summary>
+		/// Add a new prompt
+		/// </summary>
+		/// <param name="prompt">Found prompt</param>
 		public void Add(TextPrompt prompt)
 		{
+			if (prompt == null) throw new ArgumentNullException("prompt");
+			if (prompt.LocaleId != Culture.LCID)
+				throw new ArgumentException("Prompt is for " + prompt.LocaleId + ", our language is " + Culture);
+			
 			_prompts.Add(prompt);
 		}
 
-		public string Translate(Type subject, string textName)
+		/// <summary>
+		/// Translate a prompt if found
+		/// </summary>
+		/// <param name="key">Prompt to translate</param>
+		/// <returns>Translation if found; otherwise null.</returns>
+		public string Translate(TypePromptKey key)
 		{
-			return _prompts.Where(p => p.TextName == textName && p.Subject == subject).Select(p => p.TranslatedText).FirstOrDefault();
-		}
-
-		public TextPrompt GetPrompt(Type subject, string textName)
-		{
-			return _prompts.Where(p => p.TextName == textName && p.Subject == subject).FirstOrDefault();
+			return _prompts.Where(p => p.Key == key).Select(p => p.TranslatedText).FirstOrDefault();
 		}
 
 		/// <summary>
@@ -64,14 +78,25 @@ namespace Griffin.MvcContrib.Localization.Types
 			return GetEnumerator();
 		}
 
+		/// <summary>
+		/// Add a collection of prompts.
+		/// </summary>
+		/// <param name="items"></param>
 		public void AddRange(IEnumerable<TextPrompt> items)
 		{
+			if (items == null) throw new ArgumentNullException("items");
 			_prompts.AddRange(items);
 		}
 
-		public TextPrompt Get(string id)
+		/// <summary>
+		/// Get a prompt
+		/// </summary>
+		/// <param name="id">Prompt id</param>
+		/// <returns>prompt if found; otherwise null</returns>
+		public TextPrompt Get(TypePromptKey id)
 		{
-			return _prompts.Where(p => p.TextKey == id).FirstOrDefault();
+			if (id == null) throw new ArgumentNullException("id");
+			return _prompts.FirstOrDefault(p => p.Key == id);
 		}
 	}
 }

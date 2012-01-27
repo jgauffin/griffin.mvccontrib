@@ -12,18 +12,25 @@ namespace Griffin.MvcContrib.Localization.Views
 	[DataContract]
 	public class TextPrompt
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TextPrompt"/> class.
+		/// </summary>
 		public TextPrompt()
 		{
-			
 		}
-		public TextPrompt(TextPrompt source)
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TextPrompt"/> class.
+		/// </summary>
+		/// <param name="localeId">New language</param>
+		/// <param name="source">The source.</param>
+		public TextPrompt(int localeId, TextPrompt source)
 		{
-			TextKey = source.TextKey;
-			LocaleId = source.LocaleId;
-			ActionName = source.ActionName;
-			ControllerName = source.ControllerName;
+			Key = source.Key;
+			LocaleId = localeId;
+			ViewPath = source.ViewPath;
 			TextName = source.TextName;
-			TranslatedText = source.TranslatedText;
+			TranslatedText = "";
 		}
 
 		/// <summary>
@@ -33,16 +40,11 @@ namespace Griffin.MvcContrib.Localization.Views
 		public int LocaleId { get; set; }
 
 		/// <summary>
-		/// Gets or sets controller that the text is for
+		/// Gets or sets view path, typically <see cref="Uri.AbsolutePath"/>
 		/// </summary>
 		[DataMember]
-		public string ControllerName { get; set; }
+		public string ViewPath { get; set; }
 
-		/// <summary>
-		/// Gets or sets view name (unique in combination with controller name=
-		/// </summary>
-		[DataMember]
-		public string ActionName { get; set; }
 
 		/// <summary>
 		/// Gets or sets the text to translate
@@ -57,7 +59,7 @@ namespace Griffin.MvcContrib.Localization.Views
 		[DataMember]
 		public string TranslatedText { get; set; }
 
-		private string _textKey;
+		private ViewPromptKey _textKey;
 
 		/// <summary>
 		/// Gets a key for the prompt.
@@ -65,7 +67,7 @@ namespace Griffin.MvcContrib.Localization.Views
 		/// <remarks>The key must be unique in the current language but should be the
 		/// same for all different languages.</remarks>
 		[DataMember]
-		public string TextKey
+		public ViewPromptKey Key
 		{
 			get
 			{
@@ -76,23 +78,6 @@ namespace Griffin.MvcContrib.Localization.Views
 				return _textKey;
 			}
 			set { _textKey = value; }
-		}
-
-		/// <summary>
-		/// Generate a key
-		/// </summary>
-		/// <param name="controllerName"></param>
-		/// <param name="actionName"></param>
-		/// <param name="textName"></param>
-		/// <returns></returns>
-		public static string CreateKey(string controllerName, string actionName, string textName)
-		{
-			var md5 = new MD5CryptoServiceProvider();
-			var retVal = md5.ComputeHash(Encoding.UTF8.GetBytes(controllerName + actionName + textName));
-			var sb = new StringBuilder();
-			for (var i = 0; i < retVal.Length; i++)
-				sb.Append(retVal[i].ToString("x2"));
-			return sb.ToString();			
 		}
 	}
 }

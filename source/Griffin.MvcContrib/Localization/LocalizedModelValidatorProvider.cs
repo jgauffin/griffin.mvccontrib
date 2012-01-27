@@ -141,14 +141,18 @@ namespace Griffin.MvcContrib.Localization
 					string formattedError = "";
 					try
 					{
-						attr.ErrorMessage = errorMessage;
-						formattedError = attr.FormatErrorMessage(metadata.GetDisplayName());
-						attr.ErrorMessage = null;
+						lock (attr)
+						{
+							attr.ErrorMessage = errorMessage;
+							formattedError = attr.FormatErrorMessage(metadata.GetDisplayName());
+							attr.ErrorMessage = null;
+						}
 					}
 					catch (Exception err)
 					{
 						formattedError = err.Message;
 					}
+
 					validators.Add(new MyValidator(attr, errorMessage, metadata, context, _adapterFactory.Create(attr, formattedError)));
 				}
 				else
