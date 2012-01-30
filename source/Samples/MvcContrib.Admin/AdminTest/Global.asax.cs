@@ -15,6 +15,7 @@ using Griffin.MvcContrib.Localization;
 using Griffin.MvcContrib.Localization.Types;
 using Griffin.MvcContrib.Providers.Membership;
 using Griffin.MvcContrib.RavenDb.Localization;
+using Griffin.MvcContrib.VirtualPathProvider;
 using Raven.Client.Embedded;
 
 namespace AdminTest
@@ -50,8 +51,11 @@ namespace AdminTest
 			RegisterGlobalFilters(GlobalFilters.Filters);
 			RegisterRoutes(RouteTable.Routes);
 			RegisterContainer();
-			HostingEnvironment.RegisterVirtualPathProvider(
-				new GriffinVirtualPathProvider(new NamespaceMapping(typeof(GriffinHomeController).Assembly, "Griffin.MvcContrib")));
+		    HostingEnvironment.RegisterVirtualPathProvider(GriffinVirtualPathProvider.Current);
+
+		    var embeddedProvider = new EmbeddedViewFileProvider();
+		    embeddedProvider.Add(new NamespaceMapping(typeof (GriffinHomeController).Assembly, "Griffin.MvcContrib"));
+            GriffinVirtualPathProvider.Current.Add(embeddedProvider);
 
 			var stringProvider = _container.Resolve<ILocalizedStringProvider>();
 			ModelMetadataProviders.Current = new LocalizedModelMetadataProvider(stringProvider);

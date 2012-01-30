@@ -51,8 +51,9 @@
   <ItemGroup>
     <Compile Include="Caching\NamespaceDoc.cs" />
     <Compile Include="Caching\NoCacheAttribute.cs" />
-    <Compile Include="CompositeVirtualPathProvider.cs" />
-    <Compile Include="GriffinVirtualPathProvider.cs" />
+    <Compile Include="VirtualPathProvider\EmbeddedViewFileProvider.cs" />
+    <Compile Include="VirtualPathProvider\EmbeddedViewFixer.cs" />
+    <Compile Include="VirtualPathProvider\GriffinVirtualPathProvider.cs" />
     <Compile Include="GriffinWebViewPage.cs" />
     <Compile Include="Html\FormItemAdapterContext.cs" />
     <Compile Include="Html\Generators\CheckBoxGenerator.cs" />
@@ -75,6 +76,9 @@
     <Compile Include="Html\Generators\TextBoxGenerator.cs" />
     <Compile Include="Html\TagsExtensions.cs" />
     <Compile Include="Html\TextHtmlHelper.cs" />
+    <Compile Include="VirtualPathProvider\IEmbeddedViewFixer.cs" />
+    <Compile Include="VirtualPathProvider\IViewFileLocator.cs" />
+    <Compile Include="VirtualPathProvider\IViewFileProvider.cs" />
     <Compile Include="Json\AllowCrossSiteScripting.cs" />
     <Compile Include="Json\ControllerExtensions.cs" />
     <Compile Include="Json\ErrorMessage.cs" />
@@ -90,6 +94,8 @@
     <Compile Include="Localization\Types\TextPromptCollection.cs" />
     <Compile Include="Localization\Types\ViewPromptKey.cs" />
     <Compile Include="Localization\Views\ViewPromptKey.cs" />
+    <Compile Include="MyViewEngine.cs" />
+    <Compile Include="VirtualPathProvider\NamespaceMapping.cs" />
     <Compile Include="Providers\ValidationAttributeAdapterFactory.cs" />
     <Compile Include="Localization\Views\ViewLocalizationFileRepository.cs" />
     <Compile Include="Localization\MetadataLanguageProvider.cs" />
@@ -128,6 +134,7 @@
     <Compile Include="Providers\Roles\IRoleRepository.cs" />
     <Compile Include="Providers\Roles\IUserWithRoles.cs" />
     <Compile Include="Providers\Roles\RoleProvider.cs" />
+    <Compile Include="VirtualPathProvider\ViewFileProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Html\SelectLists\" />

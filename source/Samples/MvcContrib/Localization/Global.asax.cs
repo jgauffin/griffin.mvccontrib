@@ -10,6 +10,7 @@ using Autofac.Integration.Mvc;
 using Griffin.MvcContrib;
 using Griffin.MvcContrib.Localization;
 using Griffin.MvcContrib.Localization.Views;
+using Griffin.MvcContrib.VirtualPathProvider;
 using Localization.Resources;
 
 namespace Localization
@@ -39,7 +40,7 @@ namespace Localization
 		protected void Application_Start()
 		{
 			AreaRegistration.RegisterAllAreas();
-			HostingEnvironment.RegisterVirtualPathProvider(new GriffinVirtualPathProvider());
+			HostingEnvironment.RegisterVirtualPathProvider(GriffinVirtualPathProvider.Current);
 			//ViewEngines.Engines.Insert(0, new MyViewEngine());
 
 			ControllerBuilder.Current.DefaultNamespaces.Add("Griffin.MvcContrib.Areas.Controller");
