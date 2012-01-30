@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
+using System.Resources;
 using System.Threading;
 using Griffin.MvcContrib.Localization;
 using Griffin.MvcContrib.Localization.Types;
@@ -17,7 +19,9 @@ namespace Griffin.MvcContrib.RavenDb.Localization
     /// <para>You might want to specify <see cref="DefaultCulture"/>, en-us is used per default.</para>
     /// <para>
     /// Class is not thread safe and are expected to have a short lifetime (per scope)
-    /// </para></remarks>
+    /// </para>
+    /// <para>Remember to set <see cref="DefaultCulture"/></para>
+    /// </remarks>
     public class TypeLocalizationRepository : ILocalizedTypesRepository, IDisposable
     {
         private static readonly Dictionary<int, TypeLocalizationDocument> Cache =
@@ -35,11 +39,8 @@ namespace Griffin.MvcContrib.RavenDb.Localization
         public TypeLocalizationRepository(IDocumentSession documentSession)
         {
             _documentSession = documentSession;
-            DefaultCulture = new CultureInfo(1033);
             CheckValidationPrompts();
         }
-
-        public static CultureInfo DefaultCulture { get; set; }
 
         #region IDisposable Members
 
@@ -66,19 +67,21 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 
         private void CheckValidationPrompts()
         {
-            var language = GetOrCreateLanguage(DefaultCulture);
-            var prompt = language.Get(typeof(RequiredAttribute), null);
+            var language = GetOrCreateLanguage(DefaultCulture.Value);
+            var prompt = language.Get(typeof(RequiredAttribute), "class");
             if (prompt != null)
                 return;
 
-            var baseAttribte = typeof(ValidationAttribute);
-            var attributes =
-                typeof(RequiredAttribute).Assembly.GetTypes().Where(p => baseAttribte.IsAssignableFrom(p) && !p.IsAbstract).ToList();
-            foreach (var type in attributes)
+            var prompts =
+                ValidationAttributesStringProvider.Current.GetPrompts(DefaultCulture.Value).Select(
+                    p => new TypePrompt(DefaultCulture.Value, p)
+                             {
+                                 Text = p.TranslatedText
+                             });
+
+            foreach (var p in prompts)
             {
-                var key = new TypePromptKey(type, "");
-                var typePrompt = new TypePrompt(key.ToString(), type, null, DefaultCulture);
-                language.AddPrompt(typePrompt);
+                language.AddPrompt(p);
             }
 
             _documentSession.Store(language);
@@ -99,9 +102,9 @@ namespace Griffin.MvcContrib.RavenDb.Localization
             if (document == null)
             {
                 _logger.Debug("Failed to find document for " + culture.Name + ", creating it.");
-                var defaultLang = DefaultCulture.LCID == culture.LCID
+                var defaultLang = DefaultCulture.Is(culture)
                                     ? new TypeLocalizationDocument { Id = culture.Name, Prompts = new List<TypePrompt>() }
-                                    : GetOrCreateLanguage(DefaultCulture);
+                                    : GetOrCreateLanguage(DefaultCulture.Value);
 
                 document = defaultLang.Clone(culture);
                 _documentSession.Store(document);

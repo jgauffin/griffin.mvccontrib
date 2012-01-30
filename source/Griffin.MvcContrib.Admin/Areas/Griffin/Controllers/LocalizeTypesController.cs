@@ -3,9 +3,9 @@ using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
 using Griffin.MvcContrib.Areas.Griffin.Models.LocalizeTypes;
-using Griffin.MvcContrib.Areas.Griffin.Models.LocalizeViews;
 using Griffin.MvcContrib.Localization;
 using Griffin.MvcContrib.Localization.Types;
+using EditModel = Griffin.MvcContrib.Areas.Griffin.Models.LocalizeTypes.EditModel;
 using IndexModel = Griffin.MvcContrib.Areas.Griffin.Models.LocalizeTypes.IndexModel;
 
 namespace Griffin.MvcContrib.Areas.Griffin.Controllers
@@ -67,27 +67,49 @@ namespace Griffin.MvcContrib.Areas.Griffin.Controllers
 
         public ActionResult Edit(string id)
         {
+            var model = CreateModel(id);
+            return View(model);
+        }
+
+        private EditModel CreateModel(string id)
+        {
             var key = new TypePromptKey(id);
-            var model = _repository.GetPrompt(CultureInfo.CurrentUICulture, key);
-            return View(new TypePrompt(model));
+            var prompt = _repository.GetPrompt(CultureInfo.CurrentUICulture, key);
+            var defaultLang = _repository.GetPrompt(DefaultCulture.Value, key);
+            var model = new EditModel
+                            {
+                                DefaultText = defaultLang != null ? defaultLang.TranslatedText : "",
+                                LocaleId = prompt.LocaleId,
+                                Path = string.Format("{0} / {1} / {2}", CultureInfo.CurrentUICulture.DisplayName, prompt.Subject.Name, prompt.TextName),
+                                Text = prompt.TranslatedText,
+                                TextKey = prompt.Key.ToString()
+                            };
+            return model;
         }
 
         [HttpPost]
-        public ActionResult Edit(TypeEditModel model)
+        public ActionResult Edit(TranslateModel inmodel)
         {
-            var textPrompt = _repository.GetPrompt(CultureInfo.CurrentUICulture, new TypePromptKey(model.TextKey));
+            var model = CreateModel(inmodel.TextKey);
+            model.Text = inmodel.Text;
             if (!ModelState.IsValid)
-                return View(new TypePrompt(textPrompt));
+            {
+                return View(model);
+            }
+
+
+            if (!ModelState.IsValid)
+                return View(model);
 
             try
             {
-                _repository.Update(CultureInfo.CurrentUICulture, new TypePromptKey(model.TextKey), model.TranslatedText);
+                _repository.Update(CultureInfo.CurrentUICulture, new TypePromptKey(model.TextKey), model.Text);
                 return RedirectToAction("Index");
             }
             catch (Exception err)
             {
                 ModelState.AddModelError("", err.Message);
-                return View(new TypePrompt(textPrompt));
+                return View(model);
             }
         }
     }

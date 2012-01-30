@@ -54,18 +54,56 @@ namespace Griffin.MvcContrib.Areas.Griffin.Controllers
 
 		public ActionResult Edit(string id)
 		{
-			var prompt = _repository.GetPrompt(CultureInfo.CurrentUICulture, new ViewPromptKey(id));
-			if (prompt == null)
-				throw new InvalidOperationException("Failed to find " + id);
-			return View(new ViewPrompt(prompt));
+		    var model = CreateModel(id);
+			return View(model);
 		}
 
 		[HttpPost]
-		public ActionResult Edit(string textKey, string translatedText)
+		public ActionResult Edit(TranslateModel inmodel)
 		{
-			var prompt = _repository.GetPrompt(CultureInfo.CurrentUICulture, new ViewPromptKey(textKey));
-			_repository.Save(CultureInfo.CurrentUICulture, prompt.ViewPath, prompt.TextName, translatedText);
-			return RedirectToAction("Index");
+            var model = CreateModel(inmodel.TextKey);
+		    model.Text = inmodel.Text;
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            try
+            {
+                var prompt = _repository.GetPrompt(CultureInfo.CurrentUICulture, new ViewPromptKey(inmodel.TextKey));
+                _repository.Save(CultureInfo.CurrentUICulture, prompt.ViewPath, prompt.TextName, inmodel.Text);
+                return RedirectToAction("Index");
+            }
+            catch(Exception err)
+            {
+                ModelState.AddModelError("", err.Message);
+                return View(model);
+            }
 		}
+
+        private EditModel CreateModel(string id)
+        {
+            var key = new ViewPromptKey(id);
+            var prompt = _repository.GetPrompt(CultureInfo.CurrentUICulture, key);
+            var defaultLang = _repository.GetPrompt(DefaultCulture.Value, key);
+            if (prompt == null && defaultLang == null)
+                throw new InvalidOperationException("You need to visit the view with the default language first.");
+
+            if (prompt == null)
+            {
+                _repository.CreatePrompt(CultureInfo.CurrentUICulture, defaultLang.ViewPath, defaultLang.TextName, "");
+                prompt = _repository.GetPrompt(CultureInfo.CurrentUICulture, key);
+            }
+
+            var model = new EditModel
+            {
+                DefaultText = defaultLang != null && !string.IsNullOrEmpty(defaultLang.TranslatedText) ? defaultLang.TranslatedText : prompt.TextName,
+                LocaleId = prompt.LocaleId,
+                Path = string.Format("{0} / {1}", CultureInfo.CurrentUICulture.DisplayName, prompt.ViewPath),
+                Text = prompt.TranslatedText,
+                TextKey = prompt.Key.ToString()
+            };
+            return model;
+        }
 	}
 }

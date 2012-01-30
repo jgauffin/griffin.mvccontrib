@@ -12,9 +12,10 @@ namespace Griffin.MvcContrib.RavenDb.Localization
     /// <summary>
     /// RavenDB repository for view localizations
     /// </summary>
+    /// <remarks>Remember to set <see cref="DefaultCulture"/></remarks>
     public class ViewLocalizationRepository : IViewLocalizationRepository, IDisposable
     {
-        private static readonly Dictionary<int, ViewLocalizationDocument> _cache =
+        private static readonly Dictionary<int, ViewLocalizationDocument> Cache =
             new Dictionary<int, ViewLocalizationDocument>();
 
         private readonly IDocumentSession _documentSession;
@@ -29,11 +30,7 @@ namespace Griffin.MvcContrib.RavenDb.Localization
         public ViewLocalizationRepository(IDocumentSession documentSession)
         {
             _documentSession = documentSession;
-            if (DefaultCulture == null)
-                DefaultCulture = new CultureInfo(1033);
         }
-
-        public static CultureInfo DefaultCulture { get; set; }
 
         #region Implementation of IViewLocalizationRepository
 
@@ -244,8 +241,8 @@ namespace Griffin.MvcContrib.RavenDb.Localization
                 document = defaultLang.Clone(culture);
                 _documentSession.Store(document);
                 _documentSession.SaveChanges();
-                lock (_cache)
-                    _cache[culture.LCID] = document;
+                lock (Cache)
+                    Cache[culture.LCID] = document;
             }
 
             return document;
@@ -254,18 +251,18 @@ namespace Griffin.MvcContrib.RavenDb.Localization
         private ViewLocalizationDocument GetLanguage(CultureInfo culture)
         {
             ViewLocalizationDocument document;
-            lock (_cache)
+            lock (Cache)
             {
-                if (_cache.TryGetValue(culture.LCID, out document))
+                if (Cache.TryGetValue(culture.LCID, out document))
                     return document;
             }
 
             document = (from p in _documentSession.Query<ViewLocalizationDocument>()
                         where p.Id == culture.Name
                         select p).FirstOrDefault();
-            lock (_cache)
+            lock (Cache)
             {
-                _cache[culture.LCID] = document;
+                Cache[culture.LCID] = document;
             }
 
             return document;

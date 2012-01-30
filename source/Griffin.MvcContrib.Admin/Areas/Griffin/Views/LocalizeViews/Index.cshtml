@@ -1,68 +1,64 @@
 ﻿@using System.Globalization
 @model Griffin.MvcContrib.Areas.Griffin.Models.LocalizeViews.IndexModel
-
 @{
     ViewBag.Title = "Index";
 }
-<script type="text/javascript" src="@Url.Content("~/Areas/Griffin/Scripts/griffin.js")"></script>
-@Html.ActionLink("View localization", "Index", "LocalizeViews") |
-@Html.ActionLink("Type localization", "Index", "LocalizeTypes")
-
-<h2>@CultureInfo.CurrentUICulture.DisplayName</h2>
-@using (Html.BeginForm("CreateLanguage", "LocalizeViews"))
-{
-    @Html.ValidationSummary(true)
-    <div style="float: right">
-        Change language:
-        @Html.DropDownList("changeLanguage", Model.CultureItems, "", CultureInfo.CurrentUICulture.Name)
-    </div>
-    <div>Create language (should be a lang code like "sv-se")
-
-        <input type="text" name="lang" />
-        <input type="submit" value="Create"/>
-    </div>
+<div class="griffin">
+    <script type="text/javascript" src="@Url.Content("~/Areas/Griffin/Scripts/griffin.js")"></script>
+    @Html.ActionLink("View localization", "Index", "LocalizeViews") |
+    @Html.ActionLink("Type localization", "Index", "LocalizeTypes")
+    <h2>@CultureInfo.CurrentUICulture.DisplayName</h2>
+    @using (Html.BeginForm("CreateLanguage", "LocalizeViews"))
+    {
+        @Html.ValidationSummary(true)
+        <div style="float: right">
+            Change language:
+            @Html.DropDownList("changeLanguage", Model.CultureItems, "", CultureInfo.CurrentUICulture.Name)
+        </div>
+        <div>
+            Create language (should be a lang code like "sv-se")
+            <input type="text" name="lang" />
+            <input type="submit" value="Create" />
+        </div>
     
-}
-
-
-
-<table>
-    <tr>
-        <th>
-            ViewPath
-        </th>
-        <th>
-            TextName
-        </th>
-        <th>
-            TranslatedText
-        </th>
-        <th></th>
-    </tr>
-
-@foreach (var item in Model.Prompts)
-{
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.ViewPath)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.TextName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.TranslatedText)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id = item.TextKey })
-        </td>
-    </tr>
-}
-
-</table>
-<script type="text/javascript">
-    $(function () {
-        $('#changeLanguage').change(function() {
-            window.location = '@Url.Action("Index")?lang=' + $('#changeLanguage').val();
-        });
-    })
-</script>
+    }
+    <table>
+        <tr>
+            <th>
+                ViewPath
+            </th>
+            <th>
+                TextName
+            </th>
+            <th>
+                TranslatedText
+            </th>
+            <th>
+            </th>
+        </tr>
+        @foreach (var item in Model.Prompts)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ViewPath)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TextName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TranslatedText)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.TextKey })
+                </td>
+            </tr>
+        }
+    </table>
+    <script type="text/javascript">
+        $(function () {
+            $('#changeLanguage').change(function () {
+                window.location = '@Url.Action("Index")?lang=' + $('#changeLanguage').val();
+            });
+        })
+    </script>
+</div>

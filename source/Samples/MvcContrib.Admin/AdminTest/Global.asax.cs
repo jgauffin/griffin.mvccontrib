@@ -70,6 +70,7 @@ namespace AdminTest
 			var builder = new ContainerBuilder();
 			builder.RegisterControllers(Assembly.GetExecutingAssembly());
 			builder.RegisterModules(Assembly.GetExecutingAssembly());
+		    builder.RegisterType<EmbeddedViewFixer>().AsImplementedInterfaces().SingleInstance();
 			_container = builder.Build();
 			DependencyResolver.SetResolver(new AutofacDependencyResolver(_container));
 		}

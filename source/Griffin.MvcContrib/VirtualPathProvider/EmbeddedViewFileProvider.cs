@@ -14,6 +14,9 @@ namespace Griffin.MvcContrib.VirtualPathProvider
     /// <summary>
     ///   Locates views that are embedded resources.
     /// </summary>
+    /// <remarks>
+    ///   Requires that a <see cref="IEmbeddedViewFixer" /> is registered in your container if you want your views to look the same even if they are located in other projects.
+    /// </remarks>
     public class EmbeddedViewFileProvider : IViewFileProvider
     {
         private readonly List<MappedResource> _resourceNames = new List<MappedResource>();
@@ -37,10 +40,10 @@ namespace Griffin.MvcContrib.VirtualPathProvider
         /// <param name="virtualPath"> Virtual path like "~/Views/Home/Index.cshtml" </param>
         /// <param name="dependencies"> The dependencies. </param>
         /// <param name="utcStart"> The UTC start. </param>
-        /// <returns> null to disable caching </returns>
+        /// <returns> A CacheDependency if the file is found and caching should be used; <see cref="NoCache.Instance" /> if caching should be disabled for the file; <c>null</c> if file is not found. </returns>
         public CacheDependency GetCacheDependency(string virtualPath, IEnumerable dependencies, DateTime utcStart)
         {
-            return null;
+            return GetResource(virtualPath) != null ? NoCache.Instance : null;
         }
 
         /// <summary>
@@ -80,8 +83,7 @@ namespace Griffin.MvcContrib.VirtualPathProvider
             // embedded views need a @inherits instruction
             if (stream != null && resource.FullResourceName.EndsWith(".cshtml"))
             {
-                var fixer = DependencyResolver.Current.GetService<IEmbeddedViewFixer>();
-                stream = fixer.CorrectView(virtualPath, stream);
+                stream = CorrectView(virtualPath, stream);
             }
 
 
@@ -99,6 +101,17 @@ namespace Griffin.MvcContrib.VirtualPathProvider
             if (mapping == null) throw new ArgumentNullException("mapping");
 
             Map(mapping);
+        }
+
+        private static Stream CorrectView(string virtualPath, Stream stream)
+        {
+            var fixer = DependencyResolver.Current.GetService<IEmbeddedViewFixer>();
+            if (fixer == null)
+                return stream;
+
+            var outStream = fixer.CorrectView(virtualPath, stream);
+            stream.Close();
+            return outStream;
         }
 
 

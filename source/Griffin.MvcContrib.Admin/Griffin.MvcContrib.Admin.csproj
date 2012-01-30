@@ -56,9 +56,13 @@
     <Compile Include="Areas\Griffin\Models\Account\CreateModel.cs" />
     <Compile Include="Areas\Griffin\Models\Account\ListModel.cs" />
     <Compile Include="Areas\Griffin\Models\Account\SearchModel.cs" />
+    <Compile Include="Areas\Griffin\Models\LocalizeTypes\EditModel.cs" />
     <Compile Include="Areas\Griffin\Models\LocalizeTypes\IndexModel.cs" />
+    <Compile Include="Areas\Griffin\Models\LocalizeTypes\TranslateModel.cs" />
     <Compile Include="Areas\Griffin\Models\LocalizeTypes\TypePrompt.cs" />
+    <Compile Include="Areas\Griffin\Models\LocalizeViews\EditModel.cs" />
     <Compile Include="Areas\Griffin\Models\LocalizeViews\IndexModel.cs" />
+    <Compile Include="Areas\Griffin\Models\LocalizeViews\TranslateModel.cs" />
     <Compile Include="Areas\Griffin\Models\LocalizeViews\ViewPrompt.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

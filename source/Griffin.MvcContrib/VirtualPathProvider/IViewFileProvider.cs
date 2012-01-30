@@ -23,7 +23,7 @@ namespace Griffin.MvcContrib.VirtualPathProvider
         /// <param name="virtualPath">Virtual path like "~/Views/Home/Index.cshtml"</param>
         /// <param name="virtualPathDependencies">An array of paths to other resources required by the primary virtual resource </param>
         /// <param name="utcStart">The UTC time at which the virtual resources were read </param>
-        /// <returns>CacheDependency if found; otherwise <c>false</c>.</returns>
+        /// <returns>A CacheDependency if the file is found and caching should be used; <see cref="NoCache.Instance"/> if caching should be disabled for the file; <c>null</c> if file is not found.</returns>
         CacheDependency GetCacheDependency(string virtualPath, IEnumerable virtualPathDependencies, DateTime utcStart);
 
         /// <summary>

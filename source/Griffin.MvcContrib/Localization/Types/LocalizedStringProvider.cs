@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Globalization;
+using System.Threading;
+using System.Web.Mvc;
 
 namespace Griffin.MvcContrib.Localization.Types
 {
 	/// <summary>
 	/// Uses a <see cref="ILocalizedTypesRepository"/> to find all strings
 	/// </summary>
+	/// <remarks>Set the <see cref="DefaultCulture"/></remarks>
 	public class LocalizedStringProvider : ILocalizedStringProvider
 	{
 		private readonly ILocalizedTypesRepository _repository;
@@ -16,10 +19,12 @@ namespace Griffin.MvcContrib.Localization.Types
 		/// <param name="repository">The repository.</param>
 		public LocalizedStringProvider(ILocalizedTypesRepository repository)
 		{
-			_repository = repository;
+		    if (repository == null) throw new ArgumentNullException("repository");
+		    _repository = repository;
 		}
 
-		#region ILocalizedStringProvider Members
+        
+	    #region ILocalizedStringProvider Members
 
 		/// <summary>
 		/// Get a localized string for a model property
@@ -79,8 +84,11 @@ namespace Griffin.MvcContrib.Localization.Types
 			if (type == null) throw new ArgumentNullException("type");
 			if (name == null) throw new ArgumentNullException("name");
 
-			if (!string.IsNullOrEmpty(type.Namespace) && type.Namespace.StartsWith("Griffin.MvcContrib.Localization"))
-				return name;
+
+			if (!string.IsNullOrEmpty(type.Namespace) && type.Namespace.StartsWith("Griffin.MvcContrib"))
+			{
+			    return null;
+			}
 
 			var key = new TypePromptKey(type, name);
 			var prompt = _repository.GetPrompt(CultureInfo.CurrentUICulture, key);
@@ -96,7 +104,11 @@ namespace Griffin.MvcContrib.Localization.Types
 			if (name.EndsWith("NullDisplayText"))
 				return "";
 
-			return string.Format("{0}: [{1}.{2}]", CultureInfo.CurrentUICulture.Name, type.Name, name);
+
+            if (DefaultCulture.IsActive && DefaultCulture.IsEnglish)
+                return null;
+
+		    return string.Format("{0}: [{1}.{2}]", CultureInfo.CurrentUICulture.Name, type.Name, name);
 		}
 	}
 }

@@ -68,6 +68,8 @@ namespace Griffin.MvcContrib.VirtualPathProvider
             foreach (var provider in _fileProviders)
             {
                 var result = provider.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart);
+                if (result is NoCache)
+                    return null;
                 if (result != null)
                     return result;
             }

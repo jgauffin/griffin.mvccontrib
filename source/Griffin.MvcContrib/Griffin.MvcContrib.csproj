@@ -51,6 +51,8 @@
   <ItemGroup>
     <Compile Include="Caching\NamespaceDoc.cs" />
     <Compile Include="Caching\NoCacheAttribute.cs" />
+    <Compile Include="Localization\DefaultCulture.cs" />
+    <Compile Include="Localization\Types\ValidationAttributesStringProvider.cs" />
     <Compile Include="VirtualPathProvider\EmbeddedViewFileProvider.cs" />
     <Compile Include="VirtualPathProvider\EmbeddedViewFixer.cs" />
     <Compile Include="VirtualPathProvider\GriffinVirtualPathProvider.cs" />
@@ -92,7 +94,7 @@
     <Compile Include="Localization\SearchFilter.cs" />
     <Compile Include="Localization\Types\TextPrompt.cs" />
     <Compile Include="Localization\Types\TextPromptCollection.cs" />
-    <Compile Include="Localization\Types\ViewPromptKey.cs" />
+    <Compile Include="Localization\Types\TypePromptKey.cs" />
     <Compile Include="Localization\Views\ViewPromptKey.cs" />
     <Compile Include="MyViewEngine.cs" />
     <Compile Include="VirtualPathProvider\NamespaceMapping.cs" />
@@ -134,6 +136,7 @@
     <Compile Include="Providers\Roles\IRoleRepository.cs" />
     <Compile Include="Providers\Roles\IUserWithRoles.cs" />
     <Compile Include="Providers\Roles\RoleProvider.cs" />
+    <Compile Include="VirtualPathProvider\NoCache.cs" />
     <Compile Include="VirtualPathProvider\ViewFileProvider.cs" />
   </ItemGroup>
   <ItemGroup>

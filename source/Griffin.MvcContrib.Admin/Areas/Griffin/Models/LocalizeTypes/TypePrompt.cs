@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Globalization;
+﻿using System.Globalization;
 using Griffin.MvcContrib.Localization.Types;
 
 namespace Griffin.MvcContrib.Areas.Griffin.Models.LocalizeTypes
@@ -48,13 +47,5 @@ namespace Griffin.MvcContrib.Areas.Griffin.Models.LocalizeTypes
 		public string TranslatedText { get { return _prompt.TranslatedText; } }
 
 		public CultureInfo Culture { get { return new CultureInfo(_prompt.LocaleId); } }
-	}
-
-	public class TypeEditModel
-	{
-		[Required]
-		public string TextKey { get; set; }
-		[Required]
-		public string TranslatedText { get; set; }
 	}
 }

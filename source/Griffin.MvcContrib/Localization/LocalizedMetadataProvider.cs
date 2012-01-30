@@ -47,7 +47,7 @@ namespace Griffin.MvcContrib.Localization
     /// </example>
     public class LocalizedModelMetadataProvider : DataAnnotationsModelMetadataProvider
     {
-        private readonly ILocalizedStringProvider _stringProviderDontUseDirectly;
+        private ILocalizedStringProvider _stringProviderDontUseDirectly;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LocalizedModelMetadataProvider"/> class.
@@ -68,7 +68,11 @@ namespace Griffin.MvcContrib.Localization
 
         private ILocalizedStringProvider Provider
         {
-            get { return _stringProviderDontUseDirectly ?? DependencyResolver.Current.GetService<ILocalizedStringProvider>(); }
+            get {
+                return _stringProviderDontUseDirectly ??
+                       (_stringProviderDontUseDirectly =
+                        DependencyResolver.Current.GetService<ILocalizedStringProvider>());
+            }
         }
 
         /// <summary>

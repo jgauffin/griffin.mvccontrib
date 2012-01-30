@@ -14,7 +14,7 @@ namespace Griffin.MvcContrib.VirtualPathProvider
         public EmbeddedViewFixer()
         {
             WebViewPageClassName = "Griffin.MvcContrib.GriffinWebViewPage";
-            LayoutPath = "~/Views/Shared/_Layout.5.0.cshtml";
+            LayoutPath = "~/Views/Shared/_Layout.cshtml";
         }
 
         /// <summary>

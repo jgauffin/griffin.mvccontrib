@@ -15,6 +15,9 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 
         public TypePrompt(string key, Type modelType, string propertyName, CultureInfo culture)
         {
+            if (key == null) throw new ArgumentNullException("key");
+            if (propertyName == null) throw new ArgumentNullException("propertyName");
+
             TextKey = key;
             AssemblyQualifiedName = modelType.AssemblyQualifiedName;
             FullTypeName = modelType.FullName;
@@ -25,7 +28,9 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 
         public TypePrompt(CultureInfo culture, TextPrompt prompt)
         {
-            AssemblyQualifiedName = prompt.Subject.Assembly.GetName().Name;
+            if (culture == null) throw new ArgumentNullException("culture");
+            if (prompt == null) throw new ArgumentNullException("prompt");
+            AssemblyQualifiedName = prompt.Subject.AssemblyQualifiedName;
             FullTypeName = prompt.Subject.FullName;
             TypeName = prompt.Subject.Name;
             TextName = prompt.TextName;
@@ -38,6 +43,8 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 
         public TypePrompt(CultureInfo culture, TypePrompt prompt)
         {
+            if (culture == null) throw new ArgumentNullException("culture");
+            if (prompt == null) throw new ArgumentNullException("prompt");
             AssemblyQualifiedName = prompt.AssemblyQualifiedName;
             FullTypeName = prompt.FullTypeName;
             TypeName = prompt.TypeName;

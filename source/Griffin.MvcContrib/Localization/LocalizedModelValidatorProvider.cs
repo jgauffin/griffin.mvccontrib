@@ -137,6 +137,11 @@ namespace Griffin.MvcContrib.Localization
 				if (string.IsNullOrEmpty(attr.ErrorMessageResourceName) && string.IsNullOrEmpty(attr.ErrorMessage))
 				{
 					var errorMessage = Provider.GetValidationString(attr.GetType());
+                    if (errorMessage == null)
+                    {
+                        validators.Add(new DataAnnotationsModelValidator(metadata, context, attr));
+                        continue;
+                    }
 
 					string formattedError = "";
 					try
