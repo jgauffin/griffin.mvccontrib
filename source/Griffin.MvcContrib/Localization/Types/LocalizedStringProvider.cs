@@ -66,7 +66,21 @@ namespace Griffin.MvcContrib.Localization.Types
 			return Translate(attributeType, "class");
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Get a translated string for a validation attribute
+        /// </summary>
+        /// <param name="attributeType">Type of attribute</param>
+        /// <param name="modelType">Your view model</param>
+        /// <param name="propertyName">Property in your view model</param>
+        /// <returns>
+        /// Translated validation message if found; otherwise null.
+        /// </returns>
+	    public string GetValidationString(Type attributeType, Type modelType, string propertyName)
+	    {
+	        return Translate(modelType, propertyName + "_" + attributeType.Name);
+	    }
+
+	    /// <summary>
 		/// Gets a enum string
 		/// </summary>
 		/// <param name="enumType">Type of enum</param>

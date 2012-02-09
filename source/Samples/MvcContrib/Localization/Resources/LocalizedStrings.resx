@@ -129,4 +129,7 @@
   <data name="UserViewModel_LastName" xml:space="preserve">
     <value>Last name</value>
   </data>
+  <data name="UserViewModel_LastName_Required" xml:space="preserve">
+    <value>You must specify the lastname, silly!</value>
+  </data>
 </root>

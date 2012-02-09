@@ -14,7 +14,7 @@
 {
     @Html.ValidationSummary(true)
     <fieldset>
-        <legend>@T("User view model")</legend>
+        <legend>User view model</legend>
 
         <div class="editor-label">
             @Html.LabelFor(model => model.FirstName)
@@ -39,5 +39,5 @@
 }
 
 <div>
-    @Html.ActionLink(@T("Back to List"), "Index")
+    @Html.ActionLink("Back", "Index")
 </div>

@@ -11,9 +11,9 @@ namespace Griffin.MvcContrib.Localization.Views
 	/// <remarks>
 	/// Create a class and implement <see cref="IViewLocalizationRepository"/> and register it in your container to use an own repository for the view localization. 
 	/// </remarks>
-	public class ViewLocalizer
+	public class ViewLocalizer : IViewLocalizer
 	{
-		private static ViewLocalizer _current;
+        private static IViewLocalizer _current;
 		private IViewLocalizationRepository _repositoryDontUseDirectly;
 
 		/// <summary>
@@ -27,7 +27,7 @@ namespace Griffin.MvcContrib.Localization.Views
 		/// <summary>
 		/// Gets current localizer
 		/// </summary>
-		public static ViewLocalizer Current
+		public static IViewLocalizer Current
 		{
 			get { return _current ?? (_current = new ViewLocalizer()); }
 			set { _current = value; }
@@ -37,7 +37,7 @@ namespace Griffin.MvcContrib.Localization.Views
 		/// Gets or sets default culture
 		/// </summary>
 		/// <remarks>Set to "en-US" if it has not been specified.</remarks>
-		public CultureInfo DefaultCulture { get; set; }
+		public static CultureInfo DefaultCulture { get; set; }
 
 		/// <summary>
 		/// Gets repository used to fetch strings

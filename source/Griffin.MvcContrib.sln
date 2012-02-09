@@ -32,6 +32,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Griffin.MvcContrib.SqlServe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Griffin.MvcContrib.SqlServer.Tests", "Griffin.MvcContrib.SqlServer.Tests\Griffin.MvcContrib.SqlServer.Tests.csproj", "{51118739-01BD-418E-95A2-B503C1301018}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlServerLocalization", "Samples\MvcContrib\SqlServerLocalization\SqlServerLocalization.csproj", "{299F8A95-EC52-485A-868D-F96534656BC0}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = Griffin.MvcContrib.vsmdi
@@ -77,6 +79,10 @@ Global
 		{51118739-01BD-418E-95A2-B503C1301018}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{51118739-01BD-418E-95A2-B503C1301018}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{51118739-01BD-418E-95A2-B503C1301018}.Release|Any CPU.Build.0 = Release|Any CPU
+		{299F8A95-EC52-485A-868D-F96534656BC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{299F8A95-EC52-485A-868D-F96534656BC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{299F8A95-EC52-485A-868D-F96534656BC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{299F8A95-EC52-485A-868D-F96534656BC0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -86,6 +92,7 @@ Global
 		{6027658D-9BBB-4868-BE43-28CCF7CE5208} = {6D9911B1-ACD1-4848-95FB-D4922B38E787}
 		{B5949D64-4C2B-4FEB-B8F7-59A64434B0BD} = {96BC24AD-7D18-4834-B241-B1CFA8CB9FF6}
 		{69BA3CD7-9A9E-4F0B-9FF3-2AA557549915} = {96BC24AD-7D18-4834-B241-B1CFA8CB9FF6}
+		{299F8A95-EC52-485A-868D-F96534656BC0} = {96BC24AD-7D18-4834-B241-B1CFA8CB9FF6}
 		{0B9132E5-3BF0-4E4F-82C4-F6FE820ECCDE} = {6027658D-9BBB-4868-BE43-28CCF7CE5208}
 	EndGlobalSection
 EndGlobal

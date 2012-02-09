@@ -35,17 +35,19 @@ namespace Griffin.MvcContrib.Html
             : base(helper)
         {
             var resolver = DependencyResolver.Current;
-            if (_textBoxGenerator != null)
+            if (_textBoxGenerator == null)
                 _textBoxGenerator = resolver.GetService<TextBoxGenerator>() ?? new TextBoxGenerator(helper.ViewContext);
 
-            if (_textAreaGenerator != null)
+            if (_textAreaGenerator == null)
                 _textAreaGenerator = resolver.GetService<TextAreaGenerator>() ?? new TextAreaGenerator(helper.ViewContext);
-            if (_checkBoxGenerator != null)
+            
+            if (_checkBoxGenerator == null)
                 _checkBoxGenerator = resolver.GetService<CheckBoxGenerator>() ?? new CheckBoxGenerator(helper.ViewContext);
-            if (_radioButtonGenerator != null)
+
+            if (_radioButtonGenerator == null)
                 _radioButtonGenerator = resolver.GetService<RadioButtonGenerator>() ??
                                     new RadioButtonGenerator(helper.ViewContext);
-            if (_selectGenerator != null)
+            if (_selectGenerator == null)
                 _selectGenerator = resolver.GetService<SelectGenerator>() ?? new SelectGenerator(helper.ViewContext);
         }
 

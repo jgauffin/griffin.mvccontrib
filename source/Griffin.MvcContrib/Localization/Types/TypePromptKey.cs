@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Text;
 using Griffin.MvcContrib.Localization.Views;
@@ -10,8 +11,10 @@ namespace Griffin.MvcContrib.Localization.Types
 	/// </summary>
 	/// <remarks>The key is only unique for the current language only. This is a requirement
 	/// to be able to translate prompts between languages</remarks>
+	[DataContract]
 	public class TypePromptKey : IEquatable<TypePromptKey>
 	{
+        [DataMember]
 		private readonly string _id;
 
 		/// <summary>

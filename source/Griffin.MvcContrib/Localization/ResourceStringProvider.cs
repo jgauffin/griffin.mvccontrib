@@ -101,6 +101,22 @@ namespace Griffin.MvcContrib.Localization
         }
 
         /// <summary>
+        /// Get a translated string for a validation attribute
+        /// </summary>
+        /// <param name="attributeType">Type of attribute</param>
+        /// <param name="modelType">Your view model</param>
+        /// <param name="propertyName">Property in your view model</param>
+        /// <returns>Translated validation message if found; otherwise null.</returns>
+        /// <remarks>
+        /// Tries to get a validation string which is specific for a view model property.
+        /// </remarks>
+        public string GetValidationString(Type attributeType, Type modelType, string propertyName)
+        {
+            var name = Format(modelType, propertyName, attributeType.Name.Replace("Attribute", ""));
+            return GetString(name);
+        }
+
+        /// <summary>
         /// Gets a enum string
         /// </summary>
         /// <param name="enumType">Type of enum</param>

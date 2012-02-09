@@ -245,6 +245,9 @@ namespace Griffin.MvcContrib.Localization.Views
         /// <returns>Collection of items (or an empty collection)</returns>
         protected virtual IEnumerable<TextPrompt> Deserialize(Stream stream)
         {
+            if (stream.Length == 0)
+                return new List<TextPrompt>();
+            
             var serializer = new DataContractJsonSerializer(typeof(List<TextPrompt>));
             return (IEnumerable<TextPrompt>)serializer.ReadObject(stream);
         }

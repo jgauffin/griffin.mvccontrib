@@ -52,7 +52,9 @@
     <Compile Include="Caching\NamespaceDoc.cs" />
     <Compile Include="Caching\NoCacheAttribute.cs" />
     <Compile Include="Localization\DefaultCulture.cs" />
+    <Compile Include="Localization\Types\CommonPrompts.cs" />
     <Compile Include="Localization\Types\ValidationAttributesStringProvider.cs" />
+    <Compile Include="Localization\Views\IViewLocalizer.cs" />
     <Compile Include="VirtualPathProvider\EmbeddedViewFileProvider.cs" />
     <Compile Include="VirtualPathProvider\EmbeddedViewFixer.cs" />
     <Compile Include="VirtualPathProvider\GriffinVirtualPathProvider.cs" />

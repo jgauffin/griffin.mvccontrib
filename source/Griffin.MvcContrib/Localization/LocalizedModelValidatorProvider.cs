@@ -47,7 +47,7 @@ namespace Griffin.MvcContrib.Localization
 	/// </example>
 	public class LocalizedModelValidatorProvider : DataAnnotationsModelValidatorProvider
 	{
-		private readonly ILocalizedStringProvider _stringProviderDontUsedirectly;
+		private ILocalizedStringProvider _stringProviderDontUsedirectly;
 		private ILogger _logger = LogProvider.Current.GetLogger<LocalizedModelValidatorProvider>();
 
 		ValidationAttributeAdapterFactory _adapterFactory = new ValidationAttributeAdapterFactory();
@@ -136,7 +136,9 @@ namespace Griffin.MvcContrib.Localization
 			{
 				if (string.IsNullOrEmpty(attr.ErrorMessageResourceName) && string.IsNullOrEmpty(attr.ErrorMessage))
 				{
-					var errorMessage = Provider.GetValidationString(attr.GetType());
+				    var errorMessage =
+				        Provider.GetValidationString(attr.GetType(), metadata.ContainerType, metadata.PropertyName) ??
+				        Provider.GetValidationString(attr.GetType());
                     if (errorMessage == null)
                     {
                         validators.Add(new DataAnnotationsModelValidator(metadata, context, attr));
@@ -183,7 +185,10 @@ namespace Griffin.MvcContrib.Localization
 
 		protected ILocalizedStringProvider Provider
 		{
-			get { return _stringProviderDontUsedirectly ?? DependencyResolver.Current.GetService<ILocalizedStringProvider>(); }
+			get {
+			    return _stringProviderDontUsedirectly ??
+			           (_stringProviderDontUsedirectly = DependencyResolver.Current.GetService<ILocalizedStringProvider>());
+			}
 		}
 	}
 }
