@@ -69,9 +69,9 @@ namespace Griffin.MvcContrib.SqlServer.Localization
             if (templateCulture == null) throw new ArgumentNullException("templateCulture");
 
             var sql =
-                @"INSERT INTO LocalizedViews (LocaleId, TypeName, TextName, [Key], Value, UpdatedAt, UpdatedBy)
+                @"INSERT INTO LocalizedTypes (LocaleId, TypeName, TextName, [Key], Value, UpdatedAt, UpdatedBy)
                       SELECT {3}, TypeName, TextName, [Key], Value, '{0}', '{1}'
-                    FROM LocalizedViews WHERE LCID={2}";
+                    FROM LocalizedTypes WHERE LocaleId={2}";
             sql = string.Format(sql, DateTime.Now, Thread.CurrentPrincipal.Identity.Name, templateCulture.LCID, culture.LCID);
             using (var cmd = _db.Connection.CreateCommand())
             {

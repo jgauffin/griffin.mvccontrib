@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace Griffin.MvcContrib.Areas.Griffin.Controllers
 {
-	public class GriffinHomeController : System.Web.Mvc.Controller
+    public class GriffinHomeController : System.Web.Mvc.Controller
     {
         //
         // GET: /Griffin/Home/

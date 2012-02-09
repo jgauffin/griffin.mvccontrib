@@ -40,7 +40,7 @@ namespace Griffin.MvcContrib.SqlServer.Localization
         public IEnumerable<TextPrompt> GetAllPrompts(CultureInfo culture, CultureInfo templateCulture, SearchFilter filter)
         {
             if (culture == null) throw new ArgumentNullException("culture");
-            var sql = "SELECT LocaleId, Key, ViewPath, TextName, Value, UpdatedAt, UpdatedBy FROM LocalizedViews WHERE LocaleId = @LocaleId";
+            var sql = "SELECT LocaleId, [Key], ViewPath, TextName, Value, UpdatedAt, UpdatedBy FROM LocalizedViews WHERE LocaleId = @LocaleId";
             using (var cmd = _db.Connection.CreateCommand())
             {
                 cmd.CommandText = sql;
@@ -118,7 +118,7 @@ namespace Griffin.MvcContrib.SqlServer.Localization
             var sql =
                 @"INSERT INTO LocalizedViews (LocaleId, ViewPath, TextName, [Key], Value, UpdatedAt, UpdatedBy)
                       SELECT {3}, ViewPath, TextName, [Key], Value, '{0}', '{1}'
-                    FROM LocalizedViews WHERE LCID={2}";
+                    FROM LocalizedViews WHERE LocaleId={2}";
             sql = string.Format(sql, DateTime.Now, Thread.CurrentPrincipal.Identity.Name, defaultCulture.LCID, culture.LCID);
             using (var cmd = _db.Connection.CreateCommand())
             {
