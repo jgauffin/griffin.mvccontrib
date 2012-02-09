@@ -26,13 +26,13 @@ namespace Griffin.MvcContrib.Areas.Griffin.Controllers
             try
             {
 
-                _repository.CreateLanguage(new CultureInfo(lang), new CultureInfo(1033));
+                _repository.CreateLanguage(new CultureInfo(lang), DefaultCulture.Value);
                 return RedirectToAction("Index", new { lang = lang });
             }
             catch (Exception err)
             {
                 ModelState.AddModelError("", err.Message);
-                var allPrompts = _repository.GetPrompts(CultureInfo.CurrentUICulture, new CultureInfo(1033), new SearchFilter());
+                var allPrompts = _repository.GetPrompts(CultureInfo.CurrentUICulture, DefaultCulture.Value, new SearchFilter());
                 var model = new IndexModel
                 {
                     Cultures = _repository.GetAvailableLanguages(),
@@ -50,7 +50,7 @@ namespace Griffin.MvcContrib.Areas.Griffin.Controllers
             var languges = _repository.GetAvailableLanguages();
 
             var prompts =
-                _repository.GetPrompts(CultureInfo.CurrentUICulture, new CultureInfo(1033), new SearchFilter()).Select(
+                _repository.GetPrompts(CultureInfo.CurrentUICulture, DefaultCulture.Value, new SearchFilter()).Select(
                     p => new TypePrompt(p)).OrderBy(p => p.TypeName).
                     ToList();
             if (!showMetadata)

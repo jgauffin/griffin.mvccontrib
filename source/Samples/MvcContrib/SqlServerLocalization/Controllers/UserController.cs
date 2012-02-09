@@ -8,18 +8,13 @@ using Griffin.MvcContrib.Localization;
 namespace SqlServerLocalization.Controllers
 {
     [Localized]
-    public class HomeController : Controller
+    public class UserController : Controller
     {
         public ActionResult Index()
         {
-            ViewBag.Message = "Welcome to ASP.NET MVC!";
 
             return View();
         }
 
-        public ActionResult About()
-        {
-            return View();
-        }
     }
 }

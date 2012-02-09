@@ -19,18 +19,6 @@ namespace Griffin.MvcContrib.Localization.Types
         private readonly Dictionary<CultureInfo, TextPromptCollection> _languages =
             new Dictionary<CultureInfo, TextPromptCollection>();
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FileLocalizedTypeRepository"/> class.
-        /// </summary>
-        public FileLocalizedTypeRepository()
-        {
-            DefaultCulture = new CultureInfo(1033);
-        }
-
-        /// <summary>
-        /// Culture to use as a template when creating new translations
-        /// </summary>
-        public CultureInfo DefaultCulture { get; set; }
 
         #region ILocalizedTypesRepository Members
 

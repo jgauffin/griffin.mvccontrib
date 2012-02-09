@@ -113,7 +113,7 @@
     <Compile Include="Localization\Views\IViewLocalizationRepository.cs" />
     <Compile Include="Localization\Views\TextPrompt.cs" />
     <Compile Include="Localization\Views\TextPromptCollection.cs" />
-    <Compile Include="Localization\Views\ViewLocalizer.cs" />
+    <Compile Include="Localization\Views\RepositoryViewLocalizer.cs" />
     <Compile Include="LogProvider.cs" />
     <Compile Include="NamespaceDoc.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

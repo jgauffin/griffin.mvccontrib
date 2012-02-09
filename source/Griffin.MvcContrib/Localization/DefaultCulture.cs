@@ -63,7 +63,9 @@ namespace Griffin.MvcContrib.Localization
         /// <returns></returns>
         public static bool Is(CultureInfo culture)
         {
-            return culture.LCID == _culture.LCID;
+            if (culture.Name.Length > _culture.Name.Length)
+                return culture.Name.StartsWith(_culture.Name);
+            return _culture.Name.StartsWith(culture.Name);
         }
     }
 }

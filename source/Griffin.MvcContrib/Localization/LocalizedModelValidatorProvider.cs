@@ -131,6 +131,7 @@ namespace Griffin.MvcContrib.Localization
 			if (AddImplicitRequiredAttributeForValueTypes && metadata.IsRequired && !items.Any(a => a is RequiredAttribute))
 				items.Add(new RequiredAttribute());
 
+
 			var validators = new List<ModelValidator>();
 			foreach (var attr in items.OfType<ValidationAttribute>())
 			{
@@ -141,7 +142,6 @@ namespace Griffin.MvcContrib.Localization
 				        Provider.GetValidationString(attr.GetType());
                     if (errorMessage == null)
                     {
-                        validators.Add(new DataAnnotationsModelValidator(metadata, context, attr));
                         continue;
                     }
 
@@ -162,12 +162,12 @@ namespace Griffin.MvcContrib.Localization
 
 					validators.Add(new MyValidator(attr, errorMessage, metadata, context, _adapterFactory.Create(attr, formattedError)));
 				}
-				else
-					validators.Add(new DataAnnotationsModelValidator(metadata, context, attr));
 			}
 
-			return validators;
-			// */
+            return validators.Count == 0 ? base.GetValidators(metadata, context, attributes).ToList() : validators;
+
+
+		    // */
 			/*
 			var items = base.GetValidators(metadata, context);
 			foreach (var attr in items.OfType<ValidationAttribute>().Where(p => string.IsNullOrEmpty(p.ErrorMessageResourceName)))

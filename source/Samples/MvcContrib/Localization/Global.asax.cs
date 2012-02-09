@@ -51,7 +51,7 @@ namespace Localization
 			ModelValidatorProviders.Providers.Clear();
 			ModelValidatorProviders.Providers.Add(new LocalizedModelValidatorProvider(stringProvider));
 
-			ViewLocalizer.DefaultCulture = new CultureInfo(1053);
+			DefaultCulture.Set(new CultureInfo(1053));
 
 			var builder = new ContainerBuilder();
 			builder.RegisterControllers(Assembly.GetExecutingAssembly());

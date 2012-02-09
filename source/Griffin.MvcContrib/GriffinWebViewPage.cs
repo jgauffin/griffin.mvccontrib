@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Globalization;
 using System.Web.Mvc;
 using Griffin.MvcContrib.Html;
@@ -15,6 +16,22 @@ namespace Griffin.MvcContrib
     {
         private FormHtmlHelper<TModel> _formHelper;
         private TextHtmlHelper<TModel> _textHelper;
+        private IViewLocalizer _viewLocalizer;
+
+        protected virtual IViewLocalizer ViewLocalizer
+        {
+            get
+            {
+                if (_viewLocalizer == null)
+                {
+                    _viewLocalizer = DependencyResolver.Current.GetService<IViewLocalizer>();
+                    if (_viewLocalizer == null)
+                        throw new ConfigurationErrorsException("You must register a IViewLocalizer in your container.");
+                }
+
+                return _viewLocalizer;
+            }
+        }
 
         /// <summary>
         /// Gets the text helper.
@@ -52,8 +69,7 @@ namespace Griffin.MvcContrib
         /// <returns></returns>
         public MvcHtmlString T(string text)
         {
-
-            return MvcHtmlString.Create(ViewLocalizer.Current.Translate(ViewContext.RouteData, text));
+            return MvcHtmlString.Create(ViewLocalizer.Translate(ViewContext.RouteData, text));
         }
 
         public SelectHelper Select

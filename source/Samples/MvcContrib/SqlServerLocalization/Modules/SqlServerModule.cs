@@ -2,7 +2,9 @@
 using System.Configuration;
 using System.Data;
 using System.Data.Common;
+using System.Diagnostics;
 using Autofac;
+using Autofac.Integration.Mvc;
 using Griffin.MvcContrib.SqlServer.Localization;
 
 namespace SqlServerLocalization.Modules
@@ -11,9 +13,9 @@ namespace SqlServerLocalization.Modules
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<ConnectionScope>().As<ILocalizationDbContext>().InstancePerLifetimeScope();
-            builder.RegisterType<SqlLocalizedTypesRepository>().AsImplementedInterfaces().InstancePerLifetimeScope();
-            builder.RegisterType<SqlLocalizedViewsRepository>().AsImplementedInterfaces().InstancePerLifetimeScope();
+            builder.RegisterType<ConnectionScope>().As<ILocalizationDbContext>().InstancePerHttpRequest();
+            builder.RegisterType<SqlLocalizedTypesRepository>().AsImplementedInterfaces().InstancePerHttpRequest();
+            builder.RegisterType<SqlLocalizedViewsRepository>().AsImplementedInterfaces().InstancePerHttpRequest();
             base.Load(builder);
         }
     }
@@ -49,6 +51,7 @@ namespace SqlServerLocalization.Modules
             {
                 if (_connection == null)
                 {
+
                     _connection = _factory.CreateConnection();
                     if (_connection == null)
                         throw new InvalidOperationException("Factory " + _conString.ProviderName + " failed to create a new connection object.");
@@ -57,6 +60,8 @@ namespace SqlServerLocalization.Modules
                     _connection.Open();
                 }
 
+                if (_connection.State == ConnectionState.Closed)
+                    Debugger.Break();
                 return _connection;
             }
         }
@@ -71,7 +76,7 @@ namespace SqlServerLocalization.Modules
             if (_connection != null)
             {
                 _connection.Dispose();
-                _conString = null;
+                _connection = null;
             }
         }
     }

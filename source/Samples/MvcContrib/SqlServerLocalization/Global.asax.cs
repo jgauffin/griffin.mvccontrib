@@ -53,12 +53,8 @@ namespace SqlServerLocalization
             embeddedProvider.Add(new NamespaceMapping(typeof(GriffinHomeController).Assembly, "Griffin.MvcContrib"));
             GriffinVirtualPathProvider.Current.Add(embeddedProvider);
 
-            var stringProvider = _container.Resolve<ILocalizedStringProvider>();
-            ModelMetadataProviders.Current = new LocalizedModelMetadataProvider(stringProvider);
-
+            //ModelMetadataProviders.Current = null;
             ModelValidatorProviders.Providers.Clear();
-            ModelValidatorProviders.Providers.Add(new LocalizedModelValidatorProvider(stringProvider));
-
         }
 
         private void RegisterContainer()
@@ -67,8 +63,29 @@ namespace SqlServerLocalization
             builder.RegisterControllers(Assembly.GetExecutingAssembly());
             builder.RegisterModules(Assembly.GetExecutingAssembly());
             builder.RegisterType<EmbeddedViewFixer>().AsImplementedInterfaces().SingleInstance();
+
+            // register medata providers
+            builder.RegisterType<LocalizedModelMetadataProvider>().AsImplementedInterfaces().As<ModelMetadataProvider>().InstancePerHttpRequest();
+            builder.RegisterType<LocalizedModelValidatorProvider>().AsImplementedInterfaces().As<ModelValidatorProvider>().InstancePerHttpRequest();
+
+
             _container = builder.Build();
             DependencyResolver.SetResolver(new AutofacDependencyResolver(_container));
+        }
+    }
+
+    public class ModelMetaDummy : ModelValidatorProvider
+    {
+        /// <summary>
+        /// Gets a list of validators.
+        /// </summary>
+        /// <returns>
+        /// A list of validators.
+        /// </returns>
+        /// <param name="metadata">The metadata.</param><param name="context">The context.</param>
+        public override IEnumerable<ModelValidator> GetValidators(ModelMetadata metadata, ControllerContext context)
+        {
+            return new List<ModelValidator>();
         }
     }
 }

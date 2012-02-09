@@ -191,7 +191,7 @@ namespace Griffin.MvcContrib.Localization.Views
             var language = GetLanguage(culture);
             if (language == null)
             {
-                var prompts = GetAllPrompts(culture, new CultureInfo(1033), new SearchFilter());
+                var prompts = GetAllPrompts(culture, DefaultCulture.Value, new SearchFilter());
                 var collection = new TextPromptCollection(culture);
                 collection.AddRange(prompts);
 

@@ -119,10 +119,10 @@ namespace Griffin.MvcContrib.Localization.Types
 				return "";
 
 
-            if (DefaultCulture.IsActive && DefaultCulture.IsEnglish)
+            //if (DefaultCulture.IsActive && DefaultCulture.IsEnglish)
                 return null;
 
-		    return string.Format("{0}: [{1}.{2}]", CultureInfo.CurrentUICulture.Name, type.Name, name);
+		    //return string.Format("{0}: [{1}.{2}]", CultureInfo.CurrentUICulture.Name, type.Name, name);
 		}
 	}
 }

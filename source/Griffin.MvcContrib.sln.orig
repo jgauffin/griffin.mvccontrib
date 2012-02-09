@@ -1,0 +1,109 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Griffin.MvcContrib", "Griffin.MvcContrib\Griffin.MvcContrib.csproj", "{0D102D58-4D79-444D-B633-F7ACD3B6D749}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Griffin.MvcContrib.RavenDb", "Griffin.MvcContrib.RavenDb\Griffin.MvcContrib.RavenDb.csproj", "{328FA67F-1F5E-4020-BBE5-440F50E097FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Localization", "Samples\MvcContrib\Localization\Localization.csproj", "{B5949D64-4C2B-4FEB-B8F7-59A64434B0BD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{6D9911B1-ACD1-4848-95FB-D4922B38E787}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MvcContrib", "MvcContrib", "{96BC24AD-7D18-4834-B241-B1CFA8CB9FF6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HtmlHelpersDemo", "Samples\mvccontrib\HtmlHelpersDemo\HtmlHelpersDemo.csproj", "{69BA3CD7-9A9E-4F0B-9FF3-2AA557549915}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Griffin.MvcContrib.Tests", "Griffin.MvcContrib.Tests\Griffin.MvcContrib.Tests.csproj", "{E3BDE58B-700C-44C8-989D-3C8DE329BAB5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{33DEDCE3-F263-4CAE-825B-258E035F7381}"
+	ProjectSection(SolutionItems) = preProject
+		Griffin.MvcContrib.vsmdi = Griffin.MvcContrib.vsmdi
+		Local.testsettings = Local.testsettings
+		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Griffin.MvcContrib.Admin", "Griffin.MvcContrib.Admin\Griffin.MvcContrib.Admin.csproj", "{431800A1-72C3-42F1-A679-6642B577576C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminTest", "Samples\MvcContrib.Admin\AdminTest\AdminTest.csproj", "{0B9132E5-3BF0-4E4F-82C4-F6FE820ECCDE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MvcContrib.Admin", "MvcContrib.Admin", "{6027658D-9BBB-4868-BE43-28CCF7CE5208}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Griffin.MvcContrib.SqlServer", "Griffin.MvcContrib.SqlServer\Griffin.MvcContrib.SqlServer.csproj", "{EEBAEC8E-DDCF-493B-8C88-66CD3C29946F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Griffin.MvcContrib.SqlServer.Tests", "Griffin.MvcContrib.SqlServer.Tests\Griffin.MvcContrib.SqlServer.Tests.csproj", "{51118739-01BD-418E-95A2-B503C1301018}"
+EndProject
+<<<<<<< HEAD
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlServerLocalization", "Samples\MvcContrib\SqlServerLocalization\SqlServerLocalization.csproj", "{299F8A95-EC52-485A-868D-F96534656BC0}"
+=======
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Griffin.MvcContrib.RavenDb.Tests", "Griffin.MvcContrib.RavenDb\Griffin.MvcContrib.RavenDb.Tests\Griffin.MvcContrib.RavenDb.Tests.csproj", "{814C36EA-48F5-4878-B8D0-C2E25476D59C}"
+>>>>>>> 8959f330d426cc2a3e8606132c2386f7b9eba923
+EndProject
+Global
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = Griffin.MvcContrib.vsmdi
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0D102D58-4D79-444D-B633-F7ACD3B6D749}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D102D58-4D79-444D-B633-F7ACD3B6D749}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D102D58-4D79-444D-B633-F7ACD3B6D749}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D102D58-4D79-444D-B633-F7ACD3B6D749}.Release|Any CPU.Build.0 = Release|Any CPU
+		{328FA67F-1F5E-4020-BBE5-440F50E097FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{328FA67F-1F5E-4020-BBE5-440F50E097FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{328FA67F-1F5E-4020-BBE5-440F50E097FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{328FA67F-1F5E-4020-BBE5-440F50E097FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5949D64-4C2B-4FEB-B8F7-59A64434B0BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5949D64-4C2B-4FEB-B8F7-59A64434B0BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5949D64-4C2B-4FEB-B8F7-59A64434B0BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5949D64-4C2B-4FEB-B8F7-59A64434B0BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69BA3CD7-9A9E-4F0B-9FF3-2AA557549915}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69BA3CD7-9A9E-4F0B-9FF3-2AA557549915}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69BA3CD7-9A9E-4F0B-9FF3-2AA557549915}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69BA3CD7-9A9E-4F0B-9FF3-2AA557549915}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3BDE58B-700C-44C8-989D-3C8DE329BAB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3BDE58B-700C-44C8-989D-3C8DE329BAB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3BDE58B-700C-44C8-989D-3C8DE329BAB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3BDE58B-700C-44C8-989D-3C8DE329BAB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{431800A1-72C3-42F1-A679-6642B577576C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{431800A1-72C3-42F1-A679-6642B577576C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{431800A1-72C3-42F1-A679-6642B577576C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{431800A1-72C3-42F1-A679-6642B577576C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B9132E5-3BF0-4E4F-82C4-F6FE820ECCDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B9132E5-3BF0-4E4F-82C4-F6FE820ECCDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B9132E5-3BF0-4E4F-82C4-F6FE820ECCDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B9132E5-3BF0-4E4F-82C4-F6FE820ECCDE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EEBAEC8E-DDCF-493B-8C88-66CD3C29946F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EEBAEC8E-DDCF-493B-8C88-66CD3C29946F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EEBAEC8E-DDCF-493B-8C88-66CD3C29946F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EEBAEC8E-DDCF-493B-8C88-66CD3C29946F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51118739-01BD-418E-95A2-B503C1301018}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51118739-01BD-418E-95A2-B503C1301018}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51118739-01BD-418E-95A2-B503C1301018}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51118739-01BD-418E-95A2-B503C1301018}.Release|Any CPU.Build.0 = Release|Any CPU
+<<<<<<< HEAD
+		{299F8A95-EC52-485A-868D-F96534656BC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{299F8A95-EC52-485A-868D-F96534656BC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{299F8A95-EC52-485A-868D-F96534656BC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{299F8A95-EC52-485A-868D-F96534656BC0}.Release|Any CPU.Build.0 = Release|Any CPU
+=======
+		{814C36EA-48F5-4878-B8D0-C2E25476D59C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{814C36EA-48F5-4878-B8D0-C2E25476D59C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{814C36EA-48F5-4878-B8D0-C2E25476D59C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{814C36EA-48F5-4878-B8D0-C2E25476D59C}.Release|Any CPU.Build.0 = Release|Any CPU
+>>>>>>> 8959f330d426cc2a3e8606132c2386f7b9eba923
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{96BC24AD-7D18-4834-B241-B1CFA8CB9FF6} = {6D9911B1-ACD1-4848-95FB-D4922B38E787}
+		{6027658D-9BBB-4868-BE43-28CCF7CE5208} = {6D9911B1-ACD1-4848-95FB-D4922B38E787}
+		{B5949D64-4C2B-4FEB-B8F7-59A64434B0BD} = {96BC24AD-7D18-4834-B241-B1CFA8CB9FF6}
+		{69BA3CD7-9A9E-4F0B-9FF3-2AA557549915} = {96BC24AD-7D18-4834-B241-B1CFA8CB9FF6}
+		{299F8A95-EC52-485A-868D-F96534656BC0} = {96BC24AD-7D18-4834-B241-B1CFA8CB9FF6}
+		{0B9132E5-3BF0-4E4F-82C4-F6FE820ECCDE} = {6027658D-9BBB-4868-BE43-28CCF7CE5208}
+	EndGlobalSection
+EndGlobal
