@@ -32,6 +32,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Griffin.MvcContrib.SqlServe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Griffin.MvcContrib.SqlServer.Tests", "Griffin.MvcContrib.SqlServer.Tests\Griffin.MvcContrib.SqlServer.Tests.csproj", "{51118739-01BD-418E-95A2-B503C1301018}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Griffin.MvcContrib.RavenDb.Tests", "Griffin.MvcContrib.RavenDb\Griffin.MvcContrib.RavenDb.Tests\Griffin.MvcContrib.RavenDb.Tests.csproj", "{814C36EA-48F5-4878-B8D0-C2E25476D59C}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = Griffin.MvcContrib.vsmdi
@@ -77,6 +79,10 @@ Global
 		{51118739-01BD-418E-95A2-B503C1301018}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{51118739-01BD-418E-95A2-B503C1301018}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{51118739-01BD-418E-95A2-B503C1301018}.Release|Any CPU.Build.0 = Release|Any CPU
+		{814C36EA-48F5-4878-B8D0-C2E25476D59C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{814C36EA-48F5-4878-B8D0-C2E25476D59C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{814C36EA-48F5-4878-B8D0-C2E25476D59C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{814C36EA-48F5-4878-B8D0-C2E25476D59C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
