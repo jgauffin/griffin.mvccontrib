@@ -7,7 +7,6 @@ namespace Griffin.MvcContrib.Html.Generators
     {
         public TextBoxGenerator(ViewContext viewContext) : base(viewContext)
         {
-            
         }
 
         protected override IEnumerable<NestedTagBuilder> GenerateTags()
@@ -18,7 +17,7 @@ namespace Griffin.MvcContrib.Html.Generators
             if (!string.IsNullOrEmpty(Context.Metadata.Watermark))
                 tag.MergeAttribute("title", Context.Metadata.Watermark);
 
-            return new [] {tag};
+            return new[] {tag};
         }
     }
 }

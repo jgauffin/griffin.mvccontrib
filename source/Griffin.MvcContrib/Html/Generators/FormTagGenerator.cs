@@ -65,6 +65,7 @@ namespace Griffin.MvcContrib.Html.Generators
                                             new MetadataLanguageProvider());
             }
         }
+
         /// <summary>
         /// Generate options
         /// </summary>
@@ -72,7 +73,8 @@ namespace Griffin.MvcContrib.Html.Generators
         /// <param name="selectedValue"></param>
         /// <param name="formatter"></param>
         /// <returns></returns>
-        protected IEnumerable<NestedTagBuilder> GenerateOptions(IEnumerable items, string selectedValue, ISelectItemFormatter formatter)
+        protected IEnumerable<NestedTagBuilder> GenerateOptions(IEnumerable items, string selectedValue,
+                                                                ISelectItemFormatter formatter)
         {
             if (formatter == null)
                 return GenerateOptions(items, selectedValue);
@@ -90,10 +92,9 @@ namespace Griffin.MvcContrib.Html.Generators
             }
 
             return listItems;
-
         }
 
-        protected IEnumerable<NestedTagBuilder>  GenerateOptions(IEnumerable items, string selectedValue)
+        protected IEnumerable<NestedTagBuilder> GenerateOptions(IEnumerable items, string selectedValue)
         {
             var listItems = new List<NestedTagBuilder>();
             foreach (SelectListItem listItem in items)
@@ -131,7 +132,7 @@ namespace Griffin.MvcContrib.Html.Generators
 
         protected abstract IEnumerable<NestedTagBuilder> GenerateTags();
 
-       
+
         protected NestedTagBuilder CreatePrimaryTag(string tagName)
         {
             var tagBuilder = new NestedTagBuilder(tagName);
@@ -172,7 +173,6 @@ namespace Griffin.MvcContrib.Html.Generators
             {
                 tagBuilder.AddCssClass(HtmlHelper.ValidationInputCssClassName);
             }
-
         }
     }
 }

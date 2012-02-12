@@ -3,20 +3,21 @@ using Griffin.MvcContrib.Html;
 
 namespace HtmlHelpersDemo.Adapters
 {
-
     /// <summary>
     /// will automatically sort all SELECT tags by their names
     /// </summary>
     public class SortSelectsAdapter : IFormItemAdapter
     {
+        #region IFormItemAdapter Members
+
         /// <summary>
         /// Process a tag
         /// </summary>
         /// <param name="context">Context with all html tag information</param>
         public void Process(FormItemAdapterContext context)
         {
-            if (!context.TagBuilder.Attributes.ContainsKey("class") 
-                || !context.TagBuilder.Attributes["class"].Contains("sortMe")) 
+            if (!context.TagBuilder.Attributes.ContainsKey("class")
+                || !context.TagBuilder.Attributes["class"].Contains("sortMe"))
                 return;
 
             // remove the sortMe
@@ -27,5 +28,7 @@ namespace HtmlHelpersDemo.Adapters
             context.TagBuilder.RemoveChildren();
             context.TagBuilder.AddChildren(ordered);
         }
+
+        #endregion
     }
 }

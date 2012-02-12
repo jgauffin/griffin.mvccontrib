@@ -7,16 +7,16 @@ using Griffin.MvcContrib.Localization.Views;
 
 namespace SqlServerLocalization.Modules
 {
-	public class LocalizationModule : Module
-	{
-		protected override void Load(ContainerBuilder builder)
-		{
-			builder.RegisterControllers(typeof(LocalizeViewsController).Assembly);
-			builder.RegisterType<LocalizedModelMetadataProvider>().AsImplementedInterfaces().InstancePerLifetimeScope();
-			builder.RegisterType<LocalizedModelValidatorProvider>().AsImplementedInterfaces().InstancePerLifetimeScope();
-			builder.RegisterType<LocalizedStringProvider>().AsImplementedInterfaces().InstancePerLifetimeScope();
-		    builder.RegisterType<RepositoryViewLocalizer>().AsImplementedInterfaces().InstancePerHttpRequest();
-			base.Load(builder);
-		}
-	}
+    public class LocalizationModule : Module
+    {
+        protected override void Load(ContainerBuilder builder)
+        {
+            builder.RegisterControllers(typeof (LocalizeViewsController).Assembly);
+            builder.RegisterType<LocalizedModelMetadataProvider>().AsImplementedInterfaces().InstancePerLifetimeScope();
+            builder.RegisterType<LocalizedModelValidatorProvider>().AsImplementedInterfaces().InstancePerLifetimeScope();
+            builder.RegisterType<LocalizedStringProvider>().AsImplementedInterfaces().InstancePerLifetimeScope();
+            builder.RegisterType<ViewLocalizer>().AsImplementedInterfaces().InstancePerHttpRequest();
+            base.Load(builder);
+        }
+    }
 }

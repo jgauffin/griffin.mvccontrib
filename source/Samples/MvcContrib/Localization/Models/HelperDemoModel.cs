@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
 using System.Web.Mvc;
-using Griffin.MvcContrib.Html;
 
 namespace Localization.Models
 {
@@ -15,6 +11,4 @@ namespace Localization.Models
         public IEnumerable<int> Ages { get; set; }
         public int Age { get; set; }
     }
-
-
 }

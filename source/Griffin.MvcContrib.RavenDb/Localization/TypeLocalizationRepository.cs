@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
-using System.Resources;
 using System.Threading;
 using Griffin.MvcContrib.Localization;
 using Griffin.MvcContrib.Localization.Types;
+using Griffin.MvcContrib.Logging;
 using Raven.Client;
 
 namespace Griffin.MvcContrib.RavenDb.Localization
@@ -16,11 +15,11 @@ namespace Griffin.MvcContrib.RavenDb.Localization
     /// Used to translate different types (and their properties) 
     /// </summary>
     /// <remarks>
-    /// <para>You might want to specify <see cref="DefaultCulture"/>, en-us is used per default.</para>
+    /// <para>You might want to specify <see cref="DefaultUICulture"/>, en-us is used per default.</para>
     /// <para>
     /// Class is not thread safe and are expected to have a short lifetime (per scope)
     /// </para>
-    /// <para>Remember to set <see cref="DefaultCulture"/></para>
+    /// <para>Remember to set <see cref="DefaultUICulture"/></para>
     /// </remarks>
     public class TypeLocalizationRepository : ILocalizedTypesRepository, IDisposable
     {
@@ -30,7 +29,9 @@ namespace Griffin.MvcContrib.RavenDb.Localization
         private readonly IDocumentSession _documentSession;
 
         private readonly ILogger _logger = LogProvider.Current.GetLogger<TypeLocalizationRepository>();
-        private readonly LinkedList<TypeLocalizationDocument> _modifiedDocuments = new LinkedList<TypeLocalizationDocument>();
+
+        private readonly LinkedList<TypeLocalizationDocument> _modifiedDocuments =
+            new LinkedList<TypeLocalizationDocument>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TypeLocalizationRepository"/> class.
@@ -67,14 +68,14 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 
         private void CheckValidationPrompts()
         {
-            var language = GetOrCreateLanguage(DefaultCulture.Value);
-            var prompt = language.Get(typeof(RequiredAttribute), "class");
+            var language = GetOrCreateLanguage(DefaultUICulture.Value);
+            var prompt = language.Get(typeof (RequiredAttribute), "class");
             if (prompt != null)
                 return;
 
             var prompts =
-                ValidationAttributesStringProvider.Current.GetPrompts(DefaultCulture.Value).Select(
-                    p => new TypePrompt(DefaultCulture.Value, p)
+                ValidationAttributesStringProvider.Current.GetPrompts(DefaultUICulture.Value).Select(
+                    p => new TypePromptDocument(DefaultUICulture.Value, p)
                              {
                                  Text = p.TranslatedText
                              });
@@ -102,9 +103,10 @@ namespace Griffin.MvcContrib.RavenDb.Localization
             if (document == null)
             {
                 _logger.Debug("Failed to find document for " + culture.Name + ", creating it.");
-                var defaultLang = DefaultCulture.Is(culture)
-                                    ? new TypeLocalizationDocument { Id = culture.Name, Prompts = new List<TypePrompt>() }
-                                    : GetOrCreateLanguage(DefaultCulture.Value);
+                var defaultLang = DefaultUICulture.Is(culture)
+                                      ? new TypeLocalizationDocument
+                                            {Id = culture.Name, Prompts = new List<TypePromptDocument>()}
+                                      : GetOrCreateLanguage(DefaultUICulture.Value);
 
                 document = defaultLang.Clone(culture);
                 _documentSession.Store(document);
@@ -128,7 +130,8 @@ namespace Griffin.MvcContrib.RavenDb.Localization
         /// <returns>
         /// Collection of translations
         /// </returns>
-        public IEnumerable<TextPrompt> GetPrompts(CultureInfo cultureInfo, CultureInfo defaultCulture, SearchFilter filter)
+        public IEnumerable<TypePrompt> GetPrompts(CultureInfo cultureInfo, CultureInfo defaultCulture,
+                                                  SearchFilter filter)
         {
             var ourDocument = GetOrCreateLanguage(cultureInfo);
             if (defaultCulture == null || defaultCulture == cultureInfo)
@@ -138,7 +141,7 @@ namespace Griffin.MvcContrib.RavenDb.Localization
             var defaultDocument = GetOrCreateLanguage(defaultCulture);
             var defaultPrompts =
                 defaultDocument.Prompts.Except(ourDocument.Prompts, new PromptEqualityComparer()).Select(
-                    p => new TypePrompt(cultureInfo, p)
+                    p => new TypePromptDocument(cultureInfo, p)
                              {
                                  UpdatedAt =
                                      DateTime.Now,
@@ -158,9 +161,8 @@ namespace Griffin.MvcContrib.RavenDb.Localization
             var ourLang = new TypeLocalizationDocument
                               {
                                   Id = culture.Name
-
                               };
-            ourLang.Prompts = templateLang.Prompts.Select(p => new TypePrompt(culture, p)).ToList();
+            ourLang.Prompts = templateLang.Prompts.Select(p => new TypePromptDocument(culture, p)).ToList();
 
             lock (_modifiedDocuments)
             {
@@ -176,7 +178,7 @@ namespace Griffin.MvcContrib.RavenDb.Localization
         /// <returns>
         /// Prompt if found; otherwise <c>null</c>.
         /// </returns>
-        public TextPrompt GetPrompt(CultureInfo culture, TypePromptKey key)
+        public TypePrompt GetPrompt(CultureInfo culture, TypePromptKey key)
         {
             var language = GetOrCreateLanguage(culture);
             return (from p in language.Prompts
@@ -202,7 +204,7 @@ namespace Griffin.MvcContrib.RavenDb.Localization
             var language = GetOrCreateLanguage(culture);
             var prompt = (from p in language.Prompts
                           where p.LocaleId == culture.LCID && p.TextKey == key.ToString()
-                          select p).FirstOrDefault() ?? new TypePrompt
+                          select p).FirstOrDefault() ?? new TypePromptDocument
                                                             {
                                                                 AssemblyQualifiedName = type.AssemblyQualifiedName,
                                                                 FullTypeName = type.FullName,
@@ -246,6 +248,16 @@ namespace Griffin.MvcContrib.RavenDb.Localization
             _documentSession.SaveChanges();
         }
 
+        public void Delete(CultureInfo culture, TypePromptKey key)
+        {
+            if (culture == null) throw new ArgumentNullException("culture");
+            if (key == null) throw new ArgumentNullException("key");
+
+            var language = GetOrCreateLanguage(culture);
+            language.DeletePrompt(key);
+            _modifiedDocuments.AddLast(language);
+        }
+
 
         /// <summary>
         /// Get all languages that got partial or full translations.
@@ -258,25 +270,25 @@ namespace Griffin.MvcContrib.RavenDb.Localization
             return languages.ToList().Select(p => new CultureInfo(p));
         }
 
-        private static TextPrompt CreateTextPrompt(TypePrompt p)
+        private static TypePrompt CreateTextPrompt(TypePromptDocument p)
         {
             var type = Type.GetType(p.AssemblyQualifiedName);
             //var type = Type.GetType(string.Format("{0}, {1}", p.FullTypeName, p.AssemblyName), true);
-            return new TextPrompt
-                    {
-                        LocaleId = p.LocaleId,
-                        Subject = type,
-                        TextName = p.TextName,
-                        Key = new TypePromptKey(p.TextKey),
-                        TranslatedText = p.Text,
-                        UpdatedAt = p.UpdatedAt,
-                        UpdatedBy = p.UpdatedBy
-                    };
+            return new TypePrompt
+                       {
+                           LocaleId = p.LocaleId,
+                           Subject = type,
+                           TextName = p.TextName,
+                           Key = new TypePromptKey(p.TextKey),
+                           TranslatedText = p.Text,
+                           UpdatedAt = p.UpdatedAt,
+                           UpdatedBy = p.UpdatedBy
+                       };
         }
 
-        private class PromptEqualityComparer : IEqualityComparer<TypePrompt>
+        private class PromptEqualityComparer : IEqualityComparer<TypePromptDocument>
         {
-            #region IEqualityComparer<TypePrompt> Members
+            #region IEqualityComparer<TypePromptDocument> Members
 
             /// <summary>
             /// Determines whether the specified objects are equal.
@@ -285,7 +297,7 @@ namespace Griffin.MvcContrib.RavenDb.Localization
             /// true if the specified objects are equal; otherwise, false.
             /// </returns>
             /// <param name="x">The first object of type TypePrompt to compare.</param><param name="y">The second object of type TypePrompt to compare.</param>
-            public bool Equals(TypePrompt x, TypePrompt y)
+            public bool Equals(TypePromptDocument x, TypePromptDocument y)
             {
                 return x.TextKey == y.TextKey;
             }
@@ -297,7 +309,7 @@ namespace Griffin.MvcContrib.RavenDb.Localization
             /// A hash code for the specified object.
             /// </returns>
             /// <param name="obj">The <see cref="T:System.Object"/> for which a hash code is to be returned.</param><exception cref="T:System.ArgumentNullException">The type of <paramref name="obj"/> is a reference type and <paramref name="obj"/> is null.</exception>
-            public int GetHashCode(TypePrompt obj)
+            public int GetHashCode(TypePromptDocument obj)
             {
                 return obj.TextKey.GetHashCode();
             }

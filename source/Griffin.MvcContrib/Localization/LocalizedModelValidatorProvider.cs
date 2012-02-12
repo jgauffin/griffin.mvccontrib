@@ -20,175 +20,175 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
 using Griffin.MvcContrib.Localization.Types;
+using Griffin.MvcContrib.Logging;
 
 namespace Griffin.MvcContrib.Localization
 {
-	/// <summary>
-	/// Used to localize DatAnnotation attribute error messages
-	/// </summary>
-	/// <remarks>
-	/// Check for instance <see cref="ResourceStringProvider"/> to get a description about the actual localization process.
-	/// </remarks>
-	/// <example>
-	/// <code>
-	/// public class MvcApplication : System.Web.HttpApplication
-	/// {
-	///     protected void Application_Start()
-	///     {
-	///         var stringProvider = new ResourceStringProvider(ModelMetadataStrings.ResourceManager);
-	///         ModelValidatorProviders.Providers.Clear();
-	///         ModelValidatorProviders.Providers.Add(new LocalizedModelValidatorProvider(stringProvider));
-	///     }
-	/// }
-	/// </code>
-	/// </example>
-	public class LocalizedModelValidatorProvider : DataAnnotationsModelValidatorProvider
-	{
-		private ILocalizedStringProvider _stringProviderDontUsedirectly;
-		private ILogger _logger = LogProvider.Current.GetLogger<LocalizedModelValidatorProvider>();
+    /// <summary>
+    /// Used to localize DatAnnotation attribute error messages
+    /// </summary>
+    /// <remarks>
+    /// Check for instance <see cref="ResourceStringProvider"/> to get a description about the actual localization process.
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// public class MvcApplication : System.Web.HttpApplication
+    /// {
+    ///     protected void Application_Start()
+    ///     {
+    ///         var stringProvider = new ResourceStringProvider(ModelMetadataStrings.ResourceManager);
+    ///         ModelValidatorProviders.Providers.Clear();
+    ///         ModelValidatorProviders.Providers.Add(new LocalizedModelValidatorProvider(stringProvider));
+    ///     }
+    /// }
+    /// </code>
+    /// </example>
+    public class LocalizedModelValidatorProvider : DataAnnotationsModelValidatorProvider
+    {
+        private readonly ValidationAttributeAdapterFactory _adapterFactory = new ValidationAttributeAdapterFactory();
+        private readonly ILogger _logger = LogProvider.Current.GetLogger<LocalizedModelValidatorProvider>();
+        private ILocalizedStringProvider _stringProviderDontUsedirectly;
 
-		ValidationAttributeAdapterFactory _adapterFactory = new ValidationAttributeAdapterFactory();
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LocalizedModelValidatorProvider"/> class.
+        /// </summary>
+        /// <param name="stringProvider">The string provider.</param>
+        public LocalizedModelValidatorProvider(ILocalizedStringProvider stringProvider)
+        {
+            _stringProviderDontUsedirectly = stringProvider;
+        }
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="LocalizedModelValidatorProvider"/> class.
-		/// </summary>
-		/// <param name="stringProvider">The string provider.</param>
-		public LocalizedModelValidatorProvider(ILocalizedStringProvider stringProvider)
-		{
-			_stringProviderDontUsedirectly = stringProvider;
-		}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LocalizedModelValidatorProvider"/> class.
+        /// </summary>
+        /// <remarks>you need to register <see cref="ILocalizedStringProvider"/> in your IoC container or use
+        /// the other constructor.</remarks>
+        public LocalizedModelValidatorProvider()
+        {
+        }
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="LocalizedModelValidatorProvider"/> class.
-		/// </summary>
-		/// <remarks>you need to register <see cref="ILocalizedStringProvider"/> in your IoC container or use
-		/// the other constructor.</remarks>
-		public LocalizedModelValidatorProvider()
-		{
+        protected ILocalizedStringProvider Provider
+        {
+            get
+            {
+                return _stringProviderDontUsedirectly ??
+                       (_stringProviderDontUsedirectly =
+                        DependencyResolver.Current.GetService<ILocalizedStringProvider>());
+            }
+        }
 
-		}
-
-		class MyValidator : ModelValidator
-		{
-			private readonly ValidationAttribute _attribute;
-			private readonly string _errorMsg;
-			private readonly IEnumerable<ModelClientValidationRule> _create;
-
-			public MyValidator(ValidationAttribute attribute, string errorMsg, ModelMetadata metadata, ControllerContext controllerContext, IEnumerable<ModelClientValidationRule> create)
-				: base(metadata, controllerContext)
-			{
-				_attribute = attribute;
-				_errorMsg = errorMsg;
-				_create = create;
-			}
-
-			public override bool IsRequired
-			{
-				get
-				{
-					return _attribute is RequiredAttribute;
-				}
-			}
-
-			public override IEnumerable<ModelClientValidationRule> GetClientValidationRules()
-			{
-				return _create;
-			}
-
-			public override IEnumerable<ModelValidationResult> Validate(object container)
-			{
-				if (_attribute.IsValid(Metadata.Model))
-					yield break;
-
-				string errorMsg;
-				lock (_attribute)
-				{
-					_attribute.ErrorMessage = _errorMsg;
-					errorMsg = _attribute.FormatErrorMessage(Metadata.GetDisplayName());
-					_attribute.ErrorMessage = null;
-				}
-				yield return new ModelValidationResult { Message = errorMsg };
-			}
-		}
-
-		/// <summary>
-		/// Gets a list of validators.
-		/// </summary>
-		/// <param name="metadata">The metadata.</param>
-		/// <param name="context">The context.</param>
-		/// <param name="attributes">The list of validation attributes.</param>
-		/// <returns>
-		/// A list of validators.
-		/// </returns>
-		protected override IEnumerable<ModelValidator> GetValidators(ModelMetadata metadata, ControllerContext context,
-																	 IEnumerable<Attribute> attributes)
-		{
-			
-			var items = attributes.ToList();
-			if (AddImplicitRequiredAttributeForValueTypes && metadata.IsRequired && !items.Any(a => a is RequiredAttribute))
-				items.Add(new RequiredAttribute());
+        /// <summary>
+        /// Gets a list of validators.
+        /// </summary>
+        /// <param name="metadata">The metadata.</param>
+        /// <param name="context">The context.</param>
+        /// <param name="attributes">The list of validation attributes.</param>
+        /// <returns>
+        /// A list of validators.
+        /// </returns>
+        protected override IEnumerable<ModelValidator> GetValidators(ModelMetadata metadata, ControllerContext context,
+                                                                     IEnumerable<Attribute> attributes)
+        {
+            var items = attributes.ToList();
+            if (AddImplicitRequiredAttributeForValueTypes && metadata.IsRequired &&
+                !items.Any(a => a is RequiredAttribute))
+                items.Add(new RequiredAttribute());
 
 
-			var validators = new List<ModelValidator>();
-			foreach (var attr in items.OfType<ValidationAttribute>())
-			{
-				if (string.IsNullOrEmpty(attr.ErrorMessageResourceName) && string.IsNullOrEmpty(attr.ErrorMessage))
-				{
-				    var errorMessage =
-				        Provider.GetValidationString(attr.GetType(), metadata.ContainerType, metadata.PropertyName) ??
-				        Provider.GetValidationString(attr.GetType());
+            var validators = new List<ModelValidator>();
+            foreach (var attr in items.OfType<ValidationAttribute>())
+            {
+                if (string.IsNullOrEmpty(attr.ErrorMessageResourceName) && string.IsNullOrEmpty(attr.ErrorMessage))
+                {
+                    var errorMessage =
+                        Provider.GetValidationString(attr.GetType(), metadata.ContainerType, metadata.PropertyName) ??
+                        Provider.GetValidationString(attr.GetType());
+
+                    // we have not translated the attribute yet.
                     if (errorMessage == null)
                     {
-                        continue;
+                        _logger.Warning("Failed to find translation for " + attr.GetType().Name + " on " +
+                                        metadata.ContainerType + "." + metadata.PropertyName);
+
+
+                        if (CultureInfo.CurrentUICulture.Name.StartsWith("en"))
+                            errorMessage = ValidationAttributesStringProvider.Current.GetString(attr.GetType(),
+                                                                                              CultureInfo.CurrentUICulture);
+                        else
+                            errorMessage = string.Format("[{0}: {1}]", CultureInfo.CurrentUICulture.Name,
+                                                         attr.GetType().Name.Replace("Attribute", ""));
                     }
 
-					string formattedError = "";
-					try
-					{
-						lock (attr)
-						{
-							attr.ErrorMessage = errorMessage;
-							formattedError = attr.FormatErrorMessage(metadata.GetDisplayName());
-							attr.ErrorMessage = null;
-						}
-					}
-					catch (Exception err)
-					{
-						formattedError = err.Message;
-					}
+                    string formattedError;
+                    try
+                    {
+                        lock (attr)
+                        {
+                            attr.ErrorMessage = errorMessage;
+                            formattedError = attr.FormatErrorMessage(metadata.GetDisplayName());
+                            attr.ErrorMessage = null;
+                        }
+                    }
+                    catch (Exception err)
+                    {
+                        formattedError = err.Message;
+                    }
 
-					validators.Add(new MyValidator(attr, errorMessage, metadata, context, _adapterFactory.Create(attr, formattedError)));
-				}
-			}
+                    validators.Add(new MyValidator(attr, errorMessage, metadata, context,
+                                                   _adapterFactory.Create(attr, formattedError)));
+                }
+            }
 
-            return validators.Count == 0 ? base.GetValidators(metadata, context, attributes).ToList() : validators;
+            return validators;
+        }
 
+        #region Nested type: MyValidator
 
-		    // */
-			/*
-			var items = base.GetValidators(metadata, context);
-			foreach (var attr in items.OfType<ValidationAttribute>().Where(p => string.IsNullOrEmpty(p.ErrorMessageResourceName)))
-			{
-				if (attr.ErrorMessage != null)
-					_logger.Debug("Current message: " + attr.ErrorMessage);
-				var value = Provider.GetValidationString(attr.GetType());
-				_logger.Debug("Localized: " + value);
-				if (!string.IsNullOrEmpty(value))
-					attr.ErrorMessage = value;
-			}
-			return items;
-			*/
-		}
+        private class MyValidator : ModelValidator
+        {
+            private readonly ValidationAttribute _attribute;
+            private readonly IEnumerable<ModelClientValidationRule> _create;
+            private readonly string _errorMsg;
 
-		protected ILocalizedStringProvider Provider
-		{
-			get {
-			    return _stringProviderDontUsedirectly ??
-			           (_stringProviderDontUsedirectly = DependencyResolver.Current.GetService<ILocalizedStringProvider>());
-			}
-		}
-	}
+            public MyValidator(ValidationAttribute attribute, string errorMsg, ModelMetadata metadata,
+                               ControllerContext controllerContext, IEnumerable<ModelClientValidationRule> create)
+                : base(metadata, controllerContext)
+            {
+                _attribute = attribute;
+                _errorMsg = errorMsg;
+                _create = create;
+            }
+
+            public override bool IsRequired
+            {
+                get { return _attribute is RequiredAttribute; }
+            }
+
+            public override IEnumerable<ModelClientValidationRule> GetClientValidationRules()
+            {
+                return _create;
+            }
+
+            public override IEnumerable<ModelValidationResult> Validate(object container)
+            {
+                if (_attribute.IsValid(Metadata.Model))
+                    yield break;
+
+                string errorMsg;
+                lock (_attribute)
+                {
+                    _attribute.ErrorMessage = _errorMsg;
+                    errorMsg = _attribute.FormatErrorMessage(Metadata.GetDisplayName());
+                    _attribute.ErrorMessage = null;
+                }
+                yield return new ModelValidationResult { Message = errorMsg };
+            }
+        }
+
+        #endregion
+    }
 }

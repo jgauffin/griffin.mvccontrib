@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Configuration.Provider;
 using System.Linq;
-using System.Text;
 using Griffin.MvcContrib.Providers.Roles;
 using Raven.Client;
 

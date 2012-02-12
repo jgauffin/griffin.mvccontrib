@@ -5,13 +5,12 @@ using System.Web.Mvc;
 using Griffin.MvcContrib.Areas.Griffin.Models.LocalizeTypes;
 using Griffin.MvcContrib.Localization;
 using Griffin.MvcContrib.Localization.Types;
-using EditModel = Griffin.MvcContrib.Areas.Griffin.Models.LocalizeTypes.EditModel;
-using IndexModel = Griffin.MvcContrib.Areas.Griffin.Models.LocalizeTypes.IndexModel;
+using TypePrompt = Griffin.MvcContrib.Areas.Griffin.Models.LocalizeTypes.TypePrompt;
 
 namespace Griffin.MvcContrib.Areas.Griffin.Controllers
 {
     [Localized]
-    public class LocalizeTypesController : System.Web.Mvc.Controller
+    public class LocalizeTypesController : Controller
     {
         private readonly ILocalizedTypesRepository _repository;
 
@@ -25,22 +24,41 @@ namespace Griffin.MvcContrib.Areas.Griffin.Controllers
         {
             try
             {
-
-                _repository.CreateLanguage(new CultureInfo(lang), DefaultCulture.Value);
-                return RedirectToAction("Index", new { lang = lang });
+                _repository.CreateLanguage(new CultureInfo(lang), DefaultUICulture.Value);
+                return RedirectToAction("Index", new {lang});
             }
             catch (Exception err)
             {
                 ModelState.AddModelError("", err.Message);
-                var allPrompts = _repository.GetPrompts(CultureInfo.CurrentUICulture, DefaultCulture.Value, new SearchFilter());
+                var allPrompts = _repository.GetPrompts(CultureInfo.CurrentUICulture, DefaultUICulture.Value,
+                                                        new SearchFilter());
                 var model = new IndexModel
-                {
-                    Cultures = _repository.GetAvailableLanguages(),
-                    Prompts = allPrompts.Select(p => new TypePrompt(p))
-                };
+                                {
+                                    Cultures = _repository.GetAvailableLanguages(),
+                                    Prompts = allPrompts.Select(p => new TypePrompt(p))
+                                };
                 return View("Index", model);
             }
         }
+
+        public ActionResult MakeCommon(string id)
+        {
+            var key = new TypePromptKey(id);
+            var prompt = _repository.GetPrompt(CultureInfo.CurrentUICulture, key);
+            prompt.Subject = typeof (CommonPrompts);
+            _repository.Save(CultureInfo.CurrentUICulture, typeof (CommonPrompts), prompt.TextName,
+                             prompt.TranslatedText);
+            _repository.Delete(CultureInfo.CurrentUICulture, key);
+            return RedirectToAction("Index");
+        }
+
+        public ActionResult Delete(string id)
+        {
+            var key = new TypePromptKey(id);
+            _repository.Delete(CultureInfo.CurrentUICulture, key);
+            return RedirectToAction("Index");
+        }
+
 
         public ActionResult Index()
         {
@@ -50,7 +68,7 @@ namespace Griffin.MvcContrib.Areas.Griffin.Controllers
             var languges = _repository.GetAvailableLanguages();
 
             var prompts =
-                _repository.GetPrompts(CultureInfo.CurrentUICulture, DefaultCulture.Value, new SearchFilter()).Select(
+                _repository.GetPrompts(CultureInfo.CurrentUICulture, DefaultUICulture.Value, new SearchFilter()).Select(
                     p => new TypePrompt(p)).OrderBy(p => p.TypeName).
                     ToList();
             if (!showMetadata)
@@ -75,12 +93,14 @@ namespace Griffin.MvcContrib.Areas.Griffin.Controllers
         {
             var key = new TypePromptKey(id);
             var prompt = _repository.GetPrompt(CultureInfo.CurrentUICulture, key);
-            var defaultLang = _repository.GetPrompt(DefaultCulture.Value, key);
+            var defaultLang = _repository.GetPrompt(DefaultUICulture.Value, key);
             var model = new EditModel
                             {
                                 DefaultText = defaultLang != null ? defaultLang.TranslatedText : "",
                                 LocaleId = prompt.LocaleId,
-                                Path = string.Format("{0} / {1} / {2}", CultureInfo.CurrentUICulture.DisplayName, prompt.Subject.Name, prompt.TextName),
+                                Path =
+                                    string.Format("{0} / {1} / {2}", CultureInfo.CurrentUICulture.DisplayName,
+                                                  prompt.Subject.Name, prompt.TextName),
                                 Text = prompt.TranslatedText,
                                 TextKey = prompt.Key.ToString()
                             };

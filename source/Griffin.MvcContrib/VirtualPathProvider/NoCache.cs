@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Web.Caching;
+﻿using System.Web.Caching;
 
 namespace Griffin.MvcContrib.VirtualPathProvider
 {
@@ -18,12 +14,14 @@ namespace Griffin.MvcContrib.VirtualPathProvider
         /// </summary>
         private NoCache()
         {
-            
         }
 
         /// <summary>
         /// Gets current instance.
         /// </summary>
-        public static NoCache Instance { get { return _instance; } }
+        public static NoCache Instance
+        {
+            get { return _instance; }
+        }
     }
 }

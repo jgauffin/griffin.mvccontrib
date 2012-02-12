@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Griffin.MvcContrib.Areas.Griffin.Models.LocalizeTypes
+﻿namespace Griffin.MvcContrib.Areas.Griffin.Models.LocalizeTypes
 {
     public class EditModel
     {

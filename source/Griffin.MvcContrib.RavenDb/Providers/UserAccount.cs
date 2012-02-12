@@ -9,17 +9,21 @@ namespace Griffin.MvcContrib.RavenDb.Providers
 {
     public class UserAccount : IMembershipAccount, IUserWithRoles
     {
-		public UserAccount()
-		{
-			
-		}
-		public UserAccount(MembershipUser user)
-		{
-			UserName = user.UserName;
-			Email = user.Email;
-			PasswordQuestion = user.PasswordQuestion;
-			
-		}
+        private readonly List<string> _roles = new List<string>();
+
+        public UserAccount()
+        {
+        }
+
+        public UserAccount(MembershipUser user)
+        {
+            UserName = user.UserName;
+            Email = user.Email;
+            PasswordQuestion = user.PasswordQuestion;
+        }
+
+        #region IMembershipAccount Members
+
         public string UserName { get; set; }
         public string ApplicationName { get; set; }
         public string Email { get; set; }
@@ -34,17 +38,25 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         public bool IsLockedOut { get; set; }
         public bool IsOnline { get; set; }
         public DateTime LastLockedOutAt { get; set; }
-        public DateTime FailedPasswordWindowStartedAt { get;  set; }
-        public int FailedPasswordWindowAttemptCount { get;  set; }
-        public DateTime FailedPasswordAnswerWindowStartedAt { get;  set; }
-        public int FailedPasswordAnswerWindowAttemptCount { get;  set; }
+        public DateTime FailedPasswordWindowStartedAt { get; set; }
+        public int FailedPasswordWindowAttemptCount { get; set; }
+        public DateTime FailedPasswordAnswerWindowStartedAt { get; set; }
+        public int FailedPasswordAnswerWindowAttemptCount { get; set; }
 
         public DateTime CreatedAt { get; set; }
 
         public DateTime LastActivityAt { get; set; }
 
         [JsonIgnore]
-         object IMembershipAccount.Id { get { return UserName; } set{} }
+        object IMembershipAccount.Id
+        {
+            get { return UserName; }
+            set { }
+        }
+
+        #endregion
+
+        #region IUserWithRoles Members
 
         /// <summary>
         /// Gets a list of all roles that the user is a member of.
@@ -53,8 +65,6 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         {
             get { return _roles; }
         }
-
-        private List<string> _roles = new List<string>();
 
         /// <summary>
         /// Check if the user is a member of the specified role
@@ -66,6 +76,8 @@ namespace Griffin.MvcContrib.RavenDb.Providers
             return _roles.Contains(roleName);
         }
 
+        #endregion
+
         public void AddRole(string roleName)
         {
             _roles.Add(roleName);
@@ -76,6 +88,4 @@ namespace Griffin.MvcContrib.RavenDb.Providers
             _roles.Remove(roleName);
         }
     }
-
-   
 }

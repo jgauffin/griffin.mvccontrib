@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 
 namespace Griffin.MvcContrib.Areas.Griffin.Controllers
 {
-    public class GriffinHomeController : System.Web.Mvc.Controller
+    public class GriffinHomeController : Controller
     {
         //
         // GET: /Griffin/Home/
@@ -15,6 +11,5 @@ namespace Griffin.MvcContrib.Areas.Griffin.Controllers
         {
             return View();
         }
-
     }
 }

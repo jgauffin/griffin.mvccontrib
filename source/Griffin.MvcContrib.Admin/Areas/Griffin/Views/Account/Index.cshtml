@@ -1,5 +1,4 @@
-﻿@using Griffin.MvcContrib.Areas.Griffin.Models.Account
-@model ListModel
+﻿@model Griffin.MvcContrib.Areas.Griffin.Models.Account.ListModel
 @{
     ViewBag.Title = "Account administration";
 }
@@ -10,13 +9,13 @@
 @using (Html.BeginForm("ByName", null))
 {
     <text>Search by name</text>
-	<input type="text" name="value" id="byname" />
+    <input type="text" name="value" id="byname" />
     <input type="submit" value="Search" />
 }
 @using (Html.BeginForm("ByEmail", null))
 {
     <text>Search by email</text>
-	<input type="text" name="value" id="byemail" />
+    <input type="text" name="value" id="byemail" />
     <input type="submit" value="Search" />
 }
 

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Text;
 using System.Web.Mvc;
 
@@ -11,20 +10,20 @@ namespace Griffin.MvcContrib.Html
     /// </summary>
     public class NestedTagBuilder : TagBuilder
     {
-        private LinkedList<NestedTagBuilder> _children = new LinkedList<NestedTagBuilder>();
+        private readonly LinkedList<NestedTagBuilder> _children = new LinkedList<NestedTagBuilder>();
 
         public NestedTagBuilder(string tagName) : base(tagName)
         {
         }
 
-        public void AddChild(NestedTagBuilder builder)
-        {
-            _children.AddLast(builder);
-        }
-
         public IEnumerable<NestedTagBuilder> Children
         {
             get { return _children; }
+        }
+
+        public void AddChild(NestedTagBuilder builder)
+        {
+            _children.AddLast(builder);
         }
 
         public override string ToString()
@@ -45,7 +44,7 @@ namespace Griffin.MvcContrib.Html
                 case TagRenderMode.StartTag:
                     if (_children.Count == 0)
                         return base.ToString(renderMode);
-                    
+
                     sb.AppendLine(base.ToString(renderMode));
                     sb.Append(ChildrenToString());
                     return sb.ToString();
@@ -62,7 +61,8 @@ namespace Griffin.MvcContrib.Html
 
                 case TagRenderMode.SelfClosing:
                     if (_children.Count != 0)
-                        throw new InvalidOperationException("Tag has one or more child tags and cannot be self closed. HTML: " + ToString());
+                        throw new InvalidOperationException(
+                            "Tag has one or more child tags and cannot be self closed. HTML: " + ToString());
                     return base.ToString(renderMode);
 
                 default:
@@ -71,7 +71,7 @@ namespace Griffin.MvcContrib.Html
                     return base.ToString(renderMode);
             }
         }
-        
+
         /// <summary>
         /// Convert children HTML to a string.
         /// </summary>

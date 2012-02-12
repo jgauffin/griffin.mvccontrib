@@ -1,5 +1,5 @@
 ﻿@using HtmlHelpersDemo.Models
-@model ListModel
+@model HtmlHelpersDemo.Models.ListModel
 @{
     ViewBag.Title = "Index";
 }
@@ -22,6 +22,6 @@
 <p>
     Sorted by using the adapter "SortSelectsAdapter":
     <br />
-    @Html2.DropdownFor(model => model.CurrentUser.Speicies, new { @class = "sortMe" })
+    @Html2.DropdownFor(model => model.CurrentUser.Speicies, new {@class = "sortMe"})
     <br />
 </p>

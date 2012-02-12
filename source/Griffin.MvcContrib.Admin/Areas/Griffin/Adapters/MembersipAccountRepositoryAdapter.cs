@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Security;
-using Griffin.MvcContrib.Areas.Griffin.Controllers;
-using Griffin.MvcContrib.Providers.Membership;
-
-namespace Griffin.MvcContrib.Areas.Griffin.Adapters
+﻿namespace Griffin.MvcContrib.Areas.Griffin.Adapters
 {
-	/*
+    /*
 	/// <summary>
 	/// Adapter between the MembershipProvider and IAccountRepository interface
 	/// </summary>

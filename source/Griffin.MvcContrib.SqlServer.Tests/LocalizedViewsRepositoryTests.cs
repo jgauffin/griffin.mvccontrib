@@ -1,4 +1,3 @@
-using System;
 using System.Globalization;
 using Griffin.MvcContrib.Localization.Views;
 using Griffin.MvcContrib.SqlServer.Localization;
@@ -9,10 +8,13 @@ namespace Griffin.MvcContrib.SqlServer.Tests
     public class LocalizedViewsRepositoryTests
     {
         private const string ViewPath = "/myarea/controller/index";
-        private const string TextName = "This is a text that should be translated since it contains a lot of things and so.";
-        private ViewPromptKey _key = new ViewPromptKey(ViewPath, TextName);
-        private ConnectionFactory _factory = new ConnectionFactory();
-        private SqlLocalizedViewsRepository _repository;
+
+        private const string TextName =
+            "This is a text that should be translated since it contains a lot of things and so.";
+
+        private readonly ConnectionFactory _factory = new ConnectionFactory();
+        private readonly ViewPromptKey _key = new ViewPromptKey(ViewPath, TextName);
+        private readonly SqlLocalizedViewsRepository _repository;
 
         public LocalizedViewsRepositoryTests()
         {
@@ -42,7 +44,6 @@ namespace Griffin.MvcContrib.SqlServer.Tests
         [Fact]
         public void GetExisting()
         {
-
             _repository.Save(new CultureInfo(1053), ViewPath, TextName, "Förnamn");
 
             var prompt = _repository.GetPrompt(new CultureInfo(1053), _key);
@@ -72,6 +73,5 @@ namespace Griffin.MvcContrib.SqlServer.Tests
             Assert.NotNull(seprompt);
             Assert.NotEqual(enprompt.TranslatedText, seprompt.TranslatedText);
         }
-
     }
 }

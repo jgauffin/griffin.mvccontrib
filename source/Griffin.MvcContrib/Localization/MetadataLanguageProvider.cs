@@ -18,11 +18,9 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Reflection;
 using System.Web.Mvc;
 using Griffin.MvcContrib.Localization.Types;
 
@@ -34,6 +32,8 @@ namespace Griffin.MvcContrib.Localization
     /// <remarks>Is used when nothing else have been configured.</remarks>
     public class MetadataLanguageProvider : ILocalizedStringProvider
     {
+        #region ILocalizedStringProvider Members
+
         /// <summary>
         /// Get a localized string for a model property
         /// </summary>
@@ -60,7 +60,6 @@ namespace Griffin.MvcContrib.Localization
         {
             var metadata = ModelMetadataProviders.Current.GetMetadataForProperty(null, model, propertyName);
             return metadata.GetType().GetProperty(metadataName).GetValue(metadata, null).ToString();
-
         }
 
         /// <summary>
@@ -92,9 +91,11 @@ namespace Griffin.MvcContrib.Localization
         {
             var property = modelType.GetProperty(propertyName);
             if (property == null)
-                throw new InvalidOperationException(string.Format("Failed to find property {0} in {1}", propertyName, modelType.Name));
+                throw new InvalidOperationException(string.Format("Failed to find property {0} in {1}", propertyName,
+                                                                  modelType.Name));
 
-            var attribute = property.GetCustomAttributes(attributeType, true).Cast<ValidationAttribute>().FirstOrDefault();
+            var attribute =
+                property.GetCustomAttributes(attributeType, true).Cast<ValidationAttribute>().FirstOrDefault();
             if (attribute == null)
                 return null;
 
@@ -110,22 +111,27 @@ namespace Griffin.MvcContrib.Localization
         public string GetEnumString(Type enumType, string name)
         {
             DescriptionAttribute attribute;
-            if (enumType.GetCustomAttributes(typeof(FlagsAttribute), true).Any())
+            if (enumType.GetCustomAttributes(typeof (FlagsAttribute), true).Any())
             {
                 var entries = name.Split(',');
                 var description = new string[entries.Length];
                 for (var i = 0; i < entries.Length; i++)
                 {
                     var fieldInfo = enumType.GetField(entries[i].Trim());
-                    attribute = (DescriptionAttribute)fieldInfo.GetCustomAttributes(typeof(DescriptionAttribute), true).FirstOrDefault();
+                    attribute =
+                        (DescriptionAttribute)
+                        fieldInfo.GetCustomAttributes(typeof (DescriptionAttribute), true).FirstOrDefault();
                     description[i] = attribute != null ? attribute.Description : entries[i].Trim();
                 }
                 return string.Join(", ", description);
             }
 
             var memInfo = enumType.GetField(name);
-            attribute = (DescriptionAttribute)memInfo.GetCustomAttributes(typeof (DescriptionAttribute), true).FirstOrDefault();
+            attribute =
+                (DescriptionAttribute) memInfo.GetCustomAttributes(typeof (DescriptionAttribute), true).FirstOrDefault();
             return attribute == null ? name : attribute.Description;
         }
+
+        #endregion
     }
 }

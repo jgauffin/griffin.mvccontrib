@@ -37,10 +37,12 @@ namespace Griffin.MvcContrib.SqlServer.Localization
         /// <returns>
         /// A collection of prompts
         /// </returns>
-        public IEnumerable<TextPrompt> GetAllPrompts(CultureInfo culture, CultureInfo templateCulture, SearchFilter filter)
+        public IEnumerable<ViewPrompt> GetAllPrompts(CultureInfo culture, CultureInfo templateCulture,
+                                                     SearchFilter filter)
         {
             if (culture == null) throw new ArgumentNullException("culture");
-            var sql = "SELECT LocaleId, [Key], ViewPath, TextName, Value, UpdatedAt, UpdatedBy FROM LocalizedViews WHERE LocaleId = @LocaleId";
+            var sql =
+                "SELECT LocaleId, [Key], ViewPath, TextName, Value, UpdatedAt, UpdatedBy FROM LocalizedViews WHERE LocaleId = @LocaleId";
             using (var cmd = _db.Connection.CreateCommand())
             {
                 cmd.CommandText = sql;
@@ -72,36 +74,6 @@ namespace Griffin.MvcContrib.SqlServer.Localization
         }
 
         /// <summary>
-        /// Get all prompts that have not been translated
-        /// </summary>
-        /// <param name="culture">Culture to get translation for</param>
-        /// <param name="defaultCulture">Default language</param>
-        /// <returns>A collection of prompts</returns>
-        /// <remarks>
-        /// Default language will typically have more translated prompts than any other language
-        /// and is therefore used to detect missing prompts.
-        /// </remarks>
-        public IEnumerable<TextPrompt> GetNotLocalizedPrompts(CultureInfo culture, CultureInfo defaultCulture)
-        {
-            if (culture == null) throw new ArgumentNullException("culture");
-            if (defaultCulture == null) throw new ArgumentNullException("defaultCulture");
-            var sql =
-                string.Format(
-                    @"SELECT src.*
-                                        FROM LocalizedViews src 
-                                        LEFT JOIN LocalizedViews dst ON (src.TextKey = dst.TextKey) 
-                                        WHERE dst.LocaleId = {0} AND src.LocaleId = {1}
-                                        AND dst.Value IS NULL",
-                    defaultCulture.LCID, culture.LCID);
-
-            using (var cmd = _db.Connection.CreateCommand())
-            {
-                cmd.CommandText = sql;
-                return MapCollection(cmd);
-            }
-        }
-
-        /// <summary>
         /// Create a new language
         /// </summary>
         /// <param name="culture">Language to create</param>
@@ -119,7 +91,8 @@ namespace Griffin.MvcContrib.SqlServer.Localization
                 @"INSERT INTO LocalizedViews (LocaleId, ViewPath, TextName, [Key], Value, UpdatedAt, UpdatedBy)
                       SELECT {3}, ViewPath, TextName, [Key], Value, '{0}', '{1}'
                     FROM LocalizedViews WHERE LocaleId={2}";
-            sql = string.Format(sql, DateTime.Now, Thread.CurrentPrincipal.Identity.Name, defaultCulture.LCID, culture.LCID);
+            sql = string.Format(sql, DateTime.Now, Thread.CurrentPrincipal.Identity.Name, defaultCulture.LCID,
+                                culture.LCID);
             using (var cmd = _db.Connection.CreateCommand())
             {
                 cmd.CommandText = sql;
@@ -133,7 +106,7 @@ namespace Griffin.MvcContrib.SqlServer.Localization
         /// <param name="culture">Culture to get prompt for</param>
         /// <param name="key"> </param>
         /// <returns>Prompt if found; otherwise null.</returns>
-        public TextPrompt GetPrompt(CultureInfo culture, ViewPromptKey key)
+        public ViewPrompt GetPrompt(CultureInfo culture, ViewPromptKey key)
         {
             if (culture == null) throw new ArgumentNullException("culture");
             if (key == null) throw new ArgumentNullException("key");
@@ -167,14 +140,14 @@ namespace Griffin.MvcContrib.SqlServer.Localization
             if (textName == null) throw new ArgumentNullException("textName");
             if (translatedText == null) throw new ArgumentNullException("translatedText");
 
-            var prompt = new TextPrompt
-                            {
-                                Key = new ViewPromptKey(viewPath, textName),
-                                LocaleId = culture.LCID,
-                                TextName = textName,
-                                TranslatedText = translatedText,
-                                ViewPath = viewPath
-                            };
+            var prompt = new ViewPrompt
+                             {
+                                 Key = new ViewPromptKey(viewPath, textName),
+                                 LocaleId = culture.LCID,
+                                 TextName = textName,
+                                 TranslatedText = translatedText,
+                                 ViewPath = viewPath
+                             };
 
             if (Exists(culture, prompt.Key.ToString()))
                 Update(prompt);
@@ -210,24 +183,76 @@ namespace Griffin.MvcContrib.SqlServer.Localization
             if (textName == null) throw new ArgumentNullException("textName");
             if (translatedText == null) throw new ArgumentNullException("translatedText");
 
-            var prompt = new TextPrompt
-                            {
-                                Key = new ViewPromptKey(viewPath, textName),
-                                LocaleId = culture.LCID,
-                                TextName = textName,
-                                TranslatedText = translatedText,
-                                ViewPath = viewPath
-                            };
+            var prompt = new ViewPrompt
+                             {
+                                 Key = new ViewPromptKey(viewPath, textName),
+                                 LocaleId = culture.LCID,
+                                 TextName = textName,
+                                 TranslatedText = translatedText,
+                                 ViewPath = viewPath
+                             };
             Create(prompt);
+        }
+
+        /// <summary>
+        /// Delete a prompt
+        /// </summary>
+        /// <param name="cultureInfo">Culture to delete the prompt for</param>
+        /// <param name="key">Prompt key</param>
+        public void Delete(CultureInfo cultureInfo, ViewPromptKey key)
+        {
+            if (cultureInfo == null) throw new ArgumentNullException("cultureInfo");
+            if (key == null) throw new ArgumentNullException("key");
+
+            var sql =
+                @"DELETE FROM LocalizedViews WHERE LocaleId=@lcid AND [Key]=@key";
+
+            using (var cmd = _db.Connection.CreateCommand())
+            {
+                cmd.AddParameter("lcid", cultureInfo.LCID);
+                cmd.AddParameter("key", key.ToString());
+                cmd.CommandText = sql;
+                cmd.ExecuteNonQuery();
+            }
         }
 
         #endregion
 
-        private IEnumerable<TextPrompt> MapCollection(IDbCommand cmd)
+        /// <summary>
+        /// Get all prompts that have not been translated
+        /// </summary>
+        /// <param name="culture">Culture to get translation for</param>
+        /// <param name="defaultCulture">Default language</param>
+        /// <returns>A collection of prompts</returns>
+        /// <remarks>
+        /// Default language will typically have more translated prompts than any other language
+        /// and is therefore used to detect missing prompts.
+        /// </remarks>
+        public IEnumerable<ViewPrompt> GetNotLocalizedPrompts(CultureInfo culture, CultureInfo defaultCulture)
+        {
+            if (culture == null) throw new ArgumentNullException("culture");
+            if (defaultCulture == null) throw new ArgumentNullException("defaultCulture");
+            var sql =
+                string.Format(
+                    @"SELECT src.*
+                                        FROM LocalizedViews src 
+                                        LEFT JOIN LocalizedViews dst ON (src.TextKey = dst.TextKey) 
+                                        WHERE dst.LocaleId = {0} AND src.LocaleId = {1}
+                                        AND dst.Value IS NULL",
+                    defaultCulture.LCID, culture.LCID);
+
+            using (var cmd = _db.Connection.CreateCommand())
+            {
+                cmd.CommandText = sql;
+                return MapCollection(cmd);
+            }
+        }
+
+        private IEnumerable<ViewPrompt> MapCollection(IDbCommand cmd)
         {
             using (var reader = cmd.ExecuteReader())
             {
-                var items = new List<TextPrompt>();
+                var items = new List<ViewPrompt>();
                 while (reader.Read())
                 {
                     items.Add(MapEntity(reader));
@@ -236,19 +261,19 @@ namespace Griffin.MvcContrib.SqlServer.Localization
             }
         }
 
-        private TextPrompt MapEntity(IDataRecord record)
+        private ViewPrompt MapEntity(IDataRecord record)
         {
-            return new TextPrompt
-                    {
-                        LocaleId = (int) record["LocaleId"],
-                        ViewPath = record["ViewPath"].ToString(),
-                        Key = new ViewPromptKey(record["Key"].ToString()),
-                        TextName = record["TextName"].ToString(),
-                        TranslatedText = record["Value"].ToString(),
-                    };
+            return new ViewPrompt
+                       {
+                           LocaleId = (int) record["LocaleId"],
+                           ViewPath = record["ViewPath"].ToString(),
+                           Key = new ViewPromptKey(record["Key"].ToString()),
+                           TextName = record["TextName"].ToString(),
+                           TranslatedText = record["Value"].ToString(),
+                       };
         }
 
-        private void Update(TextPrompt prompt)
+        private void Update(ViewPrompt prompt)
         {
             var sql =
                 @"UPDATE LocalizedViews SET Value = @value, UpdatedAt = @updat, UpdatedBy = @updby WHERE LocaleId=@lcid AND [Key]=@key";
@@ -265,7 +290,7 @@ namespace Griffin.MvcContrib.SqlServer.Localization
             }
         }
 
-        private void Create(TextPrompt prompt)
+        private void Create(ViewPrompt prompt)
         {
             var sql =
                 @"INSERT INTO LocalizedViews (LocaleId, ViewPath, TextName, [Key], Value, UpdatedAt, UpdatedBy)

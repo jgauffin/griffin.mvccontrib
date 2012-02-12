@@ -6,15 +6,15 @@ using Module = Autofac.Module;
 
 namespace SqlServerLocalization.Modules
 {
-	public static class AutofacExtensions
-	{
-		public static void RegisterModules(this ContainerBuilder builder, Assembly assembly)
-		{
-			var moduleType = typeof (Module);
-			foreach (var type in assembly.GetTypes().Where(moduleType.IsAssignableFrom))
-			{
-				builder.RegisterModule((Module)Activator.CreateInstance(type));
-			}
-		}
-	}
+    public static class AutofacExtensions
+    {
+        public static void RegisterModules(this ContainerBuilder builder, Assembly assembly)
+        {
+            var moduleType = typeof (Module);
+            foreach (var type in assembly.GetTypes().Where(moduleType.IsAssignableFrom))
+            {
+                builder.RegisterModule((Module) Activator.CreateInstance(type));
+            }
+        }
+    }
 }

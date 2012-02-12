@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
-using Griffin.MvcContrib.Localization;
 
 namespace Griffin.MvcContrib.Html.Generators
 {
@@ -20,7 +19,7 @@ namespace Griffin.MvcContrib.Html.Generators
 
         protected override IEnumerable<NestedTagBuilder> GenerateTags()
         {
-            if (typeof(Enum).IsAssignableFrom(Context.Metadata.ModelType))
+            if (typeof (Enum).IsAssignableFrom(Context.Metadata.ModelType))
                 return GenerateForEnum(Context);
 
             return GenerateForSingleBox();
@@ -54,7 +53,6 @@ namespace Griffin.MvcContrib.Html.Generators
         {
             Setup(context);
 
-  
 
             var tags = new List<NestedTagBuilder>();
             foreach (var enumName in Enum.GetNames(Context.Metadata.ModelType))
@@ -64,7 +62,7 @@ namespace Griffin.MvcContrib.Html.Generators
                 if (!string.IsNullOrEmpty(Context.Metadata.Description))
                     tagBuilder.MergeAttribute("title", Context.Metadata.Description);
 
-                
+
                 if (GetValue() == enumName)
                     tagBuilder.MergeAttribute("checked", "checked");
 

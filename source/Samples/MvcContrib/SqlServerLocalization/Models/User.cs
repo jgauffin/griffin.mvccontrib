@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace SqlServerLocalization.Models
 {
@@ -17,6 +13,5 @@ namespace SqlServerLocalization.Models
         public string LastName { get; set; }
 
         public string Title { get; set; }
-
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 
 namespace Griffin.MvcContrib.Html
 {

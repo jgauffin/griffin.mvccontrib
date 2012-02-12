@@ -34,5 +34,4 @@ namespace Griffin.MvcContrib.Html.Generators
             return generatedTags;
         }
     }
-
 }

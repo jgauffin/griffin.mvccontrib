@@ -37,7 +37,8 @@ namespace Griffin.MvcContrib.SqlServer.Localization
         /// <returns>
         /// Collection of translations
         /// </returns>
-        public IEnumerable<TextPrompt> GetPrompts(CultureInfo cultureInfo, CultureInfo defaultCulture, SearchFilter filter)
+        public IEnumerable<TypePrompt> GetPrompts(CultureInfo cultureInfo, CultureInfo defaultCulture,
+                                                  SearchFilter filter)
         {
             var sql = "SELECT * FROM LocalizedTypes WHERE LocaleId = @LocaleId";
 
@@ -48,7 +49,7 @@ namespace Griffin.MvcContrib.SqlServer.Localization
 
                 using (var reader = cmd.ExecuteReader())
                 {
-                    var items = new List<TextPrompt>();
+                    var items = new List<TypePrompt>();
                     while (reader.Read())
                     {
                         items.Add(MapEntity(reader));
@@ -72,13 +73,13 @@ namespace Griffin.MvcContrib.SqlServer.Localization
                 @"INSERT INTO LocalizedTypes (LocaleId, TypeName, TextName, [Key], Value, UpdatedAt, UpdatedBy)
                       SELECT {3}, TypeName, TextName, [Key], Value, '{0}', '{1}'
                     FROM LocalizedTypes WHERE LocaleId={2}";
-            sql = string.Format(sql, DateTime.Now, Thread.CurrentPrincipal.Identity.Name, templateCulture.LCID, culture.LCID);
+            sql = string.Format(sql, DateTime.Now, Thread.CurrentPrincipal.Identity.Name, templateCulture.LCID,
+                                culture.LCID);
             using (var cmd = _db.Connection.CreateCommand())
             {
                 cmd.CommandText = sql;
                 cmd.ExecuteNonQuery();
             }
-
         }
 
         /// <summary>
@@ -89,7 +90,7 @@ namespace Griffin.MvcContrib.SqlServer.Localization
         /// <returns>
         /// Prompt if found; otherwise <c>null</c>.
         /// </returns>
-        public TextPrompt GetPrompt(CultureInfo culture, TypePromptKey key)
+        public TypePrompt GetPrompt(CultureInfo culture, TypePromptKey key)
         {
             var sql = "SELECT * FROM LocalizedTypes WHERE LocaleId = @LocaleId AND [Key] = @TextKey";
             using (var cmd = _db.Connection.CreateCommand())
@@ -123,7 +124,7 @@ namespace Griffin.MvcContrib.SqlServer.Localization
             if (!Exists(culture, key))
                 Create(culture, type, name, translatedText);
             else
-                Update(culture, key , translatedText);
+                Update(culture, key, translatedText);
         }
 
         /// <summary>
@@ -145,6 +146,50 @@ namespace Griffin.MvcContrib.SqlServer.Localization
                     }
                     return items;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Update translation
+        /// </summary>
+        /// <param name="culture">Culture that the prompt is for</param>
+        /// <param name="key">Unique key, in the specified language only, for the prompt to get)</param>
+        /// <param name="translatedText">Translated text string</param>
+        public void Update(CultureInfo culture, TypePromptKey key, string translatedText)
+        {
+            if (culture == null) throw new ArgumentNullException("culture");
+            if (key == null) throw new ArgumentNullException("key");
+            if (translatedText == null) throw new ArgumentNullException("translatedText");
+
+            var sql = "UPDATE LocalizedTypes SET Value=@value WHERE LocaleId = @lcid AND [Key] = @key";
+
+            using (var cmd = _db.Connection.CreateCommand())
+            {
+                cmd.CommandText = sql;
+                cmd.AddParameter("value", translatedText);
+                cmd.AddParameter("lcid", culture.LCID);
+                cmd.AddParameter("key", key.ToString());
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        /// <summary>
+        /// Delete a prompt.
+        /// </summary>
+        /// <param name="culture">Culture to delete prompt in</param>
+        /// <param name="key">Prompt key</param>
+        public void Delete(CultureInfo culture, TypePromptKey key)
+        {
+            if (culture == null) throw new ArgumentNullException("culture");
+            if (key == null) throw new ArgumentNullException("key");
+
+            var sql = "DELETE FROM LocalizedTypes WHERE [Key]=@textKey AND LocaleId = @lcid";
+            using (var cmd = _db.Connection.CreateCommand())
+            {
+                cmd.CommandText = sql;
+                cmd.AddParameter("lcid", culture.LCID);
+                cmd.AddParameter("textKey", key.ToString());
+                cmd.ExecuteNonQuery();
             }
         }
 
@@ -184,42 +229,18 @@ namespace Griffin.MvcContrib.SqlServer.Localization
             }
         }
 
-        private TextPrompt MapEntity(IDataRecord record)
+        private TypePrompt MapEntity(IDataRecord record)
         {
-            return new TextPrompt
-                    {
-                        LocaleId = (int) record["LocaleId"],
-                        SubjectTypeName = record["TypeName"].ToString(),
-                        Key = new TypePromptKey(record["Key"].ToString()),
-                        TextName = record["TextName"].ToString(),
-                        TranslatedText = record["Value"].ToString(),
-                        UpdatedAt = (DateTime) record["UpdatedAt"],
-                        UpdatedBy = record["UpdatedBy"].ToString()
-                    };
-        }
-
-        /// <summary>
-        /// Update translation
-        /// </summary>
-        /// <param name="culture">Culture that the prompt is for</param>
-        /// <param name="key">Unique key, in the specified language only, for the prompt to get)</param>
-        /// <param name="translatedText">Translated text string</param>
-        public void Update(CultureInfo culture, TypePromptKey key, string translatedText)
-        {
-            if (culture == null) throw new ArgumentNullException("culture");
-            if (key == null) throw new ArgumentNullException("key");
-            if (translatedText == null) throw new ArgumentNullException("translatedText");
-
-            var sql = "UPDATE LocalizedTypes SET Value=@value WHERE LocaleId = @lcid AND [Key] = @key";
-
-            using (var cmd = _db.Connection.CreateCommand())
-            {
-                cmd.CommandText = sql;
-                cmd.AddParameter("value", translatedText);
-                cmd.AddParameter("lcid", culture.LCID);
-                cmd.AddParameter("key", key.ToString());
-                cmd.ExecuteNonQuery();
-            }
+            return new TypePrompt
+                       {
+                           LocaleId = (int) record["LocaleId"],
+                           SubjectTypeName = record["TypeName"].ToString(),
+                           Key = new TypePromptKey(record["Key"].ToString()),
+                           TextName = record["TextName"].ToString(),
+                           TranslatedText = record["Value"].ToString(),
+                           UpdatedAt = (DateTime) record["UpdatedAt"],
+                           UpdatedBy = record["UpdatedBy"].ToString()
+                       };
         }
     }
 }

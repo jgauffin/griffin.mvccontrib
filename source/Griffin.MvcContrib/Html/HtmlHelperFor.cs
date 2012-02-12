@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq.Expressions;
 using System.Web.Mvc;
-using System.Globalization;
 using System.Web.Routing;
 
 namespace Griffin.MvcContrib.Html
 {
-    
     /// <summary>
     /// Base class for all new HtmlHelper facades.
     /// </summary>
     /// <typeparam name="TModel">Strongly typed model type ;)</typeparam>
     public class HtmlHelperFor<TModel>
     {
-        private readonly ViewDataDictionary<TModel> _viewData;
-        private readonly ViewContext _viewContext;
         private readonly HtmlHelper<TModel> _helper;
+        private readonly ViewContext _viewContext;
+        private readonly ViewDataDictionary<TModel> _viewData;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HtmlHelperFor&lt;TModel&gt;"/> class.
@@ -27,10 +26,34 @@ namespace Griffin.MvcContrib.Html
             _helper = helper;
             _viewData = new ViewDataDictionary<TModel>(helper.ViewDataContainer.ViewData);
             _viewContext = helper.ViewContext;
-            
         }
 
-        protected RouteCollection RouteCollection { get { return _helper.RouteCollection; } }
+        protected RouteCollection RouteCollection
+        {
+            get { return _helper.RouteCollection; }
+        }
+
+        /// <summary>
+        /// Type of model
+        /// </summary>
+        protected Type ModelType
+        {
+            get { return typeof (TModel); }
+        }
+
+        /// <summary>
+        /// Gets current view data
+        /// </summary>
+        protected ViewDataDictionary ViewData
+        {
+            get { return ViewContext.ViewData; }
+        }
+
+        public ViewContext ViewContext
+        {
+            get { return _viewContext; }
+        }
+
         /// <summary>
         /// Get value from the property
         /// </summary>
@@ -40,14 +63,6 @@ namespace Griffin.MvcContrib.Html
         protected TProperty GetPropertyValue<TProperty>(Expression<Func<TModel, TProperty>> property)
         {
             return property.Compile()(_viewData.Model);
-        }
-
-        /// <summary>
-        /// Type of model
-        /// </summary>
-        protected Type ModelType
-        {
-            get { return typeof(TModel); }
         }
 
         /// <summary>
@@ -80,19 +95,6 @@ namespace Griffin.MvcContrib.Html
         protected string GetFullHtmlFieldName(string name)
         {
             return ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(name);
-        }
-
-        /// <summary>
-        /// Gets current view data
-        /// </summary>
-        protected ViewDataDictionary ViewData
-        {
-            get { return ViewContext.ViewData; }
-        }
-
-        public ViewContext ViewContext
-        {
-            get { return _viewContext; }
         }
 
         /// <summary>
@@ -138,7 +140,7 @@ namespace Griffin.MvcContrib.Html
                     break;
             }
 
-            string propertyName = "";
+            var propertyName = "";
             while (me != null)
             {
                 propertyName += me.Member.Name + ".";
@@ -147,6 +149,5 @@ namespace Griffin.MvcContrib.Html
 
             return propertyName == "" ? "" : propertyName.Remove(propertyName.Length - 1, 1);
         }
-
     }
 }

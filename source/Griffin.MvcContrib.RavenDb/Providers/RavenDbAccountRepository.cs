@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Security;
 using Griffin.MvcContrib.Providers.Membership;
-using Griffin.MvcContrib.RavenDb.Providers;
 using Raven.Client;
 
 namespace Griffin.MvcContrib.RavenDb.Providers
@@ -14,7 +13,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
 
         public RavenDbAccountRepository(IDocumentSession documentSession)
         {
-            this._documentSession = documentSession;
+            _documentSession = documentSession;
         }
 
         #region Implementation of IAccountRepository
@@ -67,7 +66,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <returns>User if found; otherwise null.</returns>
         public IMembershipAccount GetById(object id)
         {
-            return _documentSession.Query<UserAccount>().Where(user => user.UserName == (string)id).FirstOrDefault();
+            return _documentSession.Query<UserAccount>().Where(user => user.UserName == (string) id).FirstOrDefault();
         }
 
         /// <summary>
@@ -77,7 +76,9 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <returns>User name if the specified email was found; otherwise null.</returns>
         public string GetUserNameByEmail(string email)
         {
-            return _documentSession.Query<UserAccount>().Where(user => user.Email == email).Select(user => user.UserName).FirstOrDefault();
+            return
+                _documentSession.Query<UserAccount>().Where(user => user.Email == email).Select(user => user.UserName).
+                    FirstOrDefault();
         }
 
         /// <summary>
@@ -106,8 +107,6 @@ namespace Griffin.MvcContrib.RavenDb.Providers
             }
         }
 
-        public event EventHandler<DeletedEventArgs> Deleted = delegate { };
-
         /// <summary>
         /// Get number of users that are online
         /// </summary>
@@ -131,21 +130,21 @@ namespace Griffin.MvcContrib.RavenDb.Providers
             return query.ToList();
         }
 
-    	/// <summary>
-    	/// Find new acounts that haven't been activated.
-    	/// </summary>
-    	/// <param name="pageIndex">zero based index</param>
-    	/// <param name="pageSize">Number of users per page</param>
-    	/// <param name="totalRecords">Total number of users</param>
-    	/// <returns>A collection of users or an empty collection if no users was found.</returns>
-    	public IEnumerable<IMembershipAccount> FindNewAccounts(int pageIndex, int pageSize, out int totalRecords)
-    	{
-			IQueryable<UserAccount> query = _documentSession.Query<UserAccount>().Where(p => p.IsApproved==false);
-			query = CountAndPageQuery(pageIndex, pageSize, out totalRecords, query);
-			return query.ToList();
-    	}
+        /// <summary>
+        /// Find new acounts that haven't been activated.
+        /// </summary>
+        /// <param name="pageIndex">zero based index</param>
+        /// <param name="pageSize">Number of users per page</param>
+        /// <param name="totalRecords">Total number of users</param>
+        /// <returns>A collection of users or an empty collection if no users was found.</returns>
+        public IEnumerable<IMembershipAccount> FindNewAccounts(int pageIndex, int pageSize, out int totalRecords)
+        {
+            var query = _documentSession.Query<UserAccount>().Where(p => p.IsApproved == false);
+            query = CountAndPageQuery(pageIndex, pageSize, out totalRecords, query);
+            return query.ToList();
+        }
 
-    	/// <summary>
+        /// <summary>
         /// Find by searching for user name
         /// </summary>
         /// <param name="usernameToMatch">User name (or partial user name)</param>
@@ -153,20 +152,12 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <param name="pageSize">Number of items per page</param>
         /// <param name="totalRecords">total number of records that partially matched the specified user name</param>
         /// <returns>A collection of users or an empty collection if no users was found.</returns>
-        public IEnumerable<IMembershipAccount> FindByUserName(string usernameToMatch, int pageIndex, int pageSize, out int totalRecords)
+        public IEnumerable<IMembershipAccount> FindByUserName(string usernameToMatch, int pageIndex, int pageSize,
+                                                              out int totalRecords)
         {
             var query = _documentSession.Query<UserAccount>().Where(user => user.UserName.Contains(usernameToMatch));
             query = CountAndPageQuery(pageIndex, pageSize, out totalRecords, query);
             return query.ToList();
-        }
-
-        private IQueryable<UserAccount> CountAndPageQuery(int pageIndex, int pageSize, out int totalRecords, IQueryable<UserAccount> query)
-        {
-            totalRecords = query.Count();
-            query = pageIndex == 1
-                        ? _documentSession.Query<UserAccount>().Take(pageSize)
-                        : _documentSession.Query<UserAccount>().Skip((pageIndex - 1)*pageSize).Take(pageSize);
-            return query;
         }
 
         /// <summary>
@@ -177,7 +168,8 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <param name="pageSize">Number of items per page</param>
         /// <param name="totalRecords">total number of records that matched the specified email</param>
         /// <returns>A collection of users or an empty collection if no users was found.</returns>
-        public IEnumerable<IMembershipAccount> FindByEmail(string emailToMatch, int pageIndex, int pageSize, out int totalRecords)
+        public IEnumerable<IMembershipAccount> FindByEmail(string emailToMatch, int pageIndex, int pageSize,
+                                                           out int totalRecords)
         {
             var query = _documentSession.Query<UserAccount>().Where(user => user.Email == emailToMatch);
             query = CountAndPageQuery(pageIndex, pageSize, out totalRecords, query);
@@ -196,6 +188,18 @@ namespace Griffin.MvcContrib.RavenDb.Providers
             return account;
         }
 
+        public event EventHandler<DeletedEventArgs> Deleted = delegate { };
+
+        private IQueryable<UserAccount> CountAndPageQuery(int pageIndex, int pageSize, out int totalRecords,
+                                                          IQueryable<UserAccount> query)
+        {
+            totalRecords = query.Count();
+            query = pageIndex == 1
+                        ? _documentSession.Query<UserAccount>().Take(pageSize)
+                        : _documentSession.Query<UserAccount>().Skip((pageIndex - 1)*pageSize).Take(pageSize);
+            return query;
+        }
+
         #endregion
     }
 
@@ -203,7 +207,6 @@ namespace Griffin.MvcContrib.RavenDb.Providers
     {
         public DeletedEventArgs(IMembershipAccount account)
         {
-            
         }
     }
 }

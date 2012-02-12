@@ -4,7 +4,7 @@
     ViewBag.Title = "Index";
 }
 <div class="griffin">
-    <script type="text/javascript" src="@Url.Content("~/Areas/Griffin/Scripts/griffin.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Areas/Griffin/Scripts/griffin.js")"> </script>
     @Html.ActionLink("View localization", "Index", "LocalizeViews") |
     @Html.ActionLink("Type localization", "Index", "LocalizeTypes")
     <h2>@CultureInfo.CurrentUICulture.DisplayName</h2>
@@ -52,22 +52,25 @@
                     @Html.DisplayFor(modelItem => item.TranslatedText)
                 </td>
                 <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.TextKey })
+                    @Html.ActionLink("Edit", "Edit", new {id = item.TextKey})
+                    @Html.ActionLink("Delete", "Delete", new {id = item.TextKey})
+                    @if (item.ModelName != "CommonPrompts")
+                    {
+                        @Html.ActionLink("Make common", "MakeCommon", new {id = item.TextKey}, new {title = "Use this phrase for all properties with the same name that haven't got a translation."})
+                    }
                 </td>
             </tr>
         }
     </table>
     <script type="text/javascript">
 
-
-
-        $(function () {
-            $('#ShowMetadata').click(function () {
+        $(function() {
+            $('#ShowMetadata').click(function() {
                 var show = this.checked ? 1 : 0;
                 setCookie('ShowMetadata', show, 365);
                 window.location.reload();
             });
-            $('#changeLanguage').change(function () {
+            $('#changeLanguage').change(function() {
                 window.location = '@Url.Action("Index")?lang=' + $('#changeLanguage').val();
             });
 

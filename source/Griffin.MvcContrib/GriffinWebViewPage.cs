@@ -1,10 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Globalization;
+﻿using System.Configuration;
 using System.Web.Mvc;
 using Griffin.MvcContrib.Html;
-using Griffin.MvcContrib.Localization;
 using Griffin.MvcContrib.Localization.Views;
 
 namespace Griffin.MvcContrib
@@ -12,21 +8,26 @@ namespace Griffin.MvcContrib
     /// <summary>
     /// Base page adding support for the new helpers in all views.
     /// </summary>
-    public abstract class GriffinWebViewPage<TModel> : WebViewPage<TModel> 
+    public abstract class GriffinWebViewPage<TModel> : WebViewPage<TModel>
     {
-        private FormHtmlHelper<TModel> _formHelper;
-        private TextHtmlHelper<TModel> _textHelper;
-        private IViewLocalizer _viewLocalizer;
+        private ViewLocalizer _viewLocalizer;
 
-        protected virtual IViewLocalizer ViewLocalizer
+        protected virtual ViewLocalizer ViewLocalizer
         {
             get
             {
                 if (_viewLocalizer == null)
                 {
-                    _viewLocalizer = DependencyResolver.Current.GetService<IViewLocalizer>();
+                    _viewLocalizer = DependencyResolver.Current.GetService<ViewLocalizer>();
                     if (_viewLocalizer == null)
-                        throw new ConfigurationErrorsException("You must register a IViewLocalizer in your container.");
+                    {
+                        var repos = DependencyResolver.Current.GetService<IViewLocalizationRepository>();
+                        if (repos == null)
+                            throw new ConfigurationErrorsException(
+                                "You must register a ViewLocalizer or an IViewLocalizationRepository in your container.");
+
+                        _viewLocalizer = new ViewLocalizer(repos);
+                    }
                 }
 
                 return _viewLocalizer;
@@ -36,19 +37,20 @@ namespace Griffin.MvcContrib
         /// <summary>
         /// Gets the text helper.
         /// </summary>
-        public TextHtmlHelper<TModel> Text
-        {
-            get { return _textHelper; }
-        }
+        public TextHtmlHelper<TModel> Text { get; private set; }
 
-        
 
         /// <summary>
         /// Gets the new HTML helpers.
         /// </summary>
-        public FormHtmlHelper<TModel> Html2
+        public FormHtmlHelper<TModel> Html2 { get; private set; }
+
+        /// <summary>
+        /// Gets select helper
+        /// </summary>
+        public SelectHelper Select
         {
-            get { return _formHelper; }
+            get { return new SelectHelper(); }
         }
 
         /// <summary>
@@ -57,8 +59,8 @@ namespace Griffin.MvcContrib
         public override void InitHelpers()
         {
             base.InitHelpers();
-            _formHelper = new FormHtmlHelper<TModel>(Html);
-            _textHelper = new TextHtmlHelper<TModel>(Html);
+            Html2 = new FormHtmlHelper<TModel>(Html);
+            Text = new TextHtmlHelper<TModel>(Html);
         }
 
 
@@ -71,12 +73,6 @@ namespace Griffin.MvcContrib
         {
             return MvcHtmlString.Create(ViewLocalizer.Translate(ViewContext.RouteData, text));
         }
-
-        public SelectHelper Select
-        {
-            get{return new SelectHelper();}
-        }
-
     }
 
     /// <summary>
@@ -84,20 +80,5 @@ namespace Griffin.MvcContrib
     /// </summary>
     public abstract class GriffinWebViewPage : WebViewPage
     {
-        
-    }
-
-    public class SelectHelper
-    {
-        public IEnumerable<SelectListItem> From<TTemplate>(IEnumerable items) where TTemplate : ISelectItemFormatter,new()
-        {
-            var selectItems = new List<SelectListItem>();
-            var template = new TTemplate();
-            foreach (var item in items)
-            {
-                selectItems.Add(template.Generate(item));
-            }
-            return selectItems;
-        }
     }
 }

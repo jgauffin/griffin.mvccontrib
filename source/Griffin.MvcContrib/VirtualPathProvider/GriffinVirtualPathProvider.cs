@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Web.Caching;
 using System.Web.Hosting;
+using Griffin.MvcContrib.Logging;
 
 namespace Griffin.MvcContrib.VirtualPathProvider
 {
@@ -16,7 +16,7 @@ namespace Griffin.MvcContrib.VirtualPathProvider
     {
         private static readonly GriffinVirtualPathProvider Instance = new GriffinVirtualPathProvider();
         private readonly List<IViewFileProvider> _fileProviders = new List<IViewFileProvider>();
-        private ILogger _logger = LogProvider.Current.GetLogger<GriffinVirtualPathProvider>();
+        private readonly ILogger _logger = LogProvider.Current.GetLogger<GriffinVirtualPathProvider>();
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="GriffinVirtualPathProvider" /> class.
@@ -40,6 +40,8 @@ namespace Griffin.MvcContrib.VirtualPathProvider
         public void Add(IViewFileProvider fileProvider)
         {
             if (fileProvider == null) throw new ArgumentNullException("fileProvider");
+
+            _logger.Debug("Added new provider: " + fileProvider);
             _fileProviders.Add(fileProvider);
         }
 
@@ -131,6 +133,4 @@ namespace Griffin.MvcContrib.VirtualPathProvider
             return base.GetFileHash(virtualPath, virtualPathDependencies);
         }
     }
-
-
 }

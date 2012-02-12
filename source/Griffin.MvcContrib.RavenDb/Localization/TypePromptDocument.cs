@@ -7,13 +7,13 @@ namespace Griffin.MvcContrib.RavenDb.Localization
     /// <summary>
     /// Document used to store localization entry in RavenDb.
     /// </summary>
-    public class TypePrompt
+    public class TypePromptDocument
     {
-        public TypePrompt()
+        public TypePromptDocument()
         {
         }
 
-        public TypePrompt(string key, Type modelType, string propertyName, CultureInfo culture)
+        public TypePromptDocument(string key, Type modelType, string propertyName, CultureInfo culture)
         {
             if (key == null) throw new ArgumentNullException("key");
             if (propertyName == null) throw new ArgumentNullException("propertyName");
@@ -26,7 +26,7 @@ namespace Griffin.MvcContrib.RavenDb.Localization
             LocaleId = culture.LCID;
         }
 
-        public TypePrompt(CultureInfo culture, TextPrompt prompt)
+        public TypePromptDocument(CultureInfo culture, TypePrompt prompt)
         {
             if (culture == null) throw new ArgumentNullException("culture");
             if (prompt == null) throw new ArgumentNullException("prompt");
@@ -41,7 +41,7 @@ namespace Griffin.MvcContrib.RavenDb.Localization
             Text = prompt.TranslatedText;
         }
 
-        public TypePrompt(CultureInfo culture, TypePrompt prompt)
+        public TypePromptDocument(CultureInfo culture, TypePromptDocument prompt)
         {
             if (culture == null) throw new ArgumentNullException("culture");
             if (prompt == null) throw new ArgumentNullException("prompt");

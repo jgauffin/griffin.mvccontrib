@@ -10,6 +10,8 @@ namespace Griffin.MvcContrib.Html
     {
         private readonly string _textPropertyName;
         private readonly string _valuePropertyName;
+        private Func<object, object> _idGetter;
+        private Func<object, object> _titleGetter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReflectiveSelectItemFormatter"/> class.
@@ -22,11 +24,13 @@ namespace Griffin.MvcContrib.Html
             _valuePropertyName = valuePropertyName;
         }
 
+        #region ISelectItemFormatter Members
+
         public SelectListItem Generate(object item)
         {
             if (_idGetter == null)
             {
-                _idGetter= CreateDelegate(item.GetType(), _valuePropertyName);
+                _idGetter = CreateDelegate(item.GetType(), _valuePropertyName);
                 _titleGetter = CreateDelegate(item.GetType(), _textPropertyName);
             }
 
@@ -37,21 +41,21 @@ namespace Griffin.MvcContrib.Html
                        };
         }
 
+        #endregion
+
         private static Func<object, object> CreateDelegate(Type itemType, string propertyName)
         {
             var propertyInfo = itemType.GetProperty(propertyName);
             if (propertyInfo == null)
-                throw new InvalidOperationException("Failed to get a readable '" + propertyName + "' property for type " + itemType.FullName);
+                throw new InvalidOperationException("Failed to get a readable '" + propertyName + "' property for type " +
+                                                    itemType.FullName);
 
             var getMethod = propertyInfo.GetGetMethod();
             if (getMethod == null)
-                throw new InvalidOperationException("Failed to get a readable '" + propertyName + "' property for type " + itemType.FullName);
+                throw new InvalidOperationException("Failed to get a readable '" + propertyName + "' property for type " +
+                                                    itemType.FullName);
 
             return instance => getMethod.Invoke(instance, null);
         }
-
-        private Func<object, object> _idGetter;
-        private Func<object, object> _titleGetter;
-
     }
 }

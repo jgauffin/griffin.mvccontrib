@@ -11,7 +11,6 @@ namespace Griffin.MvcContrib.Html
         public IdNameFormatter()
             : base("Id", "Name")
         {
-
         }
     }
 }

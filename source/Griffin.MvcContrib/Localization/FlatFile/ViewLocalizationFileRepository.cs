@@ -5,8 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Json;
 using System.Web.Hosting;
+using Griffin.MvcContrib.Localization.Views;
 
-namespace Griffin.MvcContrib.Localization.Views
+namespace Griffin.MvcContrib.Localization.FlatFile
 {
     /// <summary>
     /// Uses files to store translated view strings
@@ -22,14 +23,12 @@ namespace Griffin.MvcContrib.Localization.Views
     /// <see cref="Serialize"/> and <see cref="Deserialize"/>.
     /// </para>
     /// </remarks>
-    public class ViewLocalizationFileRepository : IViewLocalizationRepository
+    public class ViewLocalizationFileRepository
     {
         private static readonly object WriteLock = new object();
 
-        private readonly Dictionary<CultureInfo, TextPromptCollection> _languages =
-            new Dictionary<CultureInfo, TextPromptCollection>();
-
-        #region IViewLocalizationRepository Members
+        private readonly Dictionary<CultureInfo, ViewPromptCollection> _languages =
+            new Dictionary<CultureInfo, ViewPromptCollection>();
 
         /// <summary>
         /// Get all prompts that have been created for an language
@@ -40,7 +39,8 @@ namespace Griffin.MvcContrib.Localization.Views
         /// <returns>
         /// A collection of prompts
         /// </returns>
-        public IEnumerable<TextPrompt> GetAllPrompts(CultureInfo culture, CultureInfo templateCulture, SearchFilter filter)
+        public IEnumerable<ViewPrompt> GetAllPrompts(CultureInfo culture, CultureInfo templateCulture,
+                                                     SearchFilter filter)
         {
             if (culture == null) throw new ArgumentNullException("culture");
             if (filter == null) throw new ArgumentNullException("filter");
@@ -51,7 +51,7 @@ namespace Griffin.MvcContrib.Localization.Views
 
             var defaultLanguage = GetLanguage(templateCulture);
             var missing = defaultLanguage.Except(ourLanguage, new PromptEqualityComparer())
-                .Select(p => new TextPrompt(culture.LCID, p));
+                .Select(p => new ViewPrompt(culture.LCID, p));
             return ourLanguage.Union(missing);
         }
 
@@ -62,8 +62,8 @@ namespace Griffin.MvcContrib.Localization.Views
         /// <param name="templateCulture">Language to use as a template</param>
         public void CreateLanguage(CultureInfo culture, CultureInfo templateCulture)
         {
-            var prompts = GetLanguage(templateCulture).Select(p => new TextPrompt(culture.LCID, p));
-            var newLanguage = new TextPromptCollection(culture);
+            var prompts = GetLanguage(templateCulture).Select(p => new ViewPrompt(culture.LCID, p));
+            var newLanguage = new ViewPromptCollection(culture);
             newLanguage.AddRange(prompts);
             lock (_languages)
             {
@@ -114,7 +114,7 @@ namespace Griffin.MvcContrib.Localization.Views
         /// <returns>
         /// Prompt if found; otherwise null.
         /// </returns>
-        public TextPrompt GetPrompt(CultureInfo culture, ViewPromptKey key)
+        public ViewPrompt GetPrompt(CultureInfo culture, ViewPromptKey key)
         {
             var prompts = GetLanguage(CultureInfo.CurrentUICulture);
             return prompts.Get(key);
@@ -139,7 +139,7 @@ namespace Griffin.MvcContrib.Localization.Views
             var thePrompt = prompts.Get(key);
             if (thePrompt == null)
             {
-                prompts.Add(new TextPrompt
+                prompts.Add(new ViewPrompt
                                 {
                                     Key = key,
                                     LocaleId = culture.LCID,
@@ -180,19 +180,19 @@ namespace Griffin.MvcContrib.Localization.Views
             if (translatedText == null) throw new ArgumentNullException("translatedText");
 
             var key = new ViewPromptKey(viewPath, textName);
-            var prompt = new TextPrompt
-                            {
-                                Key = key,
-                                TranslatedText = translatedText,
-                                LocaleId = culture.LCID,
-                                TextName = textName,
-                                ViewPath = viewPath
-                            };
+            var prompt = new ViewPrompt
+                             {
+                                 Key = key,
+                                 TranslatedText = translatedText,
+                                 LocaleId = culture.LCID,
+                                 TextName = textName,
+                                 ViewPath = viewPath
+                             };
             var language = GetLanguage(culture);
             if (language == null)
             {
-                var prompts = GetAllPrompts(culture, DefaultCulture.Value, new SearchFilter());
-                var collection = new TextPromptCollection(culture);
+                var prompts = GetAllPrompts(culture, DefaultUICulture.Value, new SearchFilter());
+                var collection = new ViewPromptCollection(culture);
                 collection.AddRange(prompts);
 
                 // dont forget to translate
@@ -210,9 +210,17 @@ namespace Griffin.MvcContrib.Localization.Views
             SaveLanguage(culture, language);
         }
 
-        #endregion
+        public void Delete(CultureInfo culture, ViewPromptKey key)
+        {
+            var language = GetLanguage(culture);
+            if (language != null)
+            {
+                language.Delete(key);
+                SaveLanguage(culture, language);
+            }
+        }
 
-        protected TextPromptCollection LoadLanguage(CultureInfo culture)
+        protected ViewPromptCollection LoadLanguage(CultureInfo culture)
         {
             var filename = GetFullPath(culture);
             if (!File.Exists(filename))
@@ -220,7 +228,7 @@ namespace Griffin.MvcContrib.Localization.Views
 
             using (var stream = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
-                var prompts = new TextPromptCollection(culture);
+                var prompts = new ViewPromptCollection(culture);
                 var items = Deserialize(stream);
                 prompts.AddRange(items);
                 return prompts;
@@ -232,7 +240,7 @@ namespace Griffin.MvcContrib.Localization.Views
         /// </summary>
         /// <param name="stream">Stream to serialize to</param>
         /// <param name="prompts">Prompts to serialize</param>
-        protected virtual void Serialize(Stream stream, List<TextPrompt> prompts)
+        protected virtual void Serialize(Stream stream, List<ViewPrompt> prompts)
         {
             var serializer = new DataContractJsonSerializer(prompts.GetType());
             serializer.WriteObject(stream, prompts);
@@ -243,13 +251,13 @@ namespace Griffin.MvcContrib.Localization.Views
         /// </summary>
         /// <param name="stream">Stream containing serialized items</param>
         /// <returns>Collection of items (or an empty collection)</returns>
-        protected virtual IEnumerable<TextPrompt> Deserialize(Stream stream)
+        protected virtual IEnumerable<ViewPrompt> Deserialize(Stream stream)
         {
             if (stream.Length == 0)
-                return new List<TextPrompt>();
-            
-            var serializer = new DataContractJsonSerializer(typeof(List<TextPrompt>));
-            return (IEnumerable<TextPrompt>)serializer.ReadObject(stream);
+                return new List<ViewPrompt>();
+
+            var serializer = new DataContractJsonSerializer(typeof (List<ViewPrompt>));
+            return (IEnumerable<ViewPrompt>) serializer.ReadObject(stream);
         }
 
         private string GetFullPath(CultureInfo culture)
@@ -257,9 +265,9 @@ namespace Griffin.MvcContrib.Localization.Views
             return HostingEnvironment.MapPath(string.Format(@"~/App_Data/ViewLocalization.{0}.dat", culture.Name));
         }
 
-        protected TextPromptCollection GetLanguage(CultureInfo culture)
+        protected ViewPromptCollection GetLanguage(CultureInfo culture)
         {
-            TextPromptCollection prompts;
+            ViewPromptCollection prompts;
             if (_languages.TryGetValue(culture, out prompts))
                 return prompts;
 
@@ -271,7 +279,7 @@ namespace Griffin.MvcContrib.Localization.Views
                 prompts = LoadLanguage(culture);
                 if (prompts == null)
                 {
-                    prompts = new TextPromptCollection(culture);
+                    prompts = new ViewPromptCollection(culture);
                     _languages.Add(culture, prompts);
                 }
             }
@@ -279,11 +287,13 @@ namespace Griffin.MvcContrib.Localization.Views
             return prompts;
         }
 
-        private void SaveLanguage(CultureInfo cultureInfo, IEnumerable<TextPrompt> prompts)
+        private void SaveLanguage(CultureInfo cultureInfo, IEnumerable<ViewPrompt> prompts)
         {
             lock (WriteLock)
             {
-                using (var stream = new FileStream(GetFullPath(cultureInfo), FileMode.Create, FileAccess.Write, FileShare.None))
+                using (
+                    var stream = new FileStream(GetFullPath(cultureInfo), FileMode.Create, FileAccess.Write,
+                                                FileShare.None))
                 {
                     Serialize(stream, prompts.ToList());
                 }
@@ -292,9 +302,9 @@ namespace Griffin.MvcContrib.Localization.Views
 
         #region Nested type: PromptEqualityComparer
 
-        private class PromptEqualityComparer : IEqualityComparer<TextPrompt>
+        private class PromptEqualityComparer : IEqualityComparer<ViewPrompt>
         {
-            #region IEqualityComparer<TextPrompt> Members
+            #region IEqualityComparer<ViewPrompt> Members
 
             /// <summary>
             /// Determines whether the specified objects are equal.
@@ -302,8 +312,8 @@ namespace Griffin.MvcContrib.Localization.Views
             /// <returns>
             /// true if the specified objects are equal; otherwise, false.
             /// </returns>
-            /// <param name="x">The first object of type TextPrompt to compare.</param><param name="y">The second object of type TextPrompt to compare.</param>
-            public bool Equals(TextPrompt x, TextPrompt y)
+            /// <param name="x">The first object of type ViewPrompt to compare.</param><param name="y">The second object of type ViewPrompt to compare.</param>
+            public bool Equals(ViewPrompt x, ViewPrompt y)
             {
                 return x.Key == y.Key;
             }
@@ -315,7 +325,7 @@ namespace Griffin.MvcContrib.Localization.Views
             /// A hash code for the specified object.
             /// </returns>
             /// <param name="obj">The <see cref="T:System.Object"/> for which a hash code is to be returned.</param><exception cref="T:System.ArgumentNullException">The type of <paramref name="obj"/> is a reference type and <paramref name="obj"/> is null.</exception>
-            public int GetHashCode(TextPrompt obj)
+            public int GetHashCode(ViewPrompt obj)
             {
                 return obj.Key.GetHashCode();
             }

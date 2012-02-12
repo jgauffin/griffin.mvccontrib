@@ -9,9 +9,8 @@ namespace Griffin.MvcContrib.Html
         /// Initializes a new instance of the <see cref="IdTitleFormatter"/> class.
         /// </summary>
         public IdTitleFormatter()
-            :base("Id", "Title")
+            : base("Id", "Title")
         {
-            
         }
     }
 }

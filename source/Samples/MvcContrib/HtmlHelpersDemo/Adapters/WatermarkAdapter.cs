@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Griffin.MvcContrib.Html;
+﻿using Griffin.MvcContrib.Html;
 
 namespace HtmlHelpersDemo.Adapters
 {
     public class WatermarkAdapter : IFormItemAdapter
     {
+        #region IFormItemAdapter Members
+
         /// <summary>
         /// Process a tag
         /// </summary>
@@ -16,10 +14,14 @@ namespace HtmlHelpersDemo.Adapters
         {
             // there is a "Watermark" metadata but it cannot currently be set.
             // unless you are using a custom metadata provider like the one in the localization demo.
-            if (string.IsNullOrEmpty(context.Metadata.Description) || !context.TagBuilder.Attributes.ContainsKey("class") || !context.TagBuilder.Attributes["class"].Contains("watermark"))
+            if (string.IsNullOrEmpty(context.Metadata.Description) ||
+                !context.TagBuilder.Attributes.ContainsKey("class") ||
+                !context.TagBuilder.Attributes["class"].Contains("watermark"))
                 return;
 
             context.TagBuilder.MergeAttribute("title", "Watermark:" + context.Metadata.Description);
         }
+
+        #endregion
     }
 }

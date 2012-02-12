@@ -80,6 +80,5 @@ namespace Griffin.MvcContrib.Localization.Types
         /// <param name="name">Name of the value to translation for</param>
         /// <returns>Translated name if found; otherwise null.</returns>
         string GetEnumString(Type enumType, string name);
-
     }
 }

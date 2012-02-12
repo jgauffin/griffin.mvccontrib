@@ -19,7 +19,7 @@ namespace Griffin.MvcContrib.VirtualPathProvider
         /// <example>
         /// HostingEnvironment.RegisterVirtualPathProvider(GriffinVirtualPathProvider.Current);
         /// 
-		/// var embeddedProvider = new EmbeddedViewFileProvider();
+        /// var embeddedProvider = new EmbeddedViewFileProvider();
         /// embeddedProvider.Add(new NamespaceMapping(typeof (GriffinHomeController).Assembly, "Griffin.MvcContrib"));
         /// 
         /// GriffinVirtualPathProvider.Current.Add(embeddedProvider);

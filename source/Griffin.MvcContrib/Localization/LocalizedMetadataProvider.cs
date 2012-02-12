@@ -19,6 +19,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Web.Mvc;
 using Griffin.MvcContrib.Localization.Types;
 
@@ -68,7 +69,8 @@ namespace Griffin.MvcContrib.Localization
 
         private ILocalizedStringProvider Provider
         {
-            get {
+            get
+            {
                 return _stringProviderDontUseDirectly ??
                        (_stringProviderDontUseDirectly =
                         DependencyResolver.Current.GetService<ILocalizedStringProvider>());
@@ -94,7 +96,11 @@ namespace Griffin.MvcContrib.Localization
                 return metadata;
 
             if (metadata.DisplayName == null)
+            {
                 metadata.DisplayName = Translate(containerType, propertyName);
+                if (!DefaultUICulture.IsActive && metadata.DisplayName == null)
+                    metadata.DisplayName = string.Format("[{0}: {1}]", CultureInfo.CurrentUICulture.Name, propertyName);
+            }
 
             if (metadata.Watermark == null)
                 metadata.Watermark = Translate(containerType, propertyName, "Watermark");

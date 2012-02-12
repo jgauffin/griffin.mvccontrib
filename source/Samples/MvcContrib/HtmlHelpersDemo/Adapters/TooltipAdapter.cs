@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Griffin.MvcContrib.Html;
+﻿using Griffin.MvcContrib.Html;
 
 namespace HtmlHelpersDemo.Adapters
 {
@@ -11,6 +7,8 @@ namespace HtmlHelpersDemo.Adapters
     /// </summary>
     public class TooltipAdapter : IFormItemAdapter
     {
+        #region IFormItemAdapter Members
+
         /// <summary>
         /// Process a tag
         /// </summary>
@@ -22,5 +20,7 @@ namespace HtmlHelpersDemo.Adapters
 
             context.TagBuilder.MergeAttribute("title", context.Metadata.Description);
         }
+
+        #endregion
     }
 }

@@ -6,12 +6,13 @@
 
 <h2>Index</h2>
 
-<script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
-<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"> </script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"> </script>
 
 The textbox editor isn't special in any way other than it invokes the adapters.
 
-@using (Html.BeginForm()) {
+@using (Html.BeginForm())
+{
     @Html.ValidationSummary(true)
     <fieldset>
         <legend>User</legend>
@@ -22,7 +23,7 @@ The textbox editor isn't special in any way other than it invokes the adapters.
             @Html.LabelFor(model => model.FirstName)
         </div>
         <div class="editor-field">
-            @Html2.TextBoxFor(model => model.FirstName, new { @class = "watermark" })
+            @Html2.TextBoxFor(model => model.FirstName, new {@class = "watermark"})
             @Html.ValidationMessageFor(model => model.FirstName)
         </div>
 

@@ -20,9 +20,9 @@ namespace Griffin.MvcContrib.Html.Generators
 
         protected override IEnumerable<NestedTagBuilder> GenerateTags()
         {
-            if (typeof(Enum).IsAssignableFrom(Context.Metadata.ModelType))
-                return GenerateForEnum(Context); 
-            
+            if (typeof (Enum).IsAssignableFrom(Context.Metadata.ModelType))
+                return GenerateForEnum(Context);
+
             var selectContext = Context as SelectContext;
             if (selectContext == null)
                 throw new InvalidOperationException("Only SelectContext is supported.");
@@ -31,7 +31,7 @@ namespace Griffin.MvcContrib.Html.Generators
 
             var value = GetValue();
             tagBuilder.AddChildren(GenerateOptions(selectContext.ListItems, value, selectContext.Formatter));
-            return new[] { tagBuilder };
+            return new[] {tagBuilder};
         }
 
 
@@ -57,7 +57,7 @@ namespace Griffin.MvcContrib.Html.Generators
                 selectTag.AddChild(tagBuilder);
             }
 
-            return new []{selectTag};
+            return new[] {selectTag};
         }
     }
 }

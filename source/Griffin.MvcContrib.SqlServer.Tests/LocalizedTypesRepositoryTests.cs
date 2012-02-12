@@ -7,8 +7,8 @@ namespace Griffin.MvcContrib.SqlServer.Tests
 {
     public class LocalizedTypesRepositoryTests
     {
-        private ConnectionFactory _factory = new ConnectionFactory();
-        private SqlLocalizedTypesRepository _repository ;
+        private readonly ConnectionFactory _factory = new ConnectionFactory();
+        private readonly SqlLocalizedTypesRepository _repository;
 
         public LocalizedTypesRepositoryTests()
         {
@@ -18,7 +18,8 @@ namespace Griffin.MvcContrib.SqlServer.Tests
         [Fact]
         public void GetNonExistant()
         {
-            var p = _repository.GetPrompt(new CultureInfo(1053), new TypePromptKey(typeof (TestType), "FirstNameOrSomething"));
+            var p = _repository.GetPrompt(new CultureInfo(1053),
+                                          new TypePromptKey(typeof (TestType), "FirstNameOrSomething"));
             Assert.Null(p);
         }
 
@@ -38,7 +39,7 @@ namespace Griffin.MvcContrib.SqlServer.Tests
         public void GetExisting()
         {
             var key = new TypePromptKey(typeof (TestType), "FirstName");
-            _repository.Save(new CultureInfo(1053),  typeof(TestType), "FirstName", "Förnamn");
+            _repository.Save(new CultureInfo(1053), typeof (TestType), "FirstName", "Förnamn");
 
             var prompt = _repository.GetPrompt(new CultureInfo(1053), key);
             Assert.NotNull(prompt);
@@ -48,7 +49,7 @@ namespace Griffin.MvcContrib.SqlServer.Tests
         [Fact]
         public void Update()
         {
-            var key = new TypePromptKey(typeof(TestType), "FirstName");
+            var key = new TypePromptKey(typeof (TestType), "FirstName");
             _repository.Update(new CultureInfo(1053), key, "Förrenammne");
             var prompt = _repository.GetPrompt(new CultureInfo(1053), key);
             Assert.NotNull(prompt);
@@ -58,9 +59,9 @@ namespace Griffin.MvcContrib.SqlServer.Tests
         [Fact]
         public void TwoLanguages()
         {
-            var key = new TypePromptKey(typeof(TestType), "FirstName");
-            _repository.Save(new CultureInfo(1033), typeof(TestType), "FirstName", "FirstName");
-            _repository.Save(new CultureInfo(1053), typeof(TestType), "FirstName", "Förnamn");
+            var key = new TypePromptKey(typeof (TestType), "FirstName");
+            _repository.Save(new CultureInfo(1033), typeof (TestType), "FirstName", "FirstName");
+            _repository.Save(new CultureInfo(1053), typeof (TestType), "FirstName", "Förnamn");
 
 
             var enprompt = _repository.GetPrompt(new CultureInfo(1033), key);
@@ -69,6 +70,5 @@ namespace Griffin.MvcContrib.SqlServer.Tests
             Assert.NotNull(seprompt);
             Assert.NotEqual(enprompt.TranslatedText, seprompt.TranslatedText);
         }
-
     }
 }

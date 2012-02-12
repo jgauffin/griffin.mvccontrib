@@ -9,7 +9,7 @@ namespace Griffin.MvcContrib.Localization
     /// <remarks>
     ///   The default culture will not get translation missing tags etc.
     /// </remarks>
-    public static class DefaultCulture
+    public static class DefaultUICulture
     {
         private static CultureInfo _culture = new CultureInfo(1033);
 
@@ -47,12 +47,21 @@ namespace Griffin.MvcContrib.Localization
         }
 
         /// <summary>
+        /// Reset to framework default culture (1033)
+        /// </summary>
+        internal static void Reset()
+        {
+            _culture = new CultureInfo(1033);
+        }
+
+        /// <summary>
         ///   Sets the specified culture.
         /// </summary>
         /// <param name="culture"> The culture. </param>
         public static void Set(CultureInfo culture)
         {
             if (culture == null) throw new ArgumentNullException("culture");
+
             _culture = culture;
         }
 
@@ -63,6 +72,8 @@ namespace Griffin.MvcContrib.Localization
         /// <returns></returns>
         public static bool Is(CultureInfo culture)
         {
+            if (culture == null) throw new ArgumentNullException("culture");
+
             if (culture.Name.Length > _culture.Name.Length)
                 return culture.Name.StartsWith(_culture.Name);
             return _culture.Name.StartsWith(culture.Name);

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using Griffin.MvcContrib.Localization;
 using Griffin.MvcContrib.Localization.Views;
+using Griffin.MvcContrib.Logging;
 using Raven.Client;
 
 namespace Griffin.MvcContrib.RavenDb.Localization
@@ -12,7 +13,7 @@ namespace Griffin.MvcContrib.RavenDb.Localization
     /// <summary>
     /// RavenDB repository for view localizations
     /// </summary>
-    /// <remarks>Remember to set <see cref="DefaultCulture"/></remarks>
+    /// <remarks>Remember to set <see cref="DefaultUICulture"/></remarks>
     public class ViewLocalizationRepository : IViewLocalizationRepository, IDisposable
     {
         private static readonly Dictionary<int, ViewLocalizationDocument> Cache =
@@ -21,7 +22,9 @@ namespace Griffin.MvcContrib.RavenDb.Localization
         private readonly IDocumentSession _documentSession;
 
         private readonly ILogger _logger = LogProvider.Current.GetLogger<ViewLocalizationRepository>();
-        private readonly LinkedList<ViewLocalizationDocument> _modifiedDocuments = new LinkedList<ViewLocalizationDocument>();
+
+        private readonly LinkedList<ViewLocalizationDocument> _modifiedDocuments =
+            new LinkedList<ViewLocalizationDocument>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ViewLocalizationRepository"/> class.
@@ -43,7 +46,8 @@ namespace Griffin.MvcContrib.RavenDb.Localization
         /// <returns>
         /// A collection of prompts
         /// </returns>
-        public IEnumerable<TextPrompt> GetAllPrompts(CultureInfo culture, CultureInfo templateCulture, SearchFilter filter)
+        public IEnumerable<ViewPrompt> GetAllPrompts(CultureInfo culture, CultureInfo templateCulture,
+                                                     SearchFilter filter)
         {
             return GetOrCreateLanguage(culture, templateCulture).Prompts.Select(CreatePrompt);
         }
@@ -59,14 +63,13 @@ namespace Griffin.MvcContrib.RavenDb.Localization
             var newLang = new ViewLocalizationDocument
                               {
                                   Id = culture.Name,
-                                  Prompts = sourceLang.Prompts.Select(p => new ViewPrompt(p)
+                                  Prompts = sourceLang.Prompts.Select(p => new ViewPromptDocument(p)
                                                                                {
                                                                                    UpdatedAt = DateTime.Now,
                                                                                    UpdatedBy =
                                                                                        Thread.CurrentPrincipal.Identity.
                                                                                        Name,
                                                                                    Text = ""
-
                                                                                }).ToList()
                               };
 
@@ -88,43 +91,12 @@ namespace Griffin.MvcContrib.RavenDb.Localization
         }
 
         /// <summary>
-        /// Get all prompts that have not been translated
-        /// </summary>
-        /// <param name="culture">Culture to get translation for</param>
-        /// <param name="defaultCulture">Default language</param>
-        /// <returns>A collection of prompts</returns>
-        /// <remarks>
-        /// Default language will typically have more translated prompts than any other language
-        /// and is therefore used to detect missing prompts.
-        /// </remarks>
-        public IEnumerable<TextPrompt> GetNotLocalizedPrompts(CultureInfo culture, CultureInfo defaultCulture)
-        {
-            var sourceLanguage = GetOrCreateLanguage(defaultCulture, defaultCulture);
-            var ourLanguage = GetLanguage(culture) ?? new ViewLocalizationDocument {Id = culture.Name};
-            return sourceLanguage.Prompts.Except(ourLanguage.Prompts.Where(p => p.Text != "")).Select(CreatePrompt).ToList();
-        }
-
-        /// <summary>
-        /// Create a new language
-        /// </summary>
-        /// <param name="culture">Language to create</param>
-        /// <param name="defaultCulture">The default culture.</param>
-        /// <remarks>
-        /// Will add empty entries for all known entries. Entries are added automatically to the default language when views
-        /// are visited. This is NOT done for any other language.
-        /// </remarks>
-        public void CreateForLanguage(CultureInfo culture, CultureInfo defaultCulture)
-        {
-            GetOrCreateLanguage(culture, defaultCulture);
-        }
-
-        /// <summary>
         /// Get a text using it's name.
         /// </summary>
         /// <param name="culture">Culture to get prompt for</param>
         /// <param name="key"> </param>
         /// <returns>Prompt if found; otherwise null.</returns>
-        public TextPrompt GetPrompt(CultureInfo culture, ViewPromptKey key)
+        public ViewPrompt GetPrompt(CultureInfo culture, ViewPromptKey key)
         {
             if (culture == null) throw new ArgumentNullException("culture");
             if (key == null) throw new ArgumentNullException("key");
@@ -161,15 +133,15 @@ namespace Griffin.MvcContrib.RavenDb.Localization
             }
             else
             {
-                dbPrompt = new ViewPrompt
-                            {
-                                LocaleId = culture.LCID,
-                                TextName = textName,
-                                Text = translatedText,
-                                TextKey = key.ToString(),
-                                UpdatedAt = DateTime.Now,
-                                UpdatedBy = Thread.CurrentPrincipal.Identity.Name
-                            };
+                dbPrompt = new ViewPromptDocument
+                               {
+                                   LocaleId = culture.LCID,
+                                   TextName = textName,
+                                   Text = translatedText,
+                                   TextKey = key.ToString(),
+                                   UpdatedAt = DateTime.Now,
+                                   UpdatedBy = Thread.CurrentPrincipal.Identity.Name
+                               };
                 language.Prompts.Add(dbPrompt);
             }
 
@@ -204,22 +176,68 @@ namespace Griffin.MvcContrib.RavenDb.Localization
             if (dbPrompt == null)
             {
                 _logger.Debug("Created prompt " + viewPath + " " + textName);
-                dbPrompt = new ViewPrompt
-                            {
-                                TextKey = key.ToString(),
-                                Text = translatedText,
-                                LocaleId = culture.LCID,
-                                TextName = textName,
-                                ViewPath = viewPath,
-                                UpdatedAt = DateTime.Today,
-                                UpdatedBy = Thread.CurrentPrincipal.Identity.Name
-                            };
+                dbPrompt = new ViewPromptDocument
+                               {
+                                   TextKey = key.ToString(),
+                                   Text = translatedText,
+                                   LocaleId = culture.LCID,
+                                   TextName = textName,
+                                   ViewPath = viewPath,
+                                   UpdatedAt = DateTime.Today,
+                                   UpdatedBy = Thread.CurrentPrincipal.Identity.Name
+                               };
                 language.Prompts.Add(dbPrompt);
             }
             else
             {
                 dbPrompt.Text = translatedText;
             }
+            SetAsModified(language);
+        }
+
+        public void Delete(CultureInfo culture, ViewPromptKey key)
+        {
+            var language = GetOrCreateLanguage(culture, culture);
+            if (language != null && language.Delete(key))
+            {
+                SetAsModified(language);
+            }
+        }
+
+        /// <summary>
+        /// Get all prompts that have not been translated
+        /// </summary>
+        /// <param name="culture">Culture to get translation for</param>
+        /// <param name="defaultCulture">Default language</param>
+        /// <returns>A collection of prompts</returns>
+        /// <remarks>
+        /// Default language will typically have more translated prompts than any other language
+        /// and is therefore used to detect missing prompts.
+        /// </remarks>
+        public IEnumerable<ViewPrompt> GetNotLocalizedPrompts(CultureInfo culture, CultureInfo defaultCulture)
+        {
+            var sourceLanguage = GetOrCreateLanguage(defaultCulture, defaultCulture);
+            var ourLanguage = GetLanguage(culture) ?? new ViewLocalizationDocument {Id = culture.Name};
+            return
+                sourceLanguage.Prompts.Except(ourLanguage.Prompts.Where(p => p.Text != "")).Select(CreatePrompt).ToList();
+        }
+
+        /// <summary>
+        /// Create a new language
+        /// </summary>
+        /// <param name="culture">Language to create</param>
+        /// <param name="defaultCulture">The default culture.</param>
+        /// <remarks>
+        /// Will add empty entries for all known entries. Entries are added automatically to the default language when views
+        /// are visited. This is NOT done for any other language.
+        /// </remarks>
+        public void CreateForLanguage(CultureInfo culture, CultureInfo defaultCulture)
+        {
+            GetOrCreateLanguage(culture, defaultCulture);
+        }
+
+        private void SetAsModified(ViewLocalizationDocument language)
+        {
             lock (_modifiedDocuments)
             {
                 if (!_modifiedDocuments.Contains(language))
@@ -235,8 +253,9 @@ namespace Griffin.MvcContrib.RavenDb.Localization
                 _logger.Debug("Failed to find language " + culture.Name + ", creating it using " + defaultCulture.Name +
                               " as a template.");
                 var defaultLang = culture.LCID == defaultCulture.LCID
-                                    ? new ViewLocalizationDocument {Id = culture.Name, Prompts = new List<ViewPrompt>()}
-                                    : GetOrCreateLanguage(defaultCulture, defaultCulture);
+                                      ? new ViewLocalizationDocument
+                                            {Id = culture.Name, Prompts = new List<ViewPromptDocument>()}
+                                      : GetOrCreateLanguage(defaultCulture, defaultCulture);
 
                 document = defaultLang.Clone(culture);
                 _documentSession.Store(document);
@@ -268,16 +287,16 @@ namespace Griffin.MvcContrib.RavenDb.Localization
             return document;
         }
 
-        private TextPrompt CreatePrompt(ViewPrompt prompt)
+        private ViewPrompt CreatePrompt(ViewPromptDocument prompt)
         {
-            return new TextPrompt
-                    {
-                        ViewPath = prompt.ViewPath,
-                        LocaleId = prompt.LocaleId,
-                        Key = new ViewPromptKey(prompt.TextKey),
-                        TextName = prompt.TextName,
-                        TranslatedText = prompt.Text
-                    };
+            return new ViewPrompt
+                       {
+                           ViewPath = prompt.ViewPath,
+                           LocaleId = prompt.LocaleId,
+                           Key = new ViewPromptKey(prompt.TextKey),
+                           TextName = prompt.TextName,
+                           TranslatedText = prompt.Text
+                       };
         }
 
         #endregion

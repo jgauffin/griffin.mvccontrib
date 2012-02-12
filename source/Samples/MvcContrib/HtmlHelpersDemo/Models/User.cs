@@ -1,24 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
 
 namespace HtmlHelpersDemo.Models
 {
     public class User
     {
-        public int Id { get; set; }
-
-        [Display(Description = "Simulate watermark metadata")]
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public int Age { get; set; }
-        public Speicies Speicies { get; set; }
-        public bool IsHappy { get { return true; } }
-
-        public static readonly User[] Users = new User[]
+        public static readonly User[] Users = new[]
                                                   {
                                                       new User
                                                           {
@@ -45,6 +32,20 @@ namespace HtmlHelpersDemo.Models
                                                               Speicies = Speicies.Marsian
                                                           },
                                                   };
+
+        public int Id { get; set; }
+
+        [Display(Description = "Simulate watermark metadata")]
+        public string FirstName { get; set; }
+
+        public string LastName { get; set; }
+        public int Age { get; set; }
+        public Speicies Speicies { get; set; }
+
+        public bool IsHappy
+        {
+            get { return true; }
+        }
     }
 
     public enum Speicies
@@ -54,7 +55,6 @@ namespace HtmlHelpersDemo.Models
         Cat,
         Cow,
 
-        [Description("From planet Mars")]
-        Marsian
+        [Description("From planet Mars")] Marsian
     }
 }

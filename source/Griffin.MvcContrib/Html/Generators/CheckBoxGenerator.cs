@@ -8,12 +8,11 @@ namespace Griffin.MvcContrib.Html.Generators
     {
         public CheckBoxGenerator(ViewContext viewContext) : base(viewContext)
         {
-            
         }
 
         protected override IEnumerable<NestedTagBuilder> GenerateTags()
         {
-            if (typeof(Enum).IsAssignableFrom(Context.Metadata.ModelType))
+            if (typeof (Enum).IsAssignableFrom(Context.Metadata.ModelType))
                 return GenerateForEnum(Context);
 
             return GenerateForSingleBox();

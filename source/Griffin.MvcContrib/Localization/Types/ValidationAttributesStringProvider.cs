@@ -58,20 +58,20 @@ namespace Griffin.MvcContrib.Localization.Types
         /// </summary>
         /// <param name="culture">Culture to get prompts for</param>
         /// <returns>A colleciton of prompts (or an empty collection)</returns>
-        public virtual IEnumerable<TextPrompt> GetPrompts(CultureInfo culture)
+        public virtual IEnumerable<TypePrompt> GetPrompts(CultureInfo culture)
         {
             if (culture == null) throw new ArgumentNullException("culture");
 
-            var prompts = new List<TextPrompt>();
+            var prompts = new List<TypePrompt>();
 
-            var baseAttribte = typeof(ValidationAttribute);
+            var baseAttribte = typeof (ValidationAttribute);
             var attributes =
-                typeof(RequiredAttribute).Assembly.GetTypes().Where(
+                typeof (RequiredAttribute).Assembly.GetTypes().Where(
                     p => baseAttribte.IsAssignableFrom(p) && !p.IsAbstract).ToList();
             foreach (var type in attributes)
             {
                 var key = new TypePromptKey(type, "class");
-                var typePrompt = new TextPrompt
+                var typePrompt = new TypePrompt
                                      {
                                          Key = key,
                                          LocaleId = CultureInfo.CurrentUICulture.LCID,
@@ -84,7 +84,7 @@ namespace Griffin.MvcContrib.Localization.Types
                 var value = GetString(type, culture);
                 if (value != null)
                 {
-                    typePrompt.TranslatedText = DefaultCulture.IsActive ? value : "";
+                    typePrompt.TranslatedText = DefaultUICulture.IsActive ? value : "";
                 }
 
                 prompts.Add(typePrompt);
@@ -99,9 +99,11 @@ namespace Griffin.MvcContrib.Localization.Types
         /// <param name="type">Validation attribute type.</param>
         /// <param name="culture">Culture to get for </param>
         /// <returns>Text if found; otherwise null</returns>
-        protected virtual string GetString(Type type, CultureInfo culture)
+        public virtual string GetString(Type type, CultureInfo culture)
         {
-            return _resourceManager == null ? null : _resourceManager.GetString(string.Format("{0}_ValidationError", type.Name), culture);
+            return _resourceManager == null
+                       ? null
+                       : _resourceManager.GetString(string.Format("{0}_ValidationError", type.Name), culture);
         }
     }
 }

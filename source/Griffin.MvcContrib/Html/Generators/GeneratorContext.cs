@@ -8,7 +8,8 @@ namespace Griffin.MvcContrib.Html.Generators
     /// </summary>
     public class GeneratorContext
     {
-        public GeneratorContext(string name, string fullName, ModelMetadata metadata, RouteValueDictionary htmlAttributes)
+        public GeneratorContext(string name, string fullName, ModelMetadata metadata,
+                                RouteValueDictionary htmlAttributes)
         {
             Name = name;
             FullName = fullName;

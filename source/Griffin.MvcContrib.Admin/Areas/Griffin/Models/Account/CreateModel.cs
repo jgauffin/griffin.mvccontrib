@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace Griffin.MvcContrib.Areas.Griffin.Models.Account
+﻿namespace Griffin.MvcContrib.Areas.Griffin.Models.Account
 {
-	public class CreateModel
-	{
-		public string Password { get; set; }
-		public string UserName { get; set; }
-		public string Email { get; set; }
-		public bool IsApproved { get; set; }
-		public string PasswordQuestion { get; set; }
-		public string PasswordAnswer { get; set; }
-
-	}
+    public class CreateModel
+    {
+        public string Password { get; set; }
+        public string UserName { get; set; }
+        public string Email { get; set; }
+        public bool IsApproved { get; set; }
+        public string PasswordQuestion { get; set; }
+        public string PasswordAnswer { get; set; }
+    }
 }

@@ -1,15 +1,7 @@
-﻿using Griffin.MvcContrib.Providers.Roles;
-
-namespace Griffin.MvcContrib.RavenDb.Providers
+﻿namespace Griffin.MvcContrib.RavenDb.Providers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-
-    public class Role 
+    public class Role
     {
-
         /// <summary>
         /// Gets role name
         /// </summary>

@@ -68,11 +68,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Localization\TypeLocalizationDocument.cs" />
-    <Compile Include="Localization\TypePrompt.cs" />
+    <Compile Include="Localization\TypePromptDocument.cs" />
     <Compile Include="Localization\TypeLocalizationRepository.cs" />
     <Compile Include="Localization\ViewLocalizationDocument.cs" />
     <Compile Include="Localization\ViewLocalizationRepository.cs" />
-    <Compile Include="Localization\ViewPrompt.cs" />
+    <Compile Include="Localization\ViewPromptDocument.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\RavenDbAccountRepository.cs" />
     <Compile Include="Providers\RavenDbRoleRepository.cs" />

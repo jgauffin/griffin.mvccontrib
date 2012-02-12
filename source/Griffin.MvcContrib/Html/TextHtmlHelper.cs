@@ -39,7 +39,6 @@ namespace Griffin.MvcContrib.Html
         {
             return null;
         }
-
     }
 
     public interface IHtmlLabelAdapter
@@ -65,21 +64,21 @@ namespace Griffin.MvcContrib.Html
     public class SingleTagAdapterContext : TextHtmlHelperAdapterContext, ISingleTagAdapterContext
     {
         private readonly TagBuilder _tagBuilder;
+
         public SingleTagAdapterContext(TagBuilder tagBuilder, ModelMetadata metadata)
             : base(metadata)
         {
             _tagBuilder = tagBuilder;
         }
 
-
+        #region ISingleTagAdapterContext Members
 
         public TagBuilder TagBuilder
         {
-            get
-            {
-                return _tagBuilder;
-            }
+            get { return _tagBuilder; }
         }
+
+        #endregion
     }
 
     public class TextHtmlHelperAdapterContext : ITextHtmlHelperAdapterContext
@@ -91,12 +90,13 @@ namespace Griffin.MvcContrib.Html
             _metadata = metadata;
         }
 
+        #region ITextHtmlHelperAdapterContext Members
+
         public ModelMetadata Metadata
         {
-            get
-            {
-                return _metadata;
-            }
+            get { return _metadata; }
         }
+
+        #endregion
     }
 }

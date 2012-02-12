@@ -7,6 +7,5 @@ namespace Griffin.MvcContrib.Localization.Types
     /// <seealso cref="ILocalizedStringProvider"/>
     public class CommonPrompts
     {
-        
     }
 }

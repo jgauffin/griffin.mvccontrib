@@ -50,40 +50,39 @@ namespace Griffin.MvcContrib.Localization
         /// <param name="filterContext">The filter context.</param>
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-			if (filterContext.HttpContext.Request.QueryString["lang"] != null)
-			{
-				var lang = filterContext.HttpContext.Request.QueryString["lang"];
-				Thread.CurrentThread.CurrentCulture =
-					Thread.CurrentThread.CurrentUICulture =
-						new CultureInfo(lang);
+            if (filterContext.HttpContext.Request.QueryString["lang"] != null)
+            {
+                var lang = filterContext.HttpContext.Request.QueryString["lang"];
+                Thread.CurrentThread.CurrentCulture =
+                    Thread.CurrentThread.CurrentUICulture =
+                    new CultureInfo(lang);
 
-				SetCookie(filterContext.HttpContext.Response, lang);
-			}
-			else if (filterContext.RouteData.Values["lang"] != null)
-			{
-				var lang = filterContext.RouteData.Values["lang"].ToString();
-				Thread.CurrentThread.CurrentCulture =
-					Thread.CurrentThread.CurrentUICulture =
-						new CultureInfo(lang);
+                SetCookie(filterContext.HttpContext.Response, lang);
+            }
+            else if (filterContext.RouteData.Values["lang"] != null)
+            {
+                var lang = filterContext.RouteData.Values["lang"].ToString();
+                Thread.CurrentThread.CurrentCulture =
+                    Thread.CurrentThread.CurrentUICulture =
+                    new CultureInfo(lang);
 
-				SetCookie(filterContext.HttpContext.Response, lang);
-			}
+                SetCookie(filterContext.HttpContext.Response, lang);
+            }
 
-			else if (filterContext.HttpContext.Request.Cookies[CookieName] != null)
-			{
-				Thread.CurrentThread.CurrentCulture =
-					Thread.CurrentThread.CurrentUICulture = 
-						new CultureInfo(filterContext.HttpContext.Request.Cookies[CookieName].Value);
-
-			}
+            else if (filterContext.HttpContext.Request.Cookies[CookieName] != null)
+            {
+                Thread.CurrentThread.CurrentCulture =
+                    Thread.CurrentThread.CurrentUICulture =
+                    new CultureInfo(filterContext.HttpContext.Request.Cookies[CookieName].Value);
+            }
         }
 
-    	private static void SetCookie(HttpResponseBase response, string language)
-    	{
-    		response.Cookies.Add(new HttpCookie(CookieName, language)
-    		                     	{
-    		                     		Expires = DateTime.Now.AddYears(1),
-    		                     	});
-    	}
+        private static void SetCookie(HttpResponseBase response, string language)
+        {
+            response.Cookies.Add(new HttpCookie(CookieName, language)
+                                     {
+                                         Expires = DateTime.Now.AddYears(1),
+                                     });
+        }
     }
 }
