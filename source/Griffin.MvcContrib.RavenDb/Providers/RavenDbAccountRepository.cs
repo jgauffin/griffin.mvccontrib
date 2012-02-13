@@ -131,21 +131,21 @@ namespace Griffin.MvcContrib.RavenDb.Providers
             return query.ToList();
         }
 
-    	/// <summary>
-    	/// Find new acounts that haven't been activated.
-    	/// </summary>
-    	/// <param name="pageIndex">zero based index</param>
-    	/// <param name="pageSize">Number of users per page</param>
-    	/// <param name="totalRecords">Total number of users</param>
-    	/// <returns>A collection of users or an empty collection if no users was found.</returns>
-    	public IEnumerable<IMembershipAccount> FindNewAccounts(int pageIndex, int pageSize, out int totalRecords)
-    	{
-			IQueryable<UserAccount> query = _documentSession.Query<UserAccount>().Where(p => p.IsApproved==false);
-			query = CountAndPageQuery(pageIndex, pageSize, out totalRecords, query);
-			return query.ToList();
-    	}
+        /// <summary>
+        /// Find new acounts that haven't been activated.
+        /// </summary>
+        /// <param name="pageIndex">zero based index</param>
+        /// <param name="pageSize">Number of users per page</param>
+        /// <param name="totalRecords">Total number of users</param>
+        /// <returns>A collection of users or an empty collection if no users was found.</returns>
+        public IEnumerable<IMembershipAccount> FindNewAccounts(int pageIndex, int pageSize, out int totalRecords)
+        {
+            IQueryable<UserAccount> query = _documentSession.Query<UserAccount>().Where(p => p.IsApproved==false);
+            query = CountAndPageQuery(pageIndex, pageSize, out totalRecords, query);
+            return query.ToList();
+        }
 
-    	/// <summary>
+        /// <summary>
         /// Find by searching for user name
         /// </summary>
         /// <param name="usernameToMatch">User name (or partial user name)</param>
