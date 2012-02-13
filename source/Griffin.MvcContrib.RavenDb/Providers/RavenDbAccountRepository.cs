@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Security;
 using Griffin.MvcContrib.Providers.Membership;
+using Griffin.MvcContrib.RavenDb.Providers;
 using Raven.Client;
 
 namespace Griffin.MvcContrib.RavenDb.Providers
@@ -13,7 +14,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
 
         public RavenDbAccountRepository(IDocumentSession documentSession)
         {
-            _documentSession = documentSession;
+            this._documentSession = documentSession;
         }
 
         #region Implementation of IAccountRepository
@@ -33,9 +34,12 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// </remarks>
         public MembershipCreateStatus Register(IMembershipAccount account)
         {
-            account.Id = account.UserName;
-            _documentSession.Store(account);
+            var doc = account as UserAccount ?? new UserAccount(account);
+            _documentSession.Store(doc);
             _documentSession.SaveChanges();
+
+            if (account.Id == null)
+                account.Id = doc.Id;
             return MembershipCreateStatus.Success;
         }
 
@@ -46,7 +50,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <returns>User if found; otherwise null.</returns>
         public IMembershipAccount Get(string username)
         {
-            return _documentSession.Query<UserAccount>().Where(user => user.UserName == username).FirstOrDefault();
+            return _documentSession.Query<UserAccount>().FirstOrDefault(user => user.UserName == username);
         }
 
         /// <summary>
@@ -55,7 +59,20 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <param name="account">Account being updated.</param>
         public void Update(IMembershipAccount account)
         {
-            _documentSession.Store(account);
+            UserAccount userAccount;
+            if (!(account is UserAccount))
+            {
+                userAccount = _documentSession.Load<UserAccount>(account.Id.ToString());
+                if (userAccount == null)
+                    throw new InvalidOperationException("Account " + account + " is not a valid raven account.");
+
+                userAccount.Copy(account);
+            }
+            else
+                userAccount = (UserAccount) account;
+
+
+            _documentSession.Store(userAccount);
             _documentSession.SaveChanges();
         }
 
@@ -66,7 +83,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <returns>User if found; otherwise null.</returns>
         public IMembershipAccount GetById(object id)
         {
-            return _documentSession.Query<UserAccount>().Where(user => user.UserName == (string) id).FirstOrDefault();
+            return _documentSession.Query<UserAccount>().FirstOrDefault(user => user.UserName == (string)id);
         }
 
         /// <summary>
@@ -76,9 +93,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <returns>User name if the specified email was found; otherwise null.</returns>
         public string GetUserNameByEmail(string email)
         {
-            return
-                _documentSession.Query<UserAccount>().Where(user => user.Email == email).Select(user => user.UserName).
-                    FirstOrDefault();
+            return _documentSession.Query<UserAccount>().Where(user => user.Email == email).Select(user => user.UserName).FirstOrDefault();
         }
 
         /// <summary>
@@ -89,7 +104,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <returns>true if was removed successfully; otherwise false.</returns>
         public bool Delete(string username, bool deleteAllRelatedData)
         {
-            var dbUser = _documentSession.Query<UserAccount>().Where(user => user.UserName == username).FirstOrDefault();
+            var dbUser = _documentSession.Query<UserAccount>().FirstOrDefault(user => user.UserName == username);
             if (dbUser == null)
                 return true;
 
@@ -107,13 +122,15 @@ namespace Griffin.MvcContrib.RavenDb.Providers
             }
         }
 
+        public event EventHandler<DeletedEventArgs> Deleted = delegate { };
+
         /// <summary>
         /// Get number of users that are online
         /// </summary>
         /// <returns>Number of online users</returns>
         public int GetNumberOfUsersOnline()
         {
-            return _documentSession.Query<UserAccount>().Where(user => user.IsOnline).Count();
+            return _documentSession.Query<UserAccount>().Count(user => user.IsOnline);
         }
 
         /// <summary>
@@ -139,7 +156,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <returns>A collection of users or an empty collection if no users was found.</returns>
         public IEnumerable<IMembershipAccount> FindNewAccounts(int pageIndex, int pageSize, out int totalRecords)
         {
-            var query = _documentSession.Query<UserAccount>().Where(p => p.IsApproved == false);
+            IQueryable<UserAccount> query = _documentSession.Query<UserAccount>().Where(p => p.IsApproved==false);
             query = CountAndPageQuery(pageIndex, pageSize, out totalRecords, query);
             return query.ToList();
         }
@@ -152,12 +169,20 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <param name="pageSize">Number of items per page</param>
         /// <param name="totalRecords">total number of records that partially matched the specified user name</param>
         /// <returns>A collection of users or an empty collection if no users was found.</returns>
-        public IEnumerable<IMembershipAccount> FindByUserName(string usernameToMatch, int pageIndex, int pageSize,
-                                                              out int totalRecords)
+        public IEnumerable<IMembershipAccount> FindByUserName(string usernameToMatch, int pageIndex, int pageSize, out int totalRecords)
         {
             var query = _documentSession.Query<UserAccount>().Where(user => user.UserName.Contains(usernameToMatch));
             query = CountAndPageQuery(pageIndex, pageSize, out totalRecords, query);
             return query.ToList();
+        }
+
+        private IQueryable<UserAccount> CountAndPageQuery(int pageIndex, int pageSize, out int totalRecords, IQueryable<UserAccount> query)
+        {
+            totalRecords = query.Count();
+            query = pageIndex == 1
+                        ? _documentSession.Query<UserAccount>().Take(pageSize)
+                        : _documentSession.Query<UserAccount>().Skip((pageIndex - 1)*pageSize).Take(pageSize);
+            return query;
         }
 
         /// <summary>
@@ -168,8 +193,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <param name="pageSize">Number of items per page</param>
         /// <param name="totalRecords">total number of records that matched the specified email</param>
         /// <returns>A collection of users or an empty collection if no users was found.</returns>
-        public IEnumerable<IMembershipAccount> FindByEmail(string emailToMatch, int pageIndex, int pageSize,
-                                                           out int totalRecords)
+        public IEnumerable<IMembershipAccount> FindByEmail(string emailToMatch, int pageIndex, int pageSize, out int totalRecords)
         {
             var query = _documentSession.Query<UserAccount>().Where(user => user.Email == emailToMatch);
             query = CountAndPageQuery(pageIndex, pageSize, out totalRecords, query);
@@ -188,18 +212,6 @@ namespace Griffin.MvcContrib.RavenDb.Providers
             return account;
         }
 
-        public event EventHandler<DeletedEventArgs> Deleted = delegate { };
-
-        private IQueryable<UserAccount> CountAndPageQuery(int pageIndex, int pageSize, out int totalRecords,
-                                                          IQueryable<UserAccount> query)
-        {
-            totalRecords = query.Count();
-            query = pageIndex == 1
-                        ? _documentSession.Query<UserAccount>().Take(pageSize)
-                        : _documentSession.Query<UserAccount>().Skip((pageIndex - 1)*pageSize).Take(pageSize);
-            return query;
-        }
-
         #endregion
     }
 
@@ -207,6 +219,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
     {
         public DeletedEventArgs(IMembershipAccount account)
         {
+            
         }
     }
 }

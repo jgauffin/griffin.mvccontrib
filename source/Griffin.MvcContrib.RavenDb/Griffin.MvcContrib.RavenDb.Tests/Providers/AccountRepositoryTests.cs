@@ -2,6 +2,7 @@
 using Griffin.MvcContrib.Providers.Membership.SqlRepository;
 using Griffin.MvcContrib.RavenDb.Providers;
 using Raven.Client;
+using Raven.Client.Converters;
 using Raven.Client.Embedded;
 using Xunit;
 
@@ -36,14 +37,23 @@ namespace Griffin.MvcContrib.RavenDb.Tests.Providers
         #endregion
 
         [Fact]
-        public void Register()
+        public void RegisterAndDelete()
         {
+            var email = Guid.NewGuid().ToString("N") + "@somewhere.com";
             var repos = new RavenDbAccountRepository(_session);
-            repos.Register(new MembershipAccount
-                               {
-                                   Email = "some@name.com",
-                                   Password = "clear text"
-                               });
+            var account = new MembershipAccount
+                              {
+                                  Email = email,
+                                  UserName = email,
+                                  Password = "clear text"
+                              };
+
+            repos.Register(account);
+
+            Assert.NotNull(account.Id);
+
+            repos.Delete(email, true);
         }
     }
+
 }

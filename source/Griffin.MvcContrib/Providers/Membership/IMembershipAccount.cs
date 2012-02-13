@@ -131,7 +131,7 @@ namespace Griffin.MvcContrib.Providers.Membership
         /// Gets or sets ID identifying the user
         /// </summary>
         /// <remarks>
-        /// Should be an id in your system (for instance i your database)
+        /// Should be an id in your system (for instance in your database)
         /// </remarks>
         object Id { get; set; }
 
