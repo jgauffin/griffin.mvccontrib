@@ -1,0 +1,6 @@
+RavenDb integration package for MvcContrib.
+
+Read the instructions at:
+
+https://github.com/jgauffin/griffin.mvccontrib/wiki/Ravendb
+
