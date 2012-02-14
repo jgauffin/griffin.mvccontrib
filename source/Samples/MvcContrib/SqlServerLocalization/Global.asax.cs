@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using System.Web;
 using System.Web.Hosting;
@@ -68,7 +70,45 @@ namespace SqlServerLocalization
 
 
             _container = builder.Build();
-            DependencyResolver.SetResolver(new AutofacDependencyResolver(_container));
+            DependencyResolver.SetResolver(new TestDepRes(new AutofacDependencyResolver(_container)));
+        }
+    }
+
+    public class TestDepRes : IDependencyResolver
+    {
+        private readonly AutofacDependencyResolver _resolver;
+
+        public TestDepRes(AutofacDependencyResolver resolver)
+        {
+            _resolver = resolver;
+        }
+
+        /// <summary>
+        /// Resolves singly registered services that support arbitrary object creation.
+        /// </summary>
+        /// <returns>
+        /// The requested service or object.
+        /// </returns>
+        /// <param name="serviceType">The type of the requested service or object.</param>
+        public object GetService(Type serviceType)
+        {
+            if (typeof(ModelValidatorProvider).IsAssignableFrom(serviceType))
+                Debugger.Break();
+            return _resolver.GetService(serviceType);
+        }
+
+        /// <summary>
+        /// Resolves multiply registered services.
+        /// </summary>
+        /// <returns>
+        /// The requested services.
+        /// </returns>
+        /// <param name="serviceType">The type of the requested services.</param>
+        public IEnumerable<object> GetServices(Type serviceType)
+        {
+            if (typeof(ModelValidatorProvider).IsAssignableFrom(serviceType))
+                Debugger.Break();
+            return _resolver.GetServices(serviceType);
         }
     }
 

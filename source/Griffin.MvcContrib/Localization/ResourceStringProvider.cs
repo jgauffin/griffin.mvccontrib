@@ -160,7 +160,8 @@ namespace Griffin.MvcContrib.Localization
         /// <returns>string if found; otherwise null.</returns>
         private string GetString(string name)
         {
-            return _resourceManagers.Select(resourceManager => resourceManager.GetString(name)).FirstOrDefault(value => value != null);
+            var result =  _resourceManagers.Select(resourceManager => resourceManager.GetString(name)).FirstOrDefault(value => value != null);
+            return result;
         }
     }
 }
