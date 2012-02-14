@@ -67,7 +67,7 @@ namespace Griffin.MvcContrib.Localization
         /// <returns>Translated string</returns>
         public string GetModelString(Type model, string propertyName)
         {
-            return GetString(Format(model, propertyName));
+            return GetString(Format(model, propertyName)) ?? GetString(Format(typeof(CommonPrompts), propertyName));
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace Griffin.MvcContrib.Localization
         /// </remarks>
         public string GetModelString(Type model, string propertyName, string metadataName)
         {
-            return GetString(Format(model, propertyName, metadataName));
+            return GetString(Format(model, propertyName, metadataName)) ?? GetString(Format(typeof(CommonPrompts), propertyName, metadataName));
         }
 
         /// <summary>
@@ -160,9 +160,7 @@ namespace Griffin.MvcContrib.Localization
         /// <returns>string if found; otherwise null.</returns>
         private string GetString(string name)
         {
-            return _resourceManagers.Select(resourceManager => resourceManager.GetString(name))
-                .Where(value => value != null)
-                .FirstOrDefault();
+            return _resourceManagers.Select(resourceManager => resourceManager.GetString(name)).FirstOrDefault(value => value != null);
         }
     }
 }
