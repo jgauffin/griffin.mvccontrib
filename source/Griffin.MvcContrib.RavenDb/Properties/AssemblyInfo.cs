@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-[assembly: AssemblyTitle("Griffin.MvcFramework")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Griffin.MvcContrib.RavenDb")]
+[assembly: AssemblyDescription("RavanDb integration for the membership provider and the localization")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("Griffin.MvcFramework")]
-[assembly: AssemblyCopyright("Copyright © Microsoft 2011")]
+[assembly: AssemblyCompany("Gauffin Consulting AB")]
+[assembly: AssemblyProduct("Griffin.MvcContrib")]
+[assembly: AssemblyCopyright("Copyright © Jonas Gauffin 2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

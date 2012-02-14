@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Web.Security;
 using Griffin.MvcContrib.Providers.Membership;
 using Griffin.MvcContrib.Providers.Roles;
 using Newtonsoft.Json;
@@ -11,16 +10,25 @@ namespace Griffin.MvcContrib.RavenDb.Providers
     {
         private readonly List<string> _roles = new List<string>();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserAccount"/> class.
+        /// </summary>
         public UserAccount()
         {
         }
 
-        public UserAccount(MembershipUser user)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserAccount"/> class.
+        /// </summary>
+        /// <param name="user">The user.</param>
+        public UserAccount(IMembershipAccount user)
         {
-            UserName = user.UserName;
-            Email = user.Email;
-            PasswordQuestion = user.PasswordQuestion;
+            if (user == null) throw new ArgumentNullException("user");
+
+            Copy(user);
         }
+
+        public string Id { get; set; }
 
         #region IMembershipAccount Members
 
@@ -50,8 +58,8 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         [JsonIgnore]
         object IMembershipAccount.Id
         {
-            get { return UserName; }
-            set { }
+            get { return Id; }
+            set { throw new InvalidOperationException("Id is auto generated and should not be specified."); }
         }
 
         #endregion
@@ -86,6 +94,30 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         public void RemoveRole(string roleName)
         {
             _roles.Remove(roleName);
+        }
+
+        public void Copy(IMembershipAccount account)
+        {
+            UserName = account.UserName;
+            ApplicationName = account.ApplicationName;
+            Comment = account.Comment;
+            CreatedAt = account.CreatedAt;
+            IsApproved = account.IsApproved;
+            IsLockedOut = account.IsLockedOut;
+            IsOnline = account.IsOnline;
+            LastActivityAt = account.LastActivityAt;
+            LastLockedOutAt = account.LastLockedOutAt;
+            LastLoginAt = account.LastLoginAt;
+            LastPasswordChangeAt = account.LastPasswordChangeAt;
+            Email = account.Email;
+            PasswordQuestion = account.PasswordQuestion;
+            Password = account.Password;
+            PasswordAnswer = account.PasswordAnswer;
+            PasswordSalt = account.PasswordSalt;
+            FailedPasswordAnswerWindowAttemptCount = account.FailedPasswordAnswerWindowAttemptCount;
+            FailedPasswordAnswerWindowStartedAt = account.FailedPasswordAnswerWindowStartedAt;
+            FailedPasswordWindowAttemptCount = account.FailedPasswordWindowAttemptCount;
+            FailedPasswordWindowStartedAt = account.FailedPasswordWindowStartedAt;
         }
     }
 }
