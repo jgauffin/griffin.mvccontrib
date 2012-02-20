@@ -39,6 +39,14 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         #region IMembershipAccount Members
 
         /// <summary>
+        /// Gets or sets ID identifying the user
+        /// </summary>
+        /// <remarks>
+        /// Should be an id in your system (for instance in your database)
+        /// </remarks>
+        public object ProviderUserKey { get; set; }
+
+        /// <summary>
         /// Gets or sets username
         /// </summary>
         public string UserName { get; set; }
@@ -151,12 +159,6 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// </summary>
         public DateTime LastActivityAt { get; set; }
 
-        [JsonIgnore]
-        object IMembershipAccount.Id
-        {
-            get { return Id; }
-            set { throw new InvalidOperationException("Id is auto generated and should not be specified."); }
-        }
 
         #endregion
 
@@ -227,6 +229,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
             Password = account.Password;
             PasswordAnswer = account.PasswordAnswer;
             PasswordSalt = account.PasswordSalt;
+            ProviderUserKey = account.ProviderUserKey;
             FailedPasswordAnswerWindowAttemptCount = account.FailedPasswordAnswerWindowAttemptCount;
             FailedPasswordAnswerWindowStartedAt = account.FailedPasswordAnswerWindowStartedAt;
             FailedPasswordWindowAttemptCount = account.FailedPasswordWindowAttemptCount;

@@ -36,10 +36,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         {
             var doc = account as AccountDocument ?? new AccountDocument(account);
             _documentSession.Store(doc);
-            _documentSession.SaveChanges();
 
-            if (account.ProviderUserKey == null)
-                account.ProviderUserKey = doc.Id;
             return MembershipCreateStatus.Success;
         }
 
@@ -62,7 +59,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
             AccountDocument accountDocument;
             if (!(account is AccountDocument))
             {
-                accountDocument = _documentSession.Load<AccountDocument>(account.Id.ToString());
+                accountDocument = _documentSession.Query<AccountDocument>().Single(m => m.UserName == account.UserName);
                 if (accountDocument == null)
                     throw new InvalidOperationException("Account " + account + " is not a valid raven account.");
 
@@ -73,7 +70,6 @@ namespace Griffin.MvcContrib.RavenDb.Providers
 
 
             _documentSession.Store(accountDocument);
-            _documentSession.SaveChanges();
         }
 
         /// <summary>
@@ -83,7 +79,9 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <returns>User if found; otherwise null.</returns>
         public IMembershipAccount GetByProviderKey(object id)
         {
-            return _documentSession.Query<AccountDocument>().FirstOrDefault(user => user.UserName == (string)id);
+            if (id == null) throw new ArgumentNullException("id");
+
+            return _documentSession.Query<AccountDocument>().FirstOrDefault(user => user.ProviderUserKey == id);
         }
 
         /// <summary>
@@ -93,6 +91,8 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <returns>User name if the specified email was found; otherwise null.</returns>
         public string GetUserNameByEmail(string email)
         {
+            if (email == null) throw new ArgumentNullException("email");
+
             return _documentSession.Query<AccountDocument>().Where(user => user.Email == email).Select(user => user.UserName).FirstOrDefault();
         }
 
@@ -104,7 +104,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <returns>true if was removed successfully; otherwise false.</returns>
         public bool Delete(string username, bool deleteAllRelatedData)
         {
-            var dbUser = _documentSession.Query<AccountDocument>().FirstOrDefault(user => user.UserName == username);
+            var dbUser = _documentSession.Query<AccountDocument>().SingleOrDefault(user => user.UserName == username);
             if (dbUser == null)
                 return true;
 
@@ -113,7 +113,6 @@ namespace Griffin.MvcContrib.RavenDb.Providers
             try
             {
                 Deleted(this, new DeletedEventArgs(dbUser));
-                _documentSession.SaveChanges();
                 return true;
             }
             catch (Exception)
@@ -122,6 +121,9 @@ namespace Griffin.MvcContrib.RavenDb.Providers
             }
         }
 
+        /// <summary>
+        /// Invoked when a member has been deleted.
+        /// </summary>
         public event EventHandler<DeletedEventArgs> Deleted = delegate { };
 
         /// <summary>
