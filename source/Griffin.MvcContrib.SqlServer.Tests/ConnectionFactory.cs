@@ -11,6 +11,8 @@ namespace Griffin.MvcContrib.SqlServer.Tests
 
         public ConnectionFactory()
         {
+            var path = AppDomain.CurrentDomain.BaseDirectory;
+            var path2 = GetType().Assembly.Location;
             _connection =
                 new SqlConnection(string.Format(@"Server=.\SQLExpress;Integrated Security=True;Database=MvcContrib;",
                                                 AppDomain.CurrentDomain.BaseDirectory));

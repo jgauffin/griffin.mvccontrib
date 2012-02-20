@@ -25,6 +25,7 @@ using System.Linq;
 using System.Web.Mvc;
 using Griffin.MvcContrib.Localization.Types;
 using Griffin.MvcContrib.Logging;
+using Griffin.MvcContrib.Providers;
 
 namespace Griffin.MvcContrib.Localization
 {
@@ -71,6 +72,9 @@ namespace Griffin.MvcContrib.Localization
         {
         }
 
+        /// <summary>
+        /// Gets provider using lazy loading and DependencyResolver
+        /// </summary>
         protected ILocalizedStringProvider Provider
         {
             get

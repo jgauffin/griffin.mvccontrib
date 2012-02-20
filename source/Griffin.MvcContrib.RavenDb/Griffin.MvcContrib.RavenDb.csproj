@@ -81,7 +81,7 @@
     <Compile Include="Providers\RavenDbAccountRepository.cs" />
     <Compile Include="Providers\RavenDbRoleRepository.cs" />
     <Compile Include="Providers\Role.cs" />
-    <Compile Include="Providers\UserAccount.cs" />
+    <Compile Include="Providers\AccountDocument.cs" />
     <Compile Include="RegisterServiceAttribute.cs" />
   </ItemGroup>
   <ItemGroup>

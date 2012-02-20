@@ -10,18 +10,18 @@ using Griffin.MvcContrib.Localization.Views;
 namespace Griffin.MvcContrib.Localization.FlatFile
 {
     /// <summary>
-    /// Uses files to store translated view strings
+    ///   Uses files to store translated view strings
     /// </summary>
     /// <remarks>
-    /// <para>
-    /// Caches all strings in memory which means that you should keep a single instance of the repository
-    /// if you need performance.
-    /// </para>
-    /// <para>
-    /// The current implementation stores the files in your appdata folder using the JSON serializer. You
-    /// can switch locactions or serializer by deriving the class and implement <see cref="GetFullPath"/> or
-    /// <see cref="Serialize"/> and <see cref="Deserialize"/>.
-    /// </para>
+    ///   <para>Caches all strings in memory which means that you should keep a single instance of the repository
+    ///     if you need performance.</para> <para>The current implementation stores the files in your appdata folder using the JSON serializer. You
+    ///                                       can switch locactions or serializer by deriving the class and implement
+    ///                                       <see cref="GetFullPath" />
+    ///                                       or
+    ///                                       <see cref="Serialize" />
+    ///                                       and
+    ///                                       <see cref="Deserialize" />
+    ///                                       .</para>
     /// </remarks>
     public class ViewLocalizationFileRepository
     {
@@ -31,14 +31,12 @@ namespace Griffin.MvcContrib.Localization.FlatFile
             new Dictionary<CultureInfo, ViewPromptCollection>();
 
         /// <summary>
-        /// Get all prompts that have been created for an language
+        ///   Get all prompts that have been created for an language
         /// </summary>
-        /// <param name="culture">Culture to get translation for</param>
-        /// <param name="templateCulture">Culture to find not translated prompts in (or same culture to disable)</param>
-        /// <param name="filter">Used to limit the search result</param>
-        /// <returns>
-        /// A collection of prompts
-        /// </returns>
+        /// <param name="culture"> Culture to get translation for </param>
+        /// <param name="templateCulture"> Culture to find not translated prompts in (or same culture to disable) </param>
+        /// <param name="filter"> Used to limit the search result </param>
+        /// <returns> A collection of prompts </returns>
         public IEnumerable<ViewPrompt> GetAllPrompts(CultureInfo culture, CultureInfo templateCulture,
                                                      SearchFilter filter)
         {
@@ -56,10 +54,10 @@ namespace Griffin.MvcContrib.Localization.FlatFile
         }
 
         /// <summary>
-        /// Create translation for a new language
+        ///   Create translation for a new language
         /// </summary>
-        /// <param name="culture">Language to create</param>
-        /// <param name="templateCulture">Language to use as a template</param>
+        /// <param name="culture"> Language to create </param>
+        /// <param name="templateCulture"> Language to use as a template </param>
         public void CreateLanguage(CultureInfo culture, CultureInfo templateCulture)
         {
             var prompts = GetLanguage(templateCulture).Select(p => new ViewPrompt(culture.LCID, p));
@@ -72,9 +70,9 @@ namespace Griffin.MvcContrib.Localization.FlatFile
         }
 
         /// <summary>
-        /// Get all languages that have translations
+        ///   Get all languages that have translations
         /// </summary>
-        /// <returns>Collection of languages</returns>
+        /// <returns> Collection of languages </returns>
         public IEnumerable<CultureInfo> GetAvailableLanguages()
         {
             var fullPath = GetFullPath(new CultureInfo(1053)).ToLower().Replace("sv-se", "*");
@@ -107,13 +105,11 @@ namespace Griffin.MvcContrib.Localization.FlatFile
 
 
         /// <summary>
-        /// Get a text using it's name.
+        ///   Get a text using it's name.
         /// </summary>
-        /// <param name="culture">Culture to get prompt for</param>
+        /// <param name="culture"> Culture to get prompt for </param>
         /// <param name="key"> </param>
-        /// <returns>
-        /// Prompt if found; otherwise null.
-        /// </returns>
+        /// <returns> Prompt if found; otherwise null. </returns>
         public ViewPrompt GetPrompt(CultureInfo culture, ViewPromptKey key)
         {
             var prompts = GetLanguage(CultureInfo.CurrentUICulture);
@@ -121,12 +117,12 @@ namespace Griffin.MvcContrib.Localization.FlatFile
         }
 
         /// <summary>
-        /// Save/Update a text prompt
+        ///   Save/Update a text prompt
         /// </summary>
-        /// <param name="culture">Language to save prompt in</param>
-        /// <param name="viewPath">Path to view. You can use <see cref="ViewPromptKey.GetViewPath"/></param>
-        /// <param name="textName">Text to translate</param>
-        /// <param name="translatedText">Translated text</param>
+        /// <param name="culture"> Language to save prompt in </param>
+        /// <param name="viewPath"> Path to view. You can use <see cref="ViewPromptKey.GetViewPath" /> </param>
+        /// <param name="textName"> Text to translate </param>
+        /// <param name="translatedText"> Translated text </param>
         public void Save(CultureInfo culture, string viewPath, string textName, string translatedText)
         {
             if (culture == null) throw new ArgumentNullException("culture");
@@ -155,10 +151,10 @@ namespace Griffin.MvcContrib.Localization.FlatFile
         }
 
         /// <summary>
-        /// Existses the specified culture info.
+        ///   Existses the specified culture info.
         /// </summary>
-        /// <param name="cultureInfo">The culture info.</param>
-        /// <returns></returns>
+        /// <param name="cultureInfo"> The culture info. </param>
+        /// <returns> </returns>
         public bool Exists(CultureInfo cultureInfo)
         {
             if (cultureInfo == null) throw new ArgumentNullException("cultureInfo");
@@ -166,12 +162,12 @@ namespace Griffin.MvcContrib.Localization.FlatFile
         }
 
         /// <summary>
-        /// Create a new prompt in the specified language
+        ///   Create a new prompt in the specified language
         /// </summary>
-        /// <param name="culture">Language that the translation is for</param>
-        /// <param name="viewPath">Path to view. You can use <see cref="ViewPromptKey.GetViewPath"/></param>
-        /// <param name="textName">Text to translate</param>
-        /// <param name="translatedText">Translated text</param>
+        /// <param name="culture"> Language that the translation is for </param>
+        /// <param name="viewPath"> Path to view. You can use <see cref="ViewPromptKey.GetViewPath" /> </param>
+        /// <param name="textName"> Text to translate </param>
+        /// <param name="translatedText"> Translated text </param>
         public void CreatePrompt(CultureInfo culture, string viewPath, string textName, string translatedText)
         {
             if (culture == null) throw new ArgumentNullException("culture");
@@ -210,6 +206,11 @@ namespace Griffin.MvcContrib.Localization.FlatFile
             SaveLanguage(culture, language);
         }
 
+        /// <summary>
+        /// Delete  a phrase
+        /// </summary>
+        /// <param name="culture">Culture to delete the phrase in</param>
+        /// <param name="key">Unique key within a language</param>
         public void Delete(CultureInfo culture, ViewPromptKey key)
         {
             var language = GetLanguage(culture);
@@ -220,6 +221,11 @@ namespace Griffin.MvcContrib.Localization.FlatFile
             }
         }
 
+        /// <summary>
+        /// Load a language
+        /// </summary>
+        /// <param name="culture">Culture to load for</param>
+        /// <returns>Language if found; otherwise null.</returns>
         protected ViewPromptCollection LoadLanguage(CultureInfo culture)
         {
             var filename = GetFullPath(culture);
@@ -236,10 +242,10 @@ namespace Griffin.MvcContrib.Localization.FlatFile
         }
 
         /// <summary>
-        /// Serialize items into the specified stream 
+        ///   Serialize items into the specified stream
         /// </summary>
-        /// <param name="stream">Stream to serialize to</param>
-        /// <param name="prompts">Prompts to serialize</param>
+        /// <param name="stream"> Stream to serialize to </param>
+        /// <param name="prompts"> Prompts to serialize </param>
         protected virtual void Serialize(Stream stream, List<ViewPrompt> prompts)
         {
             var serializer = new DataContractJsonSerializer(prompts.GetType());
@@ -247,10 +253,10 @@ namespace Griffin.MvcContrib.Localization.FlatFile
         }
 
         /// <summary>
-        /// Deserialize items from a stream
+        ///   Deserialize items from a stream
         /// </summary>
-        /// <param name="stream">Stream containing serialized items</param>
-        /// <returns>Collection of items (or an empty collection)</returns>
+        /// <param name="stream"> Stream containing serialized items </param>
+        /// <returns> Collection of items (or an empty collection) </returns>
         protected virtual IEnumerable<ViewPrompt> Deserialize(Stream stream)
         {
             if (stream.Length == 0)
@@ -265,6 +271,11 @@ namespace Griffin.MvcContrib.Localization.FlatFile
             return HostingEnvironment.MapPath(string.Format(@"~/App_Data/ViewLocalization.{0}.dat", culture.Name));
         }
 
+        /// <summary>
+        ///   Get language for the specified culture
+        /// </summary>
+        /// <param name="culture"> Requested culture </param>
+        /// <returns> A collection of prompts (will create a new collection if it do not exist) </returns>
         protected ViewPromptCollection GetLanguage(CultureInfo culture)
         {
             ViewPromptCollection prompts;
@@ -307,24 +318,26 @@ namespace Griffin.MvcContrib.Localization.FlatFile
             #region IEqualityComparer<ViewPrompt> Members
 
             /// <summary>
-            /// Determines whether the specified objects are equal.
+            ///   Determines whether the specified objects are equal.
             /// </summary>
-            /// <returns>
-            /// true if the specified objects are equal; otherwise, false.
-            /// </returns>
-            /// <param name="x">The first object of type ViewPrompt to compare.</param><param name="y">The second object of type ViewPrompt to compare.</param>
+            /// <returns> true if the specified objects are equal; otherwise, false. </returns>
+            /// <param name="x"> The first object of type ViewPrompt to compare. </param>
+            /// <param name="y"> The second object of type ViewPrompt to compare. </param>
             public bool Equals(ViewPrompt x, ViewPrompt y)
             {
                 return x.Key == y.Key;
             }
 
             /// <summary>
-            /// Returns a hash code for the specified object.
+            ///   Returns a hash code for the specified object.
             /// </summary>
-            /// <returns>
-            /// A hash code for the specified object.
-            /// </returns>
-            /// <param name="obj">The <see cref="T:System.Object"/> for which a hash code is to be returned.</param><exception cref="T:System.ArgumentNullException">The type of <paramref name="obj"/> is a reference type and <paramref name="obj"/> is null.</exception>
+            /// <returns> A hash code for the specified object. </returns>
+            /// <param name="obj"> The <see cref="T:System.Object" /> for which a hash code is to be returned. </param>
+            /// <exception cref="T:System.ArgumentNullException">The type of
+            ///   <paramref name="obj" />
+            ///   is a reference type and
+            ///   <paramref name="obj" />
+            ///   is null.</exception>
             public int GetHashCode(ViewPrompt obj)
             {
                 return obj.Key.GetHashCode();

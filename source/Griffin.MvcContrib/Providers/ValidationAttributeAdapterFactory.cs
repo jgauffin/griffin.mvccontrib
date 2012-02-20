@@ -2,14 +2,20 @@
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 
-namespace Griffin.MvcContrib.Localization
+namespace Griffin.MvcContrib.Providers
 {
     /// <summary>
     /// creates adapters for client side validation
     /// </summary>
     public class ValidationAttributeAdapterFactory
     {
-        public IEnumerable<ModelClientValidationRule> Create(ValidationAttribute attribute, string errorMessage)
+        /// <summary>
+        /// Create client validation rules for Data Annotation attributes.
+        /// </summary>
+        /// <param name="attribute">Attribute</param>
+        /// <param name="errorMessage">Not formatted error message (should contain {0} etc}</param>
+        /// <returns>A collection of rules (or an empty collection)</returns>
+        public virtual IEnumerable<ModelClientValidationRule> Create(ValidationAttribute attribute, string errorMessage)
         {
             if (attribute is RangeAttribute)
             {

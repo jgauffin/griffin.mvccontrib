@@ -34,7 +34,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// </remarks>
         public MembershipCreateStatus Register(IMembershipAccount account)
         {
-            var doc = account as UserAccount ?? new UserAccount(account);
+            var doc = account as AccountDocument ?? new AccountDocument(account);
             _documentSession.Store(doc);
             _documentSession.SaveChanges();
 
@@ -50,7 +50,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <returns>User if found; otherwise null.</returns>
         public IMembershipAccount Get(string username)
         {
-            return _documentSession.Query<UserAccount>().FirstOrDefault(user => user.UserName == username);
+            return _documentSession.Query<AccountDocument>().FirstOrDefault(user => user.UserName == username);
         }
 
         /// <summary>
@@ -59,20 +59,20 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <param name="account">Account being updated.</param>
         public void Update(IMembershipAccount account)
         {
-            UserAccount userAccount;
-            if (!(account is UserAccount))
+            AccountDocument accountDocument;
+            if (!(account is AccountDocument))
             {
-                userAccount = _documentSession.Load<UserAccount>(account.Id.ToString());
-                if (userAccount == null)
+                accountDocument = _documentSession.Load<AccountDocument>(account.Id.ToString());
+                if (accountDocument == null)
                     throw new InvalidOperationException("Account " + account + " is not a valid raven account.");
 
-                userAccount.Copy(account);
+                accountDocument.Copy(account);
             }
             else
-                userAccount = (UserAccount) account;
+                accountDocument = (AccountDocument) account;
 
 
-            _documentSession.Store(userAccount);
+            _documentSession.Store(accountDocument);
             _documentSession.SaveChanges();
         }
 
@@ -83,7 +83,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <returns>User if found; otherwise null.</returns>
         public IMembershipAccount GetById(object id)
         {
-            return _documentSession.Query<UserAccount>().FirstOrDefault(user => user.UserName == (string)id);
+            return _documentSession.Query<AccountDocument>().FirstOrDefault(user => user.UserName == (string)id);
         }
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <returns>User name if the specified email was found; otherwise null.</returns>
         public string GetUserNameByEmail(string email)
         {
-            return _documentSession.Query<UserAccount>().Where(user => user.Email == email).Select(user => user.UserName).FirstOrDefault();
+            return _documentSession.Query<AccountDocument>().Where(user => user.Email == email).Select(user => user.UserName).FirstOrDefault();
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <returns>true if was removed successfully; otherwise false.</returns>
         public bool Delete(string username, bool deleteAllRelatedData)
         {
-            var dbUser = _documentSession.Query<UserAccount>().FirstOrDefault(user => user.UserName == username);
+            var dbUser = _documentSession.Query<AccountDocument>().FirstOrDefault(user => user.UserName == username);
             if (dbUser == null)
                 return true;
 
@@ -130,7 +130,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <returns>Number of online users</returns>
         public int GetNumberOfUsersOnline()
         {
-            return _documentSession.Query<UserAccount>().Count(user => user.IsOnline);
+            return _documentSession.Query<AccountDocument>().Count(user => user.IsOnline);
         }
 
         /// <summary>
@@ -142,7 +142,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <returns>A collection of users or an empty collection if no users was found.</returns>
         public IEnumerable<IMembershipAccount> FindAll(int pageIndex, int pageSize, out int totalRecords)
         {
-            IQueryable<UserAccount> query = _documentSession.Query<UserAccount>();
+            IQueryable<AccountDocument> query = _documentSession.Query<AccountDocument>();
             query = CountAndPageQuery(pageIndex, pageSize, out totalRecords, query);
             return query.ToList();
         }
@@ -156,7 +156,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <returns>A collection of users or an empty collection if no users was found.</returns>
         public IEnumerable<IMembershipAccount> FindNewAccounts(int pageIndex, int pageSize, out int totalRecords)
         {
-            IQueryable<UserAccount> query = _documentSession.Query<UserAccount>().Where(p => p.IsApproved==false);
+            IQueryable<AccountDocument> query = _documentSession.Query<AccountDocument>().Where(p => p.IsApproved==false);
             query = CountAndPageQuery(pageIndex, pageSize, out totalRecords, query);
             return query.ToList();
         }
@@ -171,17 +171,17 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <returns>A collection of users or an empty collection if no users was found.</returns>
         public IEnumerable<IMembershipAccount> FindByUserName(string usernameToMatch, int pageIndex, int pageSize, out int totalRecords)
         {
-            var query = _documentSession.Query<UserAccount>().Where(user => user.UserName.Contains(usernameToMatch));
+            var query = _documentSession.Query<AccountDocument>().Where(user => user.UserName.Contains(usernameToMatch));
             query = CountAndPageQuery(pageIndex, pageSize, out totalRecords, query);
             return query.ToList();
         }
 
-        private IQueryable<UserAccount> CountAndPageQuery(int pageIndex, int pageSize, out int totalRecords, IQueryable<UserAccount> query)
+        private IQueryable<AccountDocument> CountAndPageQuery(int pageIndex, int pageSize, out int totalRecords, IQueryable<AccountDocument> query)
         {
             totalRecords = query.Count();
             query = pageIndex == 1
-                        ? _documentSession.Query<UserAccount>().Take(pageSize)
-                        : _documentSession.Query<UserAccount>().Skip((pageIndex - 1)*pageSize).Take(pageSize);
+                        ? _documentSession.Query<AccountDocument>().Take(pageSize)
+                        : _documentSession.Query<AccountDocument>().Skip((pageIndex - 1)*pageSize).Take(pageSize);
             return query;
         }
 
@@ -195,14 +195,14 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <returns>A collection of users or an empty collection if no users was found.</returns>
         public IEnumerable<IMembershipAccount> FindByEmail(string emailToMatch, int pageIndex, int pageSize, out int totalRecords)
         {
-            var query = _documentSession.Query<UserAccount>().Where(user => user.Email == emailToMatch);
+            var query = _documentSession.Query<AccountDocument>().Where(user => user.Email == emailToMatch);
             query = CountAndPageQuery(pageIndex, pageSize, out totalRecords, query);
             return query.ToList();
         }
 
         public IMembershipAccount Create(object providerUserKey, string applicationName, string username, string email)
         {
-            var account = new UserAccount
+            var account = new AccountDocument
                               {
                                   ApplicationName = applicationName,
                                   UserName = username,

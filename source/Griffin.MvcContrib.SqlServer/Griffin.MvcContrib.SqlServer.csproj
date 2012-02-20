@@ -45,7 +45,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Localization\ILocalizationDbContext.cs" />
-    <Compile Include="Localization\LocalizationConnectionFactory.cs" />
     <Compile Include="Localization\SqlLocalizedTypesRepository.cs" />
     <Compile Include="Localization\SqlLocalizedViewsRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -150,6 +150,11 @@ namespace Griffin.MvcContrib.RavenDb.Localization
             _documentSession.SaveChanges();
         }
 
+        /// <summary>
+        /// checks if the specified language exists.
+        /// </summary>
+        /// <param name="cultureInfo">Language to find</param>
+        /// <returns>true if found; otherwise false.</returns>
         public bool Exists(CultureInfo cultureInfo)
         {
             return GetLanguage(cultureInfo) != null;
@@ -195,6 +200,11 @@ namespace Griffin.MvcContrib.RavenDb.Localization
             SetAsModified(language);
         }
 
+        /// <summary>
+        /// Delete a prompt
+        /// </summary>
+        /// <param name="culture">Culture to delete the prompt for</param>
+        /// <param name="key">Prompt key</param>
         public void Delete(CultureInfo culture, ViewPromptKey key)
         {
             var language = GetOrCreateLanguage(culture, culture);

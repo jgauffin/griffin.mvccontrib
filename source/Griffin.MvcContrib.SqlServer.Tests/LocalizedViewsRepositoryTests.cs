@@ -7,14 +7,37 @@ namespace Griffin.MvcContrib.SqlServer.Tests
 {
     public class LocalizedViewsRepositoryTests
     {
+        public const string Schema =
+            @"CREATE TABLE LocalizedTypes(
+	Id int IDENTITY(1,1) NOT NULL,
+	LocaleId int NOT NULL,
+	[Key] nvarchar(250) NOT NULL,
+	TypeName nvarchar(255) NOT NULL,
+	TextName nvarchar(250) NOT NULL,
+	UpdatedAt datetime NOT NULL,
+	UpdatedBy nvarchar(50) NOT NULL,
+	Value nvarchar(2000) NOT NULL
+);
+
+
+CREATE TABLE LocalizedViews(
+	Id int IDENTITY(1,1) NOT NULL,
+	LocaleId int NOT NULL,
+	[Key] nvarchar(50) NOT NULL,
+	ViewPath nvarchar(255) NOT NULL,
+	TextName nvarchar(2000) NOT NULL,
+	Value nvarchar(2000) NOT NULL,
+	UpdatedAt datetime NOT NULL,
+	UpdatedBy nvarchar(50) NOT NULL
+);";
         private const string ViewPath = "/myarea/controller/index";
 
         private const string TextName =
             "This is a text that should be translated since it contains a lot of things and so.";
 
-        private readonly ConnectionFactory _factory = new ConnectionFactory();
         private readonly ViewPromptKey _key = new ViewPromptKey(ViewPath, TextName);
         private readonly SqlLocalizedViewsRepository _repository;
+        private readonly SqlExpressConnectionFactory _factory = new SqlExpressConnectionFactory(Schema);
 
         public LocalizedViewsRepositoryTests()
         {

@@ -25,7 +25,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <returns>User if found; otherwise null.</returns>
         public IUserWithRoles GetUser(string applicationName, string username)
         {
-            return _session.Query<UserAccount>().Where(usr => usr.UserName == username).FirstOrDefault();
+            return _session.Query<AccountDocument>().Where(usr => usr.UserName == username).FirstOrDefault();
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <param name="username">User name</param>
         public void AddUserToRole(string applicationName, string roleName, string username)
         {
-            var user = _session.Query<UserAccount>().Where(usr => usr.UserName == username).FirstOrDefault();
+            var user = _session.Query<AccountDocument>().Where(usr => usr.UserName == username).FirstOrDefault();
             if (user == null)
                 throw new ProviderException("Failed to find user " + username);
 
@@ -77,7 +77,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <param name="username">User to remove</param>
         public void RemoveUserFromRole(string applicationName, string roleName, string username)
         {
-            var user = _session.Query<UserAccount>().Where(usr => usr.UserName == username).FirstOrDefault();
+            var user = _session.Query<AccountDocument>().Where(usr => usr.UserName == username).FirstOrDefault();
             if (user == null)
                 throw new ProviderException("Failed to find user " + username);
 
@@ -109,13 +109,13 @@ namespace Griffin.MvcContrib.RavenDb.Providers
 
         public int GetNumberOfUsersInRole(string applicationName, string roleName)
         {
-            return _session.Query<UserAccount>().Count(usr => usr.Roles.Contains(roleName));
+            return _session.Query<AccountDocument>().Count(usr => usr.Roles.Contains(roleName));
         }
 
         public IEnumerable<string> FindUsersInRole(string applicationName, string roleName, string userNameToMatch)
         {
             return
-                _session.Query<UserAccount>().Where(
+                _session.Query<AccountDocument>().Where(
                     usr => usr.UserName.Contains(userNameToMatch) && usr.Roles.Contains(roleName)).Select(
                         usr => usr.UserName);
         }
@@ -123,7 +123,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         public IEnumerable<string> GetUsersInRole(string applicationName, string roleName)
         {
             return
-                _session.Query<UserAccount>().Where(
+                _session.Query<AccountDocument>().Where(
                     usr => usr.Roles.Contains(roleName)).Select(
                         usr => usr.UserName);
         }

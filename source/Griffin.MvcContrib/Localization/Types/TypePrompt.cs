@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.Serialization;
 using System.Web;
 
@@ -7,6 +9,7 @@ namespace Griffin.MvcContrib.Localization.Types
     /// <summary>
     /// Used to store translated prompts.
     /// </summary>
+    /// <remarks>Will </remarks>
     [DataContract]
     public class TypePrompt : IEquatable<TypePrompt>
     {
@@ -54,7 +57,7 @@ namespace Griffin.MvcContrib.Localization.Types
                     if (SubjectTypeName == null)
                         throw new InvalidOperationException("Type has not been stored for " + TextName);
 
-                    _subject = Type.GetType(SubjectTypeName);
+                    _subject = LoadType(SubjectTypeName);
                 }
 
                 return _subject;
@@ -64,6 +67,33 @@ namespace Griffin.MvcContrib.Localization.Types
                 _subject = value;
                 SubjectTypeName = value.AssemblyQualifiedName;
             }
+        }
+
+        /// <summary>
+        /// Tries to load a type.
+        /// </summary>
+        /// <param name="assemblyQualifiedName">Assembly qualified name</param>
+        /// <returns>Type</returns>
+        /// <remarks>
+        /// Tries initially to load the specific version. Will try to load any version if the specified version is not found.
+        /// </remarks>
+        protected virtual Type LoadType(string assemblyQualifiedName)
+        {
+            return Type.GetType(assemblyQualifiedName, false) ??
+                   Type.GetType(assemblyQualifiedName, OnCheckAssmbly, OnCheckType, true, false);
+        }
+
+
+        private static Assembly OnCheckAssmbly(AssemblyName assemblyName)
+        {
+            return AppDomain.CurrentDomain
+                .GetAssemblies()
+                .FirstOrDefault(asm => asm.GetName().Name == assemblyName.Name);
+        }
+
+        private static Type OnCheckType(Assembly asm, string name, bool flag)
+        {
+            return asm.GetType(name, flag);
         }
 
         /// <summary>

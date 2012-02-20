@@ -85,6 +85,11 @@ namespace Griffin.MvcContrib.VirtualPathProvider
             return new FileResource(virtualPath, fixedView);
         }
 
+        /// <summary>
+        /// Returns a cache key to use for the specified virtual path
+        /// </summary>
+        /// <param name="virtualPath">Virtual path like "~/Views/Home/Index.cshtml"</param>
+        /// <returns>CacheDependency if found; otherwise <c>false</c>.</returns>
         public string GetCacheKey(string virtualPath)
         {
             return null;

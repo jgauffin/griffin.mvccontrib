@@ -60,6 +60,7 @@
     <Compile Include="Localization\LocalizedModelMetadataProviderTests.cs" />
     <Compile Include="Localization\LocalizedModelValidatorProviderTests.cs" />
     <Compile Include="Localization\MetadataTarget.cs" />
+    <Compile Include="Localization\TypePromptTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnitTest1.cs" />
   </ItemGroup>
