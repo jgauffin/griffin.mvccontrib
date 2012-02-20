@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Griffin.MvcContrib.RavenDb")]
 [assembly: AssemblyDescription("RavanDb integration for the membership provider and the localization")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Gauffin Consulting AB")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Griffin.MvcContrib")]
 [assembly: AssemblyCopyright("Copyright © Jonas Gauffin 2011")]
 [assembly: AssemblyTrademark("")]
@@ -35,5 +35,5 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.0.1.0")]
+[assembly: AssemblyFileVersion("1.0.1.0")]

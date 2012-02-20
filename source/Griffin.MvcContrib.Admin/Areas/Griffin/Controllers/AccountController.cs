@@ -51,7 +51,7 @@ namespace Griffin.MvcContrib.Areas.Griffin.Controllers
         [HttpPost]
         public ActionResult Approve(string id)
         {
-            var account = _repository.GetById(id);
+            var account = _repository.GetByProviderKey(id);
             account.IsApproved = true;
             _repository.Update(account);
             return Redirect(Request.UrlReferrer.AbsolutePath);
@@ -59,7 +59,7 @@ namespace Griffin.MvcContrib.Areas.Griffin.Controllers
 
         public ActionResult Details(string id)
         {
-            var account = _repository.GetById(id);
+            var account = _repository.GetByProviderKey(id);
 
             return View(account);
         }

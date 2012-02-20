@@ -230,7 +230,7 @@ namespace Griffin.MvcContrib.Providers.Membership
                     _passwordPolicy = DependencyResolver.Current.GetService<IPasswordPolicy>();
                     if (_passwordPolicy == null)
                         throw new InvalidOperationException(
-                            "You need to assign a locator to the ServiceLocator property and it should be able to lookup IPasswordPolicy.");
+                            "You need to add an IPasswordPolicy implementation to your IoC container.");
                 }
 
                 return _passwordPolicy;
@@ -282,7 +282,7 @@ namespace Griffin.MvcContrib.Providers.Membership
         /// <returns>Created user</returns>
         protected MembershipUser CloneUser(IMembershipAccount account)
         {
-            return new MembershipUser(Name, account.UserName, account.Id, account.Email,
+            return new MembershipUser(Name, account.UserName, account.ProviderUserKey, account.Email,
                                       account.PasswordQuestion, account.Comment, account.IsApproved,
                                       account.IsLockedOut, account.CreatedAt, account.LastLoginAt,
                                       account.LastActivityAt, account.LastPasswordChangeAt, account.LastLockedOutAt);
@@ -420,7 +420,7 @@ namespace Griffin.MvcContrib.Providers.Membership
             account.LastActivityAt = user.LastActivityDate;
             account.LastLockedOutAt = user.LastLockoutDate;
             account.LastPasswordChangeAt = user.LastPasswordChangedDate;
-            account.Id = user.ProviderUserKey;
+            account.ProviderUserKey = user.ProviderUserKey;
             account.UserName = user.UserName;
         }
 
@@ -493,7 +493,7 @@ namespace Griffin.MvcContrib.Providers.Membership
         /// <param name="providerUserKey">The unique identifier for the membership user to get information for.</param><param name="userIsOnline">true to update the last-activity date/time stamp for the user; false to return user information without updating the last-activity date/time stamp for the user.</param>
         public override MembershipUser GetUser(object providerUserKey, bool userIsOnline)
         {
-            var user = AccountRepository.GetById(providerUserKey);
+            var user = AccountRepository.GetByProviderKey(providerUserKey);
             if (user == null)
                 return null;
 

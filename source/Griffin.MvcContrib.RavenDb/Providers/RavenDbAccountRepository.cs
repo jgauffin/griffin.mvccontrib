@@ -30,16 +30,17 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <param name="account">Acount to register</param>
         /// <returns>Result indication</returns>
         /// <remarks>
-        /// Implementations should set the <see cref="IMembershipAccount.Id"/> property before returning.
+        /// Implementations should set the <see cref="IMembershipAccount.ProviderUserKey"/> property before returning.
         /// </remarks>
         public MembershipCreateStatus Register(IMembershipAccount account)
         {
+            if (account == null) throw new ArgumentNullException("account");
             var doc = account as UserAccount ?? new UserAccount(account);
             _documentSession.Store(doc);
             _documentSession.SaveChanges();
 
-            if (account.Id == null)
-                account.Id = doc.Id;
+            if (account.ProviderUserKey == null)
+                account.ProviderUserKey = doc.Id;
             return MembershipCreateStatus.Success;
         }
 
@@ -50,6 +51,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <returns>User if found; otherwise null.</returns>
         public IMembershipAccount Get(string username)
         {
+            if (username == null) throw new ArgumentNullException("username");
             return _documentSession.Query<UserAccount>().FirstOrDefault(user => user.UserName == username);
         }
 
@@ -59,10 +61,11 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <param name="account">Account being updated.</param>
         public void Update(IMembershipAccount account)
         {
+            if (account == null) throw new ArgumentNullException("account");
             UserAccount userAccount;
             if (!(account is UserAccount))
             {
-                userAccount = _documentSession.Load<UserAccount>(account.Id.ToString());
+                userAccount = _documentSession.Load<UserAccount>(account.ProviderUserKey.ToString());
                 if (userAccount == null)
                     throw new InvalidOperationException("Account " + account + " is not a valid raven account.");
 
@@ -81,9 +84,10 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// </summary>
         /// <param name="id">User identity specific for each account repository implementation</param>
         /// <returns>User if found; otherwise null.</returns>
-        public IMembershipAccount GetById(object id)
+        public IMembershipAccount GetByProviderKey(object id)
         {
-            return _documentSession.Query<UserAccount>().FirstOrDefault(user => user.UserName == (string)id);
+            if (id == null) throw new ArgumentNullException("id");
+            return _documentSession.Query<UserAccount>().FirstOrDefault(user => id.Equals(user.ProviderUserKey));
         }
 
         /// <summary>
@@ -93,6 +97,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <returns>User name if the specified email was found; otherwise null.</returns>
         public string GetUserNameByEmail(string email)
         {
+            if (email == null) throw new ArgumentNullException("email");
             return _documentSession.Query<UserAccount>().Where(user => user.Email == email).Select(user => user.UserName).FirstOrDefault();
         }
 
@@ -142,6 +147,11 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <returns>A collection of users or an empty collection if no users was found.</returns>
         public IEnumerable<IMembershipAccount> FindAll(int pageIndex, int pageSize, out int totalRecords)
         {
+            if (pageIndex < 1)
+                throw new ArgumentOutOfRangeException("pageIndex", "pageIndex should be 1 or larger.");
+            if (pageSize <= 0)
+                throw new ArgumentOutOfRangeException("pageSize", "Request at least one element.");
+
             IQueryable<UserAccount> query = _documentSession.Query<UserAccount>();
             query = CountAndPageQuery(pageIndex, pageSize, out totalRecords, query);
             return query.ToList();
@@ -207,6 +217,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
                                   ApplicationName = applicationName,
                                   UserName = username,
                                   Email = email,
+                                  ProviderUserKey = providerUserKey,
                                   CreatedAt = DateTime.Now
                               };
             return account;

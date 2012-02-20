@@ -38,7 +38,7 @@ namespace Griffin.MvcContrib.Providers.Membership
         /// <param name="account">Acount to register</param>
         /// <returns>Result indication</returns>
         /// <remarks>
-        /// Implementations should set the <see cref="IMembershipAccount.Id"/> property before returning.
+        /// Implementations should set the <see cref="IMembershipAccount.ProviderUserKey"/> property before returning.
         /// </remarks>
         MembershipCreateStatus Register(IMembershipAccount account);
 
@@ -56,11 +56,11 @@ namespace Griffin.MvcContrib.Providers.Membership
         void Update(IMembershipAccount account);
 
         /// <summary>
-        /// Get a user by using the implementation specific (your) Id.
+        /// Get a user by using your PK.
         /// </summary>
-        /// <param name="id">User identity specific for each account repository implementation</param>
+        /// <param name="id">PK in your own db</param>
         /// <returns>User if found; otherwise null.</returns>
-        IMembershipAccount GetById(object id);
+        IMembershipAccount GetByProviderKey(object id);
 
         /// <summary>
         /// Translate an email into a user name.

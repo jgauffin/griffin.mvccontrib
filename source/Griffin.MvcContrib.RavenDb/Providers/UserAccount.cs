@@ -55,13 +55,6 @@ namespace Griffin.MvcContrib.RavenDb.Providers
 
         public DateTime LastActivityAt { get; set; }
 
-        [JsonIgnore]
-        object IMembershipAccount.Id
-        {
-            get { return Id; }
-            set { throw new InvalidOperationException("Id is auto generated and should not be specified."); }
-        }
-
         #endregion
 
         #region IUserWithRoles Members
@@ -73,6 +66,11 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         {
             get { return _roles; }
         }
+
+        /// <summary>
+        /// Gets or sets key in the application db.
+        /// </summary>
+        public object ProviderUserKey { get; set; }
 
         /// <summary>
         /// Check if the user is a member of the specified role
@@ -114,6 +112,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
             Password = account.Password;
             PasswordAnswer = account.PasswordAnswer;
             PasswordSalt = account.PasswordSalt;
+            ProviderUserKey = account.ProviderUserKey;
             FailedPasswordAnswerWindowAttemptCount = account.FailedPasswordAnswerWindowAttemptCount;
             FailedPasswordAnswerWindowStartedAt = account.FailedPasswordAnswerWindowStartedAt;
             FailedPasswordWindowAttemptCount = account.FailedPasswordWindowAttemptCount;

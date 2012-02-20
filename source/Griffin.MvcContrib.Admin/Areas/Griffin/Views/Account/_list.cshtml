@@ -43,18 +43,18 @@
                 @Html.DisplayFor(modelItem => item.LastLoginAt)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new {id = item.Id}) |
-                @Html.ActionLink("Details", "Details", new {id = item.Id}) |
-                @Html.ActionLink("Delete", "Delete", new {id = item.Id})
+                @Html.ActionLink("Edit", "Edit", new {id = item.ProviderUserKey}) |
+                @Html.ActionLink("Details", "Details", new {id = item.ProviderUserKey}) |
+                @Html.ActionLink("Delete", "Delete", new {id = item.ProviderUserKey})
                 @if (!item.IsApproved)
                 {
-                    @Html.ConfirmLink("Approve", "Do you really want to approve " + item.UserName + "?", "Approve", id: item.Id)
+                    @Html.ConfirmLink("Approve", "Do you really want to approve " + item.UserName + "?", "Approve", id: item.ProviderUserKey)
                     ;
                     <text> | </text>
                 }
                 @if (!item.IsLockedOut)
                 {
-                    @Html.ConfirmLink("Unlock", "Do you really want to unlock " + item.UserName + "?", "Unlock", id: item.Id)
+                    @Html.ConfirmLink("Unlock", "Do you really want to unlock " + item.UserName + "?", "Unlock", id: item.ProviderUserKey)
                     ;
                 }
             </td>

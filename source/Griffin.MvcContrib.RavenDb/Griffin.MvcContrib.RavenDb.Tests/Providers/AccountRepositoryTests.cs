@@ -37,7 +37,7 @@ namespace Griffin.MvcContrib.RavenDb.Tests.Providers
         #endregion
 
         [Fact]
-        public void RegisterAndDelete()
+        public void Register_GetByKey_Delete()
         {
             var email = Guid.NewGuid().ToString("N") + "@somewhere.com";
             var repos = new RavenDbAccountRepository(_session);
@@ -45,14 +45,53 @@ namespace Griffin.MvcContrib.RavenDb.Tests.Providers
                               {
                                   Email = email,
                                   UserName = email,
-                                  Password = "clear text"
+                                  Password = "clear text",
+                                  ProviderUserKey = "ten"
                               };
 
             repos.Register(account);
 
-            Assert.NotNull(account.Id);
+            var user = repos.GetByProviderKey("ten");
+            Assert.NotNull(user);
 
             repos.Delete(email, true);
+        }
+
+        [Fact]
+        public void Register_GetByUsrName_Delete()
+        {
+            var email = Guid.NewGuid().ToString("N") + "@somewhere.com";
+            var repos = new RavenDbAccountRepository(_session);
+            var account = new MembershipAccount
+            {
+                Email = email,
+                UserName = email,
+                Password = "clear text",
+                ProviderUserKey = "ten"
+            };
+
+            repos.Register(account);
+
+            var user = repos.Get(email);
+            Assert.NotNull(user);
+
+            repos.Delete(email, true);
+        }
+
+
+        [Fact]
+        public void ListUsers()
+        {
+            var repos = new RavenDbAccountRepository(_session);
+
+            foreach (var account in _session.Query<UserAccount>())
+            {
+                _session.Delete(account);
+            }
+
+            _session.SaveChanges();
+            int records;
+            repos.FindAll(1, 500, out records);
         }
     }
 

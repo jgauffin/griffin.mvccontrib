@@ -39,7 +39,7 @@ namespace Griffin.MvcContrib.Providers.Membership.SqlRepository
         /// <param name="account">Acount to register</param>
         /// <returns>Result indication</returns>
         /// <remarks>
-        /// Implementations should set the <see cref="IMembershipAccount.Id"/> property before returning.
+        /// Implementations should set the <see cref="IMembershipAccount.ProviderUserKey"/> property before returning.
         /// </remarks>
         public MembershipCreateStatus Register(IMembershipAccount account)
         {
@@ -181,7 +181,7 @@ namespace Griffin.MvcContrib.Providers.Membership.SqlRepository
                     cmd.AddParameter("password_answer", account.PasswordAnswer);
                     cmd.AddParameter("password_question", account.PasswordQuestion);
                     cmd.AddParameter("username", account.UserName);
-                    cmd.AddParameter("id", account.Id);
+                    cmd.AddParameter("id", account.ProviderUserKey);
                     cmd.ExecuteNonQuery();
                 }
             }
@@ -192,7 +192,7 @@ namespace Griffin.MvcContrib.Providers.Membership.SqlRepository
         /// </summary>
         /// <param name="id">User identity specific for each account repository implementation</param>
         /// <returns>User if found; otherwise null.</returns>
-        public IMembershipAccount GetById(object id)
+        public IMembershipAccount GetByProviderKey(object id)
         {
             using (var connection = CreateAndOpenConnection())
             {
@@ -339,7 +339,7 @@ namespace Griffin.MvcContrib.Providers.Membership.SqlRepository
         public IMembershipAccount Create(object providerUserKey, string applicationName, string username, string email)
         {
             var account = CreateAccount();
-            account.Id = providerUserKey;
+            account.ProviderUserKey = providerUserKey;
             account.ApplicationName = applicationName;
             account.UserName = username;
             account.Email = email;
@@ -389,7 +389,7 @@ namespace Griffin.MvcContrib.Providers.Membership.SqlRepository
             account.FailedPasswordAnswerWindowStartedAt = reader.FromSqlDate("failed_password_answer_window_started_at");
             account.FailedPasswordWindowAttemptCount = (int) reader["failed_password_window_attempt_count"];
             account.FailedPasswordWindowStartedAt = reader.FromSqlDate("failed_password_window_started_at");
-            account.Id = reader["id"].ToString();
+            account.ProviderUserKey = reader["id"].ToString();
             account.IsApproved = (int) reader["is_approvied"] == 1;
             account.IsLockedOut = (int) reader["is_locked_out"] == 1;
             account.LastActivityAt = reader.FromSqlDate("last_activity_at");
