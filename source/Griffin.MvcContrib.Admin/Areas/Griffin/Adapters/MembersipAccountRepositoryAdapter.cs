@@ -274,7 +274,7 @@
 		/// </summary>
 		/// <param name="id">User identity specific for each account repository implementation</param>
 		/// <returns>User if found; otherwise null.</returns>
-		public IMembershipAccount GetById(object id)
+		public IMembershipAccount GetByProviderKey(object id)
 		{
 			throw new NotImplementedException();
 		}

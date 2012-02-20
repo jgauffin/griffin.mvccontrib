@@ -30,7 +30,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <param name="account">Acount to register</param>
         /// <returns>Result indication</returns>
         /// <remarks>
-        /// Implementations should set the <see cref="IMembershipAccount.Id"/> property before returning.
+        /// Implementations should set the <see cref="IMembershipAccount.ProviderUserKey"/> property before returning.
         /// </remarks>
         public MembershipCreateStatus Register(IMembershipAccount account)
         {
@@ -38,8 +38,8 @@ namespace Griffin.MvcContrib.RavenDb.Providers
             _documentSession.Store(doc);
             _documentSession.SaveChanges();
 
-            if (account.Id == null)
-                account.Id = doc.Id;
+            if (account.ProviderUserKey == null)
+                account.ProviderUserKey = doc.Id;
             return MembershipCreateStatus.Success;
         }
 
@@ -81,7 +81,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// </summary>
         /// <param name="id">User identity specific for each account repository implementation</param>
         /// <returns>User if found; otherwise null.</returns>
-        public IMembershipAccount GetById(object id)
+        public IMembershipAccount GetByProviderKey(object id)
         {
             return _documentSession.Query<AccountDocument>().FirstOrDefault(user => user.UserName == (string)id);
         }
@@ -207,6 +207,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
                                   ApplicationName = applicationName,
                                   UserName = username,
                                   Email = email,
+                                  ProviderUserKey = providerUserKey,
                                   CreatedAt = DateTime.Now
                               };
             return account;

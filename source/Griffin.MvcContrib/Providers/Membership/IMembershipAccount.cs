@@ -24,10 +24,15 @@ namespace Griffin.MvcContrib.Providers.Membership
     /// <summary>
     /// Account information for a user 
     /// </summary>
-    /// <remarks>Note that all fields are get/set. The motivation is that this interface (or any implementation) should not be considered
+    /// <remarks>
+    /// <para>
+    /// Note that all fields are get/set. The motivation is that this interface (or any implementation) should not be considered
     /// as a first class citizen, but as a DTO. It's solely purpose it to be able to fetch/store information
     /// in any datasource in a simple way (just implement this class and the repository interface). It should not be used
-    /// for anything else.</remarks>
+    /// for anything else.
+    /// </para>
+    /// <para>Breaking change: The ID field has been replaced with a "ProviderUserKey" field.</para>
+    /// </remarks>
     public interface IMembershipAccount
     {
         /// <summary>
@@ -133,7 +138,7 @@ namespace Griffin.MvcContrib.Providers.Membership
         /// <remarks>
         /// Should be an id in your system (for instance in your database)
         /// </remarks>
-        object Id { get; set; }
+        object ProviderUserKey { get; set; }
 
         /// <summary>
         /// Gets or sets username

@@ -110,7 +110,7 @@ namespace Griffin.MvcContrib.Areas.Griffin.Models.Account
         /// <remarks>
         /// Should be an id in your system (for instance i your database)
         /// </remarks>
-        public object Id { get; set; }
+        public object ProviderUserKey { get; set; }
 
         /// <summary>
         /// Gets or sets username
