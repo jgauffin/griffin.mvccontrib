@@ -8,7 +8,7 @@ namespace Griffin.MvcContrib.Localization.Views
     /// </summary>
     [Serializable]
     [DataContract]
-    public class ViewPrompt
+    public class ViewPrompt : IEquatable<ViewPrompt>
     {
         private ViewPromptKey _textKey;
 
@@ -76,5 +76,14 @@ namespace Griffin.MvcContrib.Localization.Views
             }
             set { _textKey = value; }
         }
+
+        #region Implementation of IEquatable<ViewPrompt>
+
+        public bool Equals(ViewPrompt other)
+        {
+            return other.Key.Equals(Key);
+        }
+
+        #endregion
     }
 }

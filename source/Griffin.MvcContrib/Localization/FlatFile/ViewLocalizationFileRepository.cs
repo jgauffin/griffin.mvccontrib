@@ -23,7 +23,7 @@ namespace Griffin.MvcContrib.Localization.FlatFile
     ///                                       <see cref="Deserialize" />
     ///                                       .</para>
     /// </remarks>
-    public class ViewLocalizationFileRepository
+    public class ViewLocalizationFileRepository: IViewLocalizationRepository
     {
         private static readonly object WriteLock = new object();
 
@@ -48,9 +48,10 @@ namespace Griffin.MvcContrib.Localization.FlatFile
                 return ourLanguage;
 
             var defaultLanguage = GetLanguage(templateCulture);
-            var missing = defaultLanguage.Except(ourLanguage, new PromptEqualityComparer())
-                .Select(p => new ViewPrompt(culture.LCID, p));
-            return ourLanguage.Union(missing);
+            var missing =
+                defaultLanguage.Except(ourLanguage, new PromptEqualityComparer()).Select(
+                    p => new ViewPrompt(culture.LCID, p)).ToList();
+            return ourLanguage.Union(missing).ToList();
         }
 
         /// <summary>
@@ -112,7 +113,7 @@ namespace Griffin.MvcContrib.Localization.FlatFile
         /// <returns> Prompt if found; otherwise null. </returns>
         public ViewPrompt GetPrompt(CultureInfo culture, ViewPromptKey key)
         {
-            var prompts = GetLanguage(CultureInfo.CurrentUICulture);
+            var prompts = GetLanguage(culture);
             return prompts.Get(key);
         }
 
@@ -340,7 +341,8 @@ namespace Griffin.MvcContrib.Localization.FlatFile
             ///   is null.</exception>
             public int GetHashCode(ViewPrompt obj)
             {
-                return obj.Key.GetHashCode();
+                return obj.Key.ToString().GetHashCode();
+                
             }
 
             #endregion
