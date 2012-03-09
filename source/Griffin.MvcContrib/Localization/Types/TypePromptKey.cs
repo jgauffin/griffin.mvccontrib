@@ -58,6 +58,22 @@ namespace Griffin.MvcContrib.Localization.Types
             return other._id.Equals(_id);
         }
 
+        public static bool operator ==(TypePromptKey typePromptKey, TypePromptKey typePromptKey2)
+        {
+            if ((object)typePromptKey == null || ((object)typePromptKey2) == null)
+                return Object.Equals(typePromptKey, typePromptKey2);
+
+            return typePromptKey.Equals(typePromptKey2);
+        }
+
+        public static bool operator !=(TypePromptKey viewPromptKey, TypePromptKey viewPromptKey2)
+        {
+            if (viewPromptKey == null || viewPromptKey2 == null)
+                return !Object.Equals(viewPromptKey, viewPromptKey2);
+
+            return !(viewPromptKey.Equals(viewPromptKey2));
+        }
+
         #endregion
 
         /// <summary>

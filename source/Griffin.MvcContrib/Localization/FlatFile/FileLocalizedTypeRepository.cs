@@ -84,16 +84,22 @@ namespace Griffin.MvcContrib.Localization.FlatFile
         {
             var lang = GetLanguage(culture);
             var key = new TypePromptKey(type, name);
-            var prompt = lang.Get(key) ?? new TypePrompt
-                                              {
-                                                  Key = key,
-                                                  LocaleId = culture.LCID,
-                                                  Subject = type,
-                                                  TextName = name,
-                                                  TranslatedText = translatedText,
-                                                  UpdatedAt = DateTime.Now,
-                                                  UpdatedBy = Thread.CurrentPrincipal.Identity.Name
-                                              };
+            var prompt = lang.Get(key);
+            if (prompt == null)
+            {
+                prompt = new TypePrompt
+                    {
+                        Key = key,
+                        LocaleId = culture.LCID,
+                        Subject = type,
+                        TextName = name,
+                        TranslatedText = translatedText,
+                        UpdatedAt = DateTime.Now,
+                        UpdatedBy = Thread.CurrentPrincipal.Identity.Name
+                    };
+                lang.Add(prompt);    
+            }
+            
             prompt.TranslatedText = translatedText;
             SaveLanguage(culture, lang);
         }
@@ -242,7 +248,7 @@ namespace Griffin.MvcContrib.Localization.FlatFile
             var defaultPrompts = GetLanguage(defaultCulture);
 
             return
-                defaultPrompts.Except(prompts).Select(
+                defaultPrompts.Except(prompts,new PromptEqualityComparer()).Select(
                     source => new TypePrompt(culture.LCID, source)).ToList();
         }
 
@@ -302,7 +308,7 @@ namespace Griffin.MvcContrib.Localization.FlatFile
             /// <param name="obj">The <see cref="T:System.Object"/> for which a hash code is to be returned.</param><exception cref="T:System.ArgumentNullException">The type of <paramref name="obj"/> is a reference type and <paramref name="obj"/> is null.</exception>
             public int GetHashCode(TypePrompt obj)
             {
-                return obj.Key.GetHashCode();
+                return obj.Key.ToString().GetHashCode();
             }
 
             #endregion
