@@ -71,6 +71,22 @@ namespace Griffin.MvcContrib.Localization.Views
             return _id;
         }
 
+        public static bool operator ==(ViewPromptKey viewPromptKey, ViewPromptKey viewPromptKey2)
+        {
+            if ((object)viewPromptKey == null || ((object)viewPromptKey2) == null)
+                return Object.Equals(viewPromptKey, viewPromptKey2);
+
+            return viewPromptKey.Equals(viewPromptKey2);
+        }
+
+        public static bool operator !=(ViewPromptKey viewPromptKey, ViewPromptKey viewPromptKey2)
+        {
+            if (viewPromptKey == null || viewPromptKey2 == null)
+                return !Object.Equals(viewPromptKey, viewPromptKey2);
+
+            return !(viewPromptKey.Equals(viewPromptKey2));
+        }
+
         /// <summary>
         /// Generate a view path from route data 
         /// </summary>
