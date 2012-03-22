@@ -8,6 +8,7 @@ namespace Griffin.MvcContrib.Localization.Views
     /// </summary>
     public interface IViewLocalizationRepository
     {
+
         /// <summary>
         /// Get all prompts that have been created for an language
         /// </summary>
@@ -71,4 +72,5 @@ namespace Griffin.MvcContrib.Localization.Views
         /// <param name="key">Prompt key</param>
         void Delete(CultureInfo cultureInfo, ViewPromptKey key);
     }
+
 }

@@ -20,8 +20,10 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Web;
 using System.Web.Mvc;
 using Griffin.MvcContrib.Localization.Types;
 using Griffin.MvcContrib.Logging;
@@ -30,25 +32,15 @@ using Griffin.MvcContrib.Providers;
 namespace Griffin.MvcContrib.Localization
 {
     /// <summary>
-    /// Used to localize DatAnnotation attribute error messages
+    /// Used to localize DataAnnotation attribute error messages and view models
     /// </summary>
     /// <remarks>
-    /// Check for instance <see cref="ResourceStringProvider"/> to get a description about the actual localization process.
+    /// <para>
+    /// Check for namespace documentation for an example on how to use the provider.
+    /// </para>
     /// </remarks>
-    /// <example>
-    /// <code>
-    /// public class MvcApplication : System.Web.HttpApplication
-    /// {
-    ///     protected void Application_Start()
-    ///     {
-    ///         var stringProvider = new ResourceStringProvider(ModelMetadataStrings.ResourceManager);
-    ///         ModelValidatorProviders.Providers.Clear();
-    ///         ModelValidatorProviders.Providers.Add(new LocalizedModelValidatorProvider(stringProvider));
-    ///     }
-    /// }
-    /// </code>
-    /// </example>
-    public class LocalizedModelValidatorProvider : DataAnnotationsModelValidatorProvider
+    /// <see cref=""/>
+    public class LocalizedModelValidatorProvider : DataAnnotationsModelValidatorProvider, IDisposable
     {
         private readonly ValidationAttributeAdapterFactory _adapterFactory = new ValidationAttributeAdapterFactory();
         private readonly ILogger _logger = LogProvider.Current.GetLogger<LocalizedModelValidatorProvider>();
@@ -75,15 +67,36 @@ namespace Griffin.MvcContrib.Localization
         /// <summary>
         /// Gets provider using lazy loading and DependencyResolver
         /// </summary>
-        protected ILocalizedStringProvider Provider
+        private ILocalizedStringProvider Provider
         {
             get
             {
-                return _stringProviderDontUsedirectly ??
-                       (_stringProviderDontUsedirectly =
-                        DependencyResolver.Current.GetService<ILocalizedStringProvider>());
+                if (_stringProviderDontUsedirectly != null)
+                    return _stringProviderDontUsedirectly;
+
+
+                // ASP.NET doesn't honor the IoC scope of the provider
+                // which means that we can't set the dependency one,
+                // but need to resolve it per request
+                var provider = HttpContext.Current.Items["ILocalizedStringProvider"] as ILocalizedStringProvider;
+                if (provider == null)
+                {
+                    Trace.WriteLine("** Resolving provider " );
+                    provider = DependencyResolver.Current.GetService<ILocalizedStringProvider>();
+                    HttpContext.Current.Items["ILocalizedStringProvider"] = provider;
+                }
+                else
+                    Trace.WriteLine("** Using cached provider ");
+
+
+                if (provider == null)
+                    throw new InvalidOperationException(
+                        "Failed to find an 'ILocalizedStringProvider' implementation. Either include one in the LocalizedModelMetadataProvider constructor, or register an implementation in your Inversion Of Control container.");
+
+                return provider;
             }
         }
+
 
         /// <summary>
         /// Gets a list of validators.
@@ -194,5 +207,10 @@ namespace Griffin.MvcContrib.Localization
         }
 
         #endregion
+
+        public void Dispose()
+        {
+            Trace.WriteLine("**disposing**");
+        }
     }
 }

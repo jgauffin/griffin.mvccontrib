@@ -55,7 +55,9 @@
     <Compile Include="Caching\NoCacheAttribute.cs" />
     <Compile Include="Localization\DefaultUICulture.cs" />
     <Compile Include="Localization\Types\CommonPrompts.cs" />
+    <Compile Include="Localization\Types\ITypePromptImporter.cs" />
     <Compile Include="Localization\Types\ValidationAttributesStringProvider.cs" />
+    <Compile Include="Localization\Views\IViewPromptImporter.cs" />
     <Compile Include="Logging\DebugWindowLogger.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\NullLogger.cs" />
@@ -97,7 +99,7 @@
     <Compile Include="Json\NamespaceDoc.cs" />
     <Compile Include="Localization\FlatFile\FileLocalizedTypeRepository.cs" />
     <Compile Include="Localization\Types\ILocalizedTypesRepository.cs" />
-    <Compile Include="Localization\Types\LocalizedStringProvider.cs" />
+    <Compile Include="Localization\Types\RepositoryStringProvider.cs" />
     <Compile Include="Localization\SearchFilter.cs" />
     <Compile Include="Localization\Types\TypePrompt.cs" />
     <Compile Include="Localization\FlatFile\TypePromptCollection.cs" />

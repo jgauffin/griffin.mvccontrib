@@ -11,8 +11,19 @@ namespace Griffin.MvcContrib.VirtualPathProvider
     ///   Provides view files from disk
     /// </summary>
     /// <remarks>
-    ///   Requires that a <see cref="IEmbeddedViewFixer" /> is registered in your container if you want your views to look the same even if they are located in other projects.
+    /// <para>
+    /// Using this provider lets you keep your view files in any folder. Combining this provider with the embedded provider is a great
+    /// way to be able to change views during development (using the file provider) and then include the views from the DLL in production.
+    /// </para>
     /// </remarks>
+    /// <example>
+    /// <code>
+    /// var provider = new DiskFileLocator(new DiskProvider("/MyArea/", @"..\..\MyClassLibrary\Areas\MyArea\Views"));
+    /// GriffinVirtualPathProvider.Current.Add(provider);
+    /// HostingEnvironment.RegisterVirtualPathProvider(GriffinVirtualPathProvider.Current);
+    /// </code>
+    /// </example>
+    /// <seealso cref="IViewFileLocator"/>
     public class ViewFileProvider : IViewFileProvider
     {
         private readonly IViewFileLocator _viewFileLocator;

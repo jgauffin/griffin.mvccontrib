@@ -1,0 +1,9 @@
+﻿@model object
+@{
+    ViewBag.Title = "Index";
+}
+<div class="griffin menu">
+    <script type="text/javascript" src="@Url.Content("~/Areas/Griffin/Scripts/griffin.js")"> </script>
+    @Html.ActionLink("View localization", "Index", "LocalizeViews") |
+    @Html.ActionLink("Type localization", "Index", "LocalizeTypes")
+</div>

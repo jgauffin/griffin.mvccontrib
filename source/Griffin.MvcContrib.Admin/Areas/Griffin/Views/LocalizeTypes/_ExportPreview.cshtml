@@ -1,0 +1,12 @@
+﻿@model IEnumerable<Griffin.MvcContrib.Areas.Griffin.Models.LocalizeTypes.TypePrompt>
+@{
+    ViewBag.Title = "Index";
+}
+@foreach (var prompt in Model)
+{
+    <tr>
+        <td>@prompt.LocaleId</td>
+        <td>@prompt.Namespace@prompt.TypeName</td>
+        <td>@prompt.TranslatedText</td>
+    </tr>
+}

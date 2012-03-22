@@ -6,6 +6,15 @@ namespace Griffin.MvcContrib.VirtualPathProvider
     /// <summary>
     ///   Adds default usings, sets an inherits clause and specifies the layout name
     /// </summary>
+    /// <remarks>
+    /// Modifies embedded views so that they works like any other views. This includes the following
+    /// <list type="bullet">
+    /// <item>Include a <c>@model</c> directive if missing</item>
+    /// <item>Add a <c>@inherits</c> directive</item>
+    /// <item>Add any missing @using statements (MVC and ASP.NET dependencies)</item>
+    /// <item>Specify which layout to use.</item>
+    /// </list>
+    /// </remarks>
     public class EmbeddedViewFixer : IEmbeddedViewFixer
     {
         /// <summary>
@@ -77,7 +86,11 @@ namespace Griffin.MvcContrib.VirtualPathProvider
             else
                 writer.WriteLine(basePrefix);
 
-            writer.WriteLine(string.Format("@{{ Layout = \"{0}\"; }}", LayoutPath));
+            // partial views should not have a layout
+            if (!string.IsNullOrEmpty(LayoutPath) && !virtualPath.Contains("/_"))
+            {
+                writer.WriteLine(string.Format("@{{ Layout = \"{0}\"; }}", LayoutPath));
+            }
             writer.Write(view);
             writer.Flush();
             ourStream.Position = 0;

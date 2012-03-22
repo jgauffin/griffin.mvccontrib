@@ -71,6 +71,14 @@ namespace Griffin.MvcContrib.Localization.Views
             return _id;
         }
 
+        /// <summary>
+        /// Implements the operator ==.
+        /// </summary>
+        /// <param name="viewPromptKey">The view prompt key.</param>
+        /// <param name="viewPromptKey2">The view prompt key2.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
         public static bool operator ==(ViewPromptKey viewPromptKey, ViewPromptKey viewPromptKey2)
         {
             if ((object)viewPromptKey == null || ((object)viewPromptKey2) == null)
@@ -79,6 +87,14 @@ namespace Griffin.MvcContrib.Localization.Views
             return viewPromptKey.Equals(viewPromptKey2);
         }
 
+        /// <summary>
+        /// Implements the operator !=.
+        /// </summary>
+        /// <param name="viewPromptKey">The view prompt key.</param>
+        /// <param name="viewPromptKey2">The view prompt key2.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
         public static bool operator !=(ViewPromptKey viewPromptKey, ViewPromptKey viewPromptKey2)
         {
             if (viewPromptKey == null || viewPromptKey2 == null)
@@ -96,10 +112,10 @@ namespace Griffin.MvcContrib.Localization.Views
         public static string GetViewPath(RouteData routeData)
         {
             if (routeData == null) throw new ArgumentNullException("routeData");
-
+            
             var controllerName = routeData.GetRequiredString("Controller");
             var actionName = routeData.GetRequiredString("Action");
-            var area = routeData.Values["area"];
+            var area = routeData.Values["area"] ?? routeData.DataTokens["area"];
             return area != null
                        ? string.Format("/{0}/{1}/{2}", area, controllerName, actionName)
                        : string.Format("/{0}/{1}", controllerName, actionName);

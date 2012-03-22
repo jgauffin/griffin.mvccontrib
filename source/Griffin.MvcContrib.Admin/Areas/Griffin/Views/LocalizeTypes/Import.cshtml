@@ -1,0 +1,17 @@
+﻿@model object
+@{
+    ViewBag.Title = "Index";
+}
+<div class="griffin">
+    @Html.Partial("_menu")
+    <h2>Import texts</h2>
+    @using (Html.BeginForm("Import", "LocalizeTypes", FormMethod.Post, new{enctype = "multipart/form-data"}))
+    {
+        @Html.ValidationSummary(true)
+        <div>
+            Select a JSON file which contains the prompts to import
+            <input type="file" name="lang" />
+            <input type="submit" value="Create" />
+        </div>
+    }
+</div>

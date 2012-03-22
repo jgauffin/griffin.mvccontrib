@@ -11,6 +11,26 @@ namespace Griffin.MvcContrib.VirtualPathProvider
     /// <summary>
     ///   Virtual path provider used to provide resources for Griffin framework
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// You can easily use embedded views (using class libraries for Controllers & Views) by configuration MVC like this:
+    /// <example>
+    /// <code>
+    /// // you can assign a custom WebViewPage or a custom layout.
+    /// var fixer = new EmbeddedViewFixer(); 
+    /// var provider = new EmbeddedViewFileProvider(fixer);
+    /// 
+    /// // Specify the assenmbly to use and the root namespace of your class library
+    /// provider.Add(new NamespaceMapping(typeof (Areas.Griffin.GriffinAreaRegistration).Assembly, "Griffin.MvcContrib"));
+    /// 
+    /// // register the embedded view provider. You can also point on the view files directly in the file system,
+    /// // which is great during development (since you can change the views on the fly)
+    /// GriffinVirtualPathProvider.Current.Add(provider);
+    /// HostingEnvironment.RegisterVirtualPathProvider(GriffinVirtualPathProvider.Current);
+    /// </code>
+    /// </example>
+    /// </para>
+    /// </remarks>
     /// <seealso cref="IEmbeddedViewFixer" />
     public class GriffinVirtualPathProvider : System.Web.Hosting.VirtualPathProvider
     {

@@ -10,16 +10,16 @@ using Griffin.MvcContrib.Providers.Membership.SqlRepository;
 namespace Griffin.MvcContrib.SqlServer.Localization
 {
     /// <summary>
-    /// Used to localize types
+    ///   Used to localize types
     /// </summary>
-    public class SqlLocalizedTypesRepository : ILocalizedTypesRepository
+    public class SqlLocalizedTypesRepository : ILocalizedTypesRepository, ITypePromptImporter
     {
         private readonly ILocalizationDbContext _db;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SqlLocalizedTypesRepository"/> class.
+        ///   Initializes a new instance of the <see cref="SqlLocalizedTypesRepository" /> class.
         /// </summary>
-        /// <param name="db">Database connection.</param>
+        /// <param name="db"> Database connection. </param>
         public SqlLocalizedTypesRepository(ILocalizationDbContext db)
         {
             if (db == null) throw new ArgumentNullException("db");
@@ -29,14 +29,12 @@ namespace Griffin.MvcContrib.SqlServer.Localization
         #region ILocalizedTypesRepository Members
 
         /// <summary>
-        /// Get all prompts
+        ///   Get all prompts
         /// </summary>
-        /// <param name="cultureInfo">Culture to get prompts for</param>
-        /// <param name="defaultCulture">Culture used as template to be able to include all non-translated prompts</param>
-        /// <param name="filter">The filter.</param>
-        /// <returns>
-        /// Collection of translations
-        /// </returns>
+        /// <param name="cultureInfo"> Culture to get prompts for </param>
+        /// <param name="defaultCulture"> Culture used as template to be able to include all non-translated prompts </param>
+        /// <param name="filter"> The filter. </param>
+        /// <returns> Collection of translations </returns>
         public IEnumerable<TypePrompt> GetPrompts(CultureInfo cultureInfo, CultureInfo defaultCulture,
                                                   SearchFilter filter)
         {
@@ -46,6 +44,11 @@ namespace Griffin.MvcContrib.SqlServer.Localization
             {
                 cmd.CommandText = sql;
                 cmd.AddParameter("LocaleId", cultureInfo.LCID);
+                if (!string.IsNullOrEmpty(filter.TextFilter))
+                {
+                    cmd.CommandText += " AND TypeName LIKE '@typeName'";
+                    cmd.AddParameter("typeName", filter.TextFilter + "%");
+                }
 
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -60,10 +63,10 @@ namespace Griffin.MvcContrib.SqlServer.Localization
         }
 
         /// <summary>
-        /// Create translation for a new language
+        ///   Create translation for a new language
         /// </summary>
-        /// <param name="culture">Language to create</param>
-        /// <param name="templateCulture">Language to use as a template</param>
+        /// <param name="culture"> Language to create </param>
+        /// <param name="templateCulture"> Language to use as a template </param>
         public void CreateLanguage(CultureInfo culture, CultureInfo templateCulture)
         {
             if (culture == null) throw new ArgumentNullException("culture");
@@ -83,13 +86,11 @@ namespace Griffin.MvcContrib.SqlServer.Localization
         }
 
         /// <summary>
-        /// Get a specific prompt
+        ///   Get a specific prompt
         /// </summary>
-        /// <param name="culture">Culture to get prompt for</param>
-        /// <param name="key">Key which is unique in the current language</param>
-        /// <returns>
-        /// Prompt if found; otherwise <c>null</c>.
-        /// </returns>
+        /// <param name="culture"> Culture to get prompt for </param>
+        /// <param name="key"> Key which is unique in the current language </param>
+        /// <returns> Prompt if found; otherwise <c>null</c> . </returns>
         public TypePrompt GetPrompt(CultureInfo culture, TypePromptKey key)
         {
             var sql = "SELECT * FROM LocalizedTypes WHERE LocaleId = @LocaleId AND [Key] = @TextKey";
@@ -107,12 +108,12 @@ namespace Griffin.MvcContrib.SqlServer.Localization
         }
 
         /// <summary>
-        /// Create  or update a prompt
+        ///   Create or update a prompt
         /// </summary>
-        /// <param name="culture">Culture that the prompt is for</param>
-        /// <param name="type">Type being localized</param>
-        /// <param name="name">Property name and any additonal names (such as metadata name, use underscore as delimiter)</param>
-        /// <param name="translatedText">Translated text string</param>
+        /// <param name="culture"> Culture that the prompt is for </param>
+        /// <param name="type"> Type being localized </param>
+        /// <param name="name"> Property name and any additonal names (such as metadata name, use underscore as delimiter) </param>
+        /// <param name="translatedText"> Translated text string </param>
         public void Save(CultureInfo culture, Type type, string name, string translatedText)
         {
             if (culture == null) throw new ArgumentNullException("culture");
@@ -128,9 +129,9 @@ namespace Griffin.MvcContrib.SqlServer.Localization
         }
 
         /// <summary>
-        /// Get all languages that got partial or full translations.
+        ///   Get all languages that got partial or full translations.
         /// </summary>
-        /// <returns>Cultures corresponding to the translations</returns>
+        /// <returns> Cultures corresponding to the translations </returns>
         public IEnumerable<CultureInfo> GetAvailableLanguages()
         {
             var sql = "SELECT distinct LocaleId FROM LocalizedTypes";
@@ -150,11 +151,11 @@ namespace Griffin.MvcContrib.SqlServer.Localization
         }
 
         /// <summary>
-        /// Update translation
+        ///   Update translation
         /// </summary>
-        /// <param name="culture">Culture that the prompt is for</param>
-        /// <param name="key">Unique key, in the specified language only, for the prompt to get)</param>
-        /// <param name="translatedText">Translated text string</param>
+        /// <param name="culture"> Culture that the prompt is for </param>
+        /// <param name="key"> Unique key, in the specified language only, for the prompt to get) </param>
+        /// <param name="translatedText"> Translated text string </param>
         public void Update(CultureInfo culture, TypePromptKey key, string translatedText)
         {
             if (culture == null) throw new ArgumentNullException("culture");
@@ -174,10 +175,10 @@ namespace Griffin.MvcContrib.SqlServer.Localization
         }
 
         /// <summary>
-        /// Delete a prompt.
+        ///   Delete a prompt.
         /// </summary>
-        /// <param name="culture">Culture to delete prompt in</param>
-        /// <param name="key">Prompt key</param>
+        /// <param name="culture"> Culture to delete prompt in </param>
+        /// <param name="key"> Prompt key </param>
         public void Delete(CultureInfo culture, TypePromptKey key)
         {
             if (culture == null) throw new ArgumentNullException("culture");
@@ -190,6 +191,22 @@ namespace Griffin.MvcContrib.SqlServer.Localization
                 cmd.AddParameter("lcid", culture.LCID);
                 cmd.AddParameter("textKey", key.ToString());
                 cmd.ExecuteNonQuery();
+            }
+        }
+
+        #endregion
+
+        #region ITypePromptImporter Members
+
+        /// <summary>
+        ///   Import prompts into the repository.
+        /// </summary>
+        /// <param name="prompts"> Prompts to import </param>
+        public void Import(IEnumerable<TypePrompt> prompts)
+        {
+            foreach (var prompt in prompts)
+            {
+                Update(new CultureInfo(prompt.LocaleId), prompt.Key, prompt.TranslatedText);
             }
         }
 

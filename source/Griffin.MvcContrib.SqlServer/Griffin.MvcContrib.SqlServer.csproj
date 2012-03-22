@@ -35,6 +35,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
@@ -44,6 +45,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AdoNetConnectionFactory.cs" />
+    <Compile Include="LocalizationDbContext.cs" />
     <Compile Include="Localization\ILocalizationDbContext.cs" />
     <Compile Include="Localization\SqlLocalizedTypesRepository.cs" />
     <Compile Include="Localization\SqlLocalizedViewsRepository.cs" />

@@ -15,11 +15,43 @@ namespace Griffin.MvcContrib.VirtualPathProvider
     ///   Locates views that are embedded resources.
     /// </summary>
     /// <remarks>
+    /// <para>
     ///   Requires that a <see cref="IEmbeddedViewFixer" /> is registered in your container if you want your views to look the same even if they are located in other projects.
+    /// </para>
+    /// <para>Each mapping should be done to the root namespace of each assembly</para>
     /// </remarks>
+    /// <example>
+    /// <code>
+    /// var provider = new EmbeddedViewFileProvider(fixer);
+    /// provider.Add(new NamespaceMapping(typeof (Areas.Griffin.GriffinAreaRegistration).Assembly, "Griffin.MvcContrib"));
+    /// 
+    /// GriffinVirtualPathProvider.Current.Add(provider);
+    /// HostingEnvironment.RegisterVirtualPathProvider(GriffinVirtualPathProvider.Current);
+    /// </code>
+    /// </example>
     public class EmbeddedViewFileProvider : IViewFileProvider
     {
+        private readonly IEmbeddedViewFixer _viewFixer;
         private readonly List<MappedResource> _resourceNames = new List<MappedResource>();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EmbeddedViewFileProvider"/> class.
+        /// </summary>
+        public EmbeddedViewFileProvider()
+        {
+            _viewFixer = DependencyResolver.Current.GetService<IEmbeddedViewFixer>();
+        }
+
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EmbeddedViewFileProvider"/> class.
+        /// </summary>
+        /// <param name="viewFixer">Corrects embeddable views so that the can be built properly</param>
+        public EmbeddedViewFileProvider(IEmbeddedViewFixer viewFixer)
+        {
+            if (viewFixer == null) throw new ArgumentNullException("viewFixer");
+            _viewFixer = viewFixer;
+        }
 
         #region IViewFileProvider Members
 
@@ -103,13 +135,12 @@ namespace Griffin.MvcContrib.VirtualPathProvider
             Map(mapping);
         }
 
-        private static Stream CorrectView(string virtualPath, Stream stream)
+        private Stream CorrectView(string virtualPath, Stream stream)
         {
-            var fixer = DependencyResolver.Current.GetService<IEmbeddedViewFixer>();
-            if (fixer == null)
+            if (_viewFixer == null)
                 return stream;
 
-            var outStream = fixer.CorrectView(virtualPath, stream);
+            var outStream = _viewFixer.CorrectView(virtualPath, stream);
             stream.Close();
             return outStream;
         }

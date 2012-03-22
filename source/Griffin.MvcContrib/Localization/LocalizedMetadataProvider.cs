@@ -19,8 +19,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
+using System.Web;
 using System.Web.Mvc;
+using System.Web.Routing;
 using Griffin.MvcContrib.Localization.Types;
 
 namespace Griffin.MvcContrib.Localization
@@ -29,23 +32,8 @@ namespace Griffin.MvcContrib.Localization
     /// Metadata provider used to localize models and their meta data.
     /// </summary>
     /// <remarks>
-    /// Check for instance <see cref="ResourceStringProvider"/> to get a description about the actual localization process.
+    /// <para>Check the namespace documentation for an example on how to use the provider.</para>
     /// </remarks>
-    /// <example>
-    /// <code>
-    /// public class MvcApplication : System.Web.HttpApplication
-    /// {
-    ///     protected void Application_Start()
-    ///     {
-    ///          var stringProvider = new ResourceStringProvider(ModelMetadataStrings.ResourceManager);
-    ///          ModelMetadataProviders.Current = new LocalizedModelMetadataProvider(stringProvider);
-    ///
-    ///         ModelValidatorProviders.Providers.Clear();
-    ///         ModelValidatorProviders.Providers.Add(new LocalizedModelValidatorProvider(stringProvider));
-    ///     }
-    /// }
-    /// </code>
-    /// </example>
     public class LocalizedModelMetadataProvider : DataAnnotationsModelMetadataProvider
     {
         private ILocalizedStringProvider _stringProviderDontUseDirectly;
@@ -56,6 +44,7 @@ namespace Griffin.MvcContrib.Localization
         /// <param name="stringProvider">The string provider.</param>
         public LocalizedModelMetadataProvider(ILocalizedStringProvider stringProvider)
         {
+            if (stringProvider == null) throw new ArgumentNullException("stringProvider");
             _stringProviderDontUseDirectly = stringProvider;
         }
 
@@ -71,9 +60,26 @@ namespace Griffin.MvcContrib.Localization
         {
             get
             {
-                return _stringProviderDontUseDirectly ??
-                       (_stringProviderDontUseDirectly =
-                        DependencyResolver.Current.GetService<ILocalizedStringProvider>());
+                if (_stringProviderDontUseDirectly != null)
+                    return _stringProviderDontUseDirectly;
+
+
+                // ASP.NET doesn't honor the IoC scope of the provider
+                // which means that we can't set the dependency one,
+                // but need to resolve it per request
+                var provider = HttpContext.Current.Items["ILocalizedStringProvider"] as ILocalizedStringProvider;
+                if (provider == null)
+                {
+                    Trace.WriteLine("** Resolving provider ");
+                    provider = DependencyResolver.Current.GetService<ILocalizedStringProvider>();
+                    HttpContext.Current.Items["ILocalizedStringProvider"] = provider;
+                }
+
+                if (provider == null)
+                    throw new InvalidOperationException(
+                        "Failed to find an 'ILocalizedStringProvider' implementation. Either include one in the LocalizedModelMetadataProvider constructor, or register an implementation in your Inversion Of Control container.");
+
+                return provider;
             }
         }
 

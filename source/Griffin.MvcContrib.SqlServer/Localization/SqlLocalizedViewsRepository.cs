@@ -12,7 +12,7 @@ namespace Griffin.MvcContrib.SqlServer.Localization
     /// <summary>
     /// Repository using SQL to handle views.
     /// </summary>
-    public class SqlLocalizedViewsRepository : IViewLocalizationRepository
+    public class SqlLocalizedViewsRepository : IViewLocalizationRepository, IViewPromptImporter
     {
         private readonly ILocalizationDbContext _db;
 
@@ -47,6 +47,12 @@ namespace Griffin.MvcContrib.SqlServer.Localization
             {
                 cmd.CommandText = sql;
                 cmd.AddParameter("LocaleId", culture.LCID);
+
+                if (!string.IsNullOrEmpty(filter.TextFilter))
+                {
+                    cmd.CommandText += " AND ViewPath LIKE '@viewPath'";
+                    cmd.AddParameter("viewPath", filter.TextFilter + "%");
+                }
                 return MapCollection(cmd);
             }
         }
@@ -320,6 +326,19 @@ namespace Griffin.MvcContrib.SqlServer.Localization
                 cmd.AddParameter("key", textKey);
                 cmd.CommandText = sql;
                 return !cmd.ExecuteScalar().Equals(0);
+            }
+        }
+
+        /// <summary>
+        /// Imports a collection of view prompts into the data source
+        /// </summary>
+        /// <param name="viewPrompts">Collection of prompts to import</param>
+        public void Import(IEnumerable<ViewPrompt> viewPrompts)
+        {
+            if (viewPrompts == null) throw new ArgumentNullException("viewPrompts");
+            foreach (var viewPrompt in viewPrompts)
+            {
+                Update(viewPrompt);
             }
         }
     }

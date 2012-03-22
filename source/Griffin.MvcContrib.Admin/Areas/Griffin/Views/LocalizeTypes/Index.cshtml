@@ -4,9 +4,12 @@
     ViewBag.Title = "Index";
 }
 <div class="griffin">
-    <script type="text/javascript" src="@Url.Content("~/Areas/Griffin/Scripts/griffin.js")"> </script>
-    @Html.ActionLink("View localization", "Index", "LocalizeViews") |
-    @Html.ActionLink("Type localization", "Index", "LocalizeTypes")
+    @Html.Partial("_menu")
+    @if (ViewBag.Importer)
+    {
+        @Html.ActionLink("Import prompts", "Import")
+        @Html.ActionLink("Export prompts", "Export")
+    }
     <h2>@CultureInfo.CurrentUICulture.DisplayName</h2>
     @using (Html.BeginForm("CreateLanguage", "LocalizeTypes"))
     {

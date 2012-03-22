@@ -36,6 +36,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
@@ -54,7 +55,6 @@
     <Compile Include="Areas\Griffin\Controllers\LocalizeViewsController.cs" />
     <Compile Include="Areas\Griffin\GriffinAreaRegistration.cs" />
     <Compile Include="Areas\Griffin\LinkHelpers.cs" />
-    <Compile Include="Areas\Griffin\Models\Account\Account.cs" />
     <Compile Include="Areas\Griffin\Models\Account\CreateModel.cs" />
     <Compile Include="Areas\Griffin\Models\Account\ListModel.cs" />
     <Compile Include="Areas\Griffin\Models\Account\SearchModel.cs" />
@@ -66,6 +66,7 @@
     <Compile Include="Areas\Griffin\Models\LocalizeViews\IndexModel.cs" />
     <Compile Include="Areas\Griffin\Models\LocalizeViews\TranslateModel.cs" />
     <Compile Include="Areas\Griffin\Models\LocalizeViews\ViewPrompt.cs" />
+    <Compile Include="NamespaceDoc.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -109,11 +110,14 @@
     <EmbeddedResource Include="Areas\Griffin\Views\LocalizeViews\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Areas\Griffin\Views\LocalizeTypes\Import.cshtml" />
+    <EmbeddedResource Include="Areas\Griffin\Views\Shared\_menu.cshtml" />
+    <EmbeddedResource Include="Areas\Griffin\Views\LocalizeTypes\Imported.cshtml" />
+    <EmbeddedResource Include="Areas\Griffin\Views\LocalizeTypes\Export.cshtml" />
+    <EmbeddedResource Include="Areas\Griffin\Views\LocalizeTypes\_ExportPreview.cshtml" />
     <None Include="Areas\Griffin\Views\Web.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Areas\Griffin\Views\Shared\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Griffin.MvcContrib\Griffin.MvcContrib.csproj">
       <Project>{0D102D58-4D79-444D-B633-F7ACD3B6D749}</Project>

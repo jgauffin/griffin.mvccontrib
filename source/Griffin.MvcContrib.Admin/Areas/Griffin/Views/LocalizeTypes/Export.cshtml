@@ -1,0 +1,40 @@
+﻿@model object
+@{
+    ViewBag.Title = "Index";
+}
+<div class="griffin">
+    @Html.Partial("_menu")
+    <h2>Export texts</h2>
+    @using (Html.BeginForm("Export", "LocalizeTypes", FormMethod.Post, new{enctype = "multipart/form-data"}))
+    {
+        @Html.ValidationSummary(true)
+        <div>
+            Enter a partial namespace (or empty for all) matching the prompts to export.><br />
+            <input type="text" name="lang" /><br />
+            <br />
+            <label><input type="checkbox" value="true" name="commons"/> Include commons</label><br />
+            <label><input type="checkbox" value="true" name="alllanguages"/> All languages</label><br />
+            <br />
+            <input type="submit" value="Create" />
+            <input type="button" value="Preview" id="Preview" />
+        </div>
+        
+        <table id="preview" style="width: 100%;">
+            <tbody>
+                
+            </tbody>
+        </table>
+    }
+</div>
+<script type="text/javascript">
+    $(function () {
+        $('#Preview').click(function (e) {
+            e.preventDefault();
+
+            $('#preview tbody').load('@Url.Action("ExportPreview")?commons=' + $('input[name="commons"]').val()
+                + '&filter=' + $('input[name="commons"]').val()
+                + '&alllanguages=' + $('input[name="alllanguages"]').val());
+        });
+    })
+
+</script>

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Mvc;
 using Griffin.MvcContrib.Areas.Griffin.Models.LocalizeViews;
 using Griffin.MvcContrib.Localization;
+using Griffin.MvcContrib.Localization.Types;
 using Griffin.MvcContrib.Localization.Views;
 using ViewPrompt = Griffin.MvcContrib.Areas.Griffin.Models.LocalizeViews.ViewPrompt;
 
@@ -13,10 +14,14 @@ namespace Griffin.MvcContrib.Areas.Griffin.Controllers
     public class LocalizeViewsController : Controller
     {
         private readonly IViewLocalizationRepository _repository;
+        private IViewPromptImporter _importer;
 
         public LocalizeViewsController(IViewLocalizationRepository repository)
         {
             _repository = repository;
+
+            // it's optional, since it depends on the implementation
+            _importer = DependencyResolver.Current.GetService<IViewPromptImporter>();
         }
 
         [HttpPost]
