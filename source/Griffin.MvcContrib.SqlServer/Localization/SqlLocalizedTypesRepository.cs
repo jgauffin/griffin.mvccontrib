@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Globalization;
+using System.Linq;
 using System.Threading;
 using Griffin.MvcContrib.Localization;
 using Griffin.MvcContrib.Localization.Types;
@@ -14,7 +16,7 @@ namespace Griffin.MvcContrib.SqlServer.Localization
     /// </summary>
     public class SqlLocalizedTypesRepository : ILocalizedTypesRepository, ITypePromptImporter
     {
-        private readonly ILocalizationDbContext _db;
+        protected readonly ILocalizationDbContext _db;
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="SqlLocalizedTypesRepository" /> class.
@@ -25,6 +27,8 @@ namespace Griffin.MvcContrib.SqlServer.Localization
             if (db == null) throw new ArgumentNullException("db");
             _db = db;
         }
+
+
 
         #region ILocalizedTypesRepository Members
 
@@ -46,8 +50,13 @@ namespace Griffin.MvcContrib.SqlServer.Localization
                 cmd.AddParameter("LocaleId", cultureInfo.LCID);
                 if (!string.IsNullOrEmpty(filter.TextFilter))
                 {
-                    cmd.CommandText += " AND TypeName LIKE '@typeName'";
-                    cmd.AddParameter("typeName", filter.TextFilter + "%");
+                    cmd.CommandText += " AND (TypeName LIKE @TextFilter OR TextName LIKE @TextFilter";
+                    cmd.AddParameter("TextFilter", '%' + filter.TextFilter + "%");
+                }
+                if (!string.IsNullOrEmpty(filter.Path))
+                {
+                    cmd.CommandText += " AND TypeName LIKE @PartialName";
+                    cmd.AddParameter("PartialName", filter.Path + "%");
                 }
 
                 using (var reader = cmd.ExecuteReader())
@@ -114,16 +123,31 @@ namespace Griffin.MvcContrib.SqlServer.Localization
         /// <param name="type"> Type being localized </param>
         /// <param name="name"> Property name and any additonal names (such as metadata name, use underscore as delimiter) </param>
         /// <param name="translatedText"> Translated text string </param>
+        [Obsolete("Use the version with fullTypeName instead")]
         public void Save(CultureInfo culture, Type type, string name, string translatedText)
         {
+            Save(culture, type.FullName, name, translatedText);
+        }
+
+        /// <summary>
+        /// Create  or update a prompt
+        /// </summary>
+        /// <param name="culture">Culture that the prompt is for</param>
+        /// <param name="fullTypeName">Type.FullName for the type being localized</param>
+        /// <param name="name">Property name and any additonal names (such as metadata name, use underscore as delimiter)</param>
+        /// <param name="translatedText">Translated text string</param>
+        public void Save(CultureInfo culture, string fullTypeName, string name, string translatedText)
+        {
             if (culture == null) throw new ArgumentNullException("culture");
-            if (type == null) throw new ArgumentNullException("type");
+            if (fullTypeName == null) throw new ArgumentNullException("fullTypeName");
             if (name == null) throw new ArgumentNullException("name");
             if (translatedText == null) throw new ArgumentNullException("translatedText");
+            if (fullTypeName.IndexOf(".") == -1)
+                throw new ArgumentException("You must use Type.FullName", "fullTypeName");
 
-            var key = new TypePromptKey(type, name);
+            var key = new TypePromptKey(fullTypeName, name);
             if (!Exists(culture, key))
-                Create(culture, type, name, translatedText);
+                Create(culture, fullTypeName, name, translatedText);
             else
                 Update(culture, key, translatedText);
         }
@@ -143,7 +167,7 @@ namespace Griffin.MvcContrib.SqlServer.Localization
                     var items = new List<CultureInfo>();
                     while (reader.Read())
                     {
-                        items.Add(new CultureInfo((int) reader[0]));
+                        items.Add(new CultureInfo((int)reader[0]));
                     }
                     return items;
                 }
@@ -162,12 +186,14 @@ namespace Griffin.MvcContrib.SqlServer.Localization
             if (key == null) throw new ArgumentNullException("key");
             if (translatedText == null) throw new ArgumentNullException("translatedText");
 
-            var sql = "UPDATE LocalizedTypes SET Value=@value WHERE LocaleId = @lcid AND [Key] = @key";
+            var sql = "UPDATE LocalizedTypes SET Value=@value, UpdatedAt=@updat, UpdatedBy=@updby WHERE LocaleId = @lcid AND [Key] = @key";
 
             using (var cmd = _db.Connection.CreateCommand())
             {
                 cmd.CommandText = sql;
                 cmd.AddParameter("value", translatedText);
+                cmd.AddParameter("updat", DateTime.Now);
+                cmd.AddParameter("updby", Thread.CurrentPrincipal.Identity.Name);
                 cmd.AddParameter("lcid", culture.LCID);
                 cmd.AddParameter("key", key.ToString());
                 cmd.ExecuteNonQuery();
@@ -202,28 +228,71 @@ namespace Griffin.MvcContrib.SqlServer.Localization
         ///   Import prompts into the repository.
         /// </summary>
         /// <param name="prompts"> Prompts to import </param>
-        public void Import(IEnumerable<TypePrompt> prompts)
+        /// <remarks>
+        /// <para>Batch for inserting/updating several rows.</para>
+        /// <para>
+        /// This method is not database engine independent (it uses SqlServers MERGE INTO). You must override it to add support
+        /// for other databases than SqlServer (for instance using REPLACE INTO in MySQL)</para></remarks>
+        public virtual void Import(IEnumerable<TypePrompt> prompts)
         {
-            foreach (var prompt in prompts)
+            using (var transaction = _db.Connection.BeginTransaction())
             {
-                Update(new CultureInfo(prompt.LocaleId), prompt.Key, prompt.TranslatedText);
+                var sql =
+                    @"MERGE LocalizedTypes AS target
+    USING (SELECT @lcid, @TextKey, @TypeName, @TextName, @value, @updat, @updby) AS source (LocaleId, TextKey, TypeName, TextName, Value, UpdatedAt, UpdatedBy)
+    ON (target.LocaleId = source.LocaleId AND target.[Key] = source.TextKey)
+    WHEN MATCHED THEN 
+        UPDATE SET Value=source.Value, UpdatedAt=source.UpdatedAt, UpdatedBy=source.UpdatedBy
+	WHEN NOT MATCHED THEN	
+	    INSERT (LocaleId, [Key], TypeName, TextName, Value, UpdatedAt, UpdatedBy)
+	    VALUES (source.LocaleId, source.TextKey, source.TypeName, source.TextName, source.Value, source.UpdatedAt, source.UpdatedBy);
+";
+  /*                  @"MERGE INTO LocalizedTypes 
+WHERE [Key] = @TextKey AND LocaleId = @lcid
+WHEN matched THEN
+    UPDATE SET Value=@value, updat=@updat, updby=@updby
+WHEN NOT matched THEN
+     INSERT (LocaleId, [Key], TypeName, TextName, Value, UpdatedAt, UpdatedBy)
+        VALUES (@lcid, @TextKey, @TypeName, @TextName, @value, @updat, @updby)";
+                */
+                foreach (var prompt in prompts)
+                {
+                    
+                    //var key = new TypePromptKey(type, name);
+                    using (var cmd = _db.Connection.CreateCommand())
+                    {
+                        cmd.Transaction = transaction;
+                        cmd.AddParameter("lcid", prompt.LocaleId);
+                        cmd.AddParameter("TextKey", prompt.Key.ToString());
+                        cmd.AddParameter("TypeName", prompt.TypeFullName);
+                        cmd.AddParameter("TextName", prompt.TextName);
+                        cmd.AddParameter("value", prompt.TranslatedText);
+                        cmd.AddParameter("updat", DateTime.Now);
+                        cmd.AddParameter("updby", Thread.CurrentPrincipal.Identity.Name);
+                        cmd.CommandText = sql;
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+                transaction.Commit();
             }
+
         }
 
         #endregion
 
-        private void Create(CultureInfo culture, Type type, string name, string translatedText)
+        private void Create(CultureInfo culture, string fullTypeName, string name, string translatedText)
         {
             var sql =
                 @"INSERT INTO LocalizedTypes (LocaleId, [Key], TypeName, TextName, Value, UpdatedAt, UpdatedBy)
                       VALUES (@lcid, @TextKey, @TypeName, @TextName, @value, @updat, @updby)";
 
-            var key = new TypePromptKey(type, name);
+            var key = new TypePromptKey(fullTypeName, name);
             using (var cmd = _db.Connection.CreateCommand())
             {
                 cmd.AddParameter("lcid", culture.LCID);
                 cmd.AddParameter("TextKey", key.ToString());
-                cmd.AddParameter("TypeName", type.AssemblyQualifiedName);
+                cmd.AddParameter("TypeName", fullTypeName);
                 cmd.AddParameter("TextName", name);
                 cmd.AddParameter("value", translatedText);
                 cmd.AddParameter("updat", DateTime.Now);
@@ -248,14 +317,20 @@ namespace Griffin.MvcContrib.SqlServer.Localization
 
         private TypePrompt MapEntity(IDataRecord record)
         {
+            // Convert assembly qualified to just full typename
+            var fullName = record["TypeName"].ToString();
+            int pos = fullName.IndexOf(",");
+            if (pos != -1)
+                fullName = fullName.Remove(pos);
+
             return new TypePrompt
                        {
-                           LocaleId = (int) record["LocaleId"],
-                           SubjectTypeName = record["TypeName"].ToString(),
+                           LocaleId = (int)record["LocaleId"],
+                           TypeFullName = fullName,
                            Key = new TypePromptKey(record["Key"].ToString()),
                            TextName = record["TextName"].ToString(),
                            TranslatedText = record["Value"].ToString(),
-                           UpdatedAt = (DateTime) record["UpdatedAt"],
+                           UpdatedAt = (DateTime)record["UpdatedAt"],
                            UpdatedBy = record["UpdatedBy"].ToString()
                        };
         }

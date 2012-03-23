@@ -10,15 +10,16 @@ using System.Web.Mvc;
 using Griffin.MvcContrib.Areas.Griffin.Models.LocalizeTypes;
 using Griffin.MvcContrib.Localization;
 using Griffin.MvcContrib.Localization.Types;
-using TypePrompt = Griffin.MvcContrib.Areas.Griffin.Models.LocalizeTypes.TypePrompt;
+using TypePrompt = Griffin.MvcContrib.Localization.Types.TypePrompt;
 
 namespace Griffin.MvcContrib.Areas.Griffin.Controllers
 {
+    [GriffinAuthorize(GriffinAdminRoles.TranslatorName)]
     [Localized]
     public class LocalizeTypesController : Controller
     {
-        private readonly ILocalizedTypesRepository _repository;
         private readonly ITypePromptImporter _importer;
+        private readonly ILocalizedTypesRepository _repository;
 
         public LocalizeTypesController(ILocalizedTypesRepository repository)
         {
@@ -27,6 +28,13 @@ namespace Griffin.MvcContrib.Areas.Griffin.Controllers
             // it's optional, since it depends on the implementation
             _importer = DependencyResolver.Current.GetService<ITypePromptImporter>();
             AddValidationPromptsIfMissing();
+        }
+
+        protected override void OnResultExecuting(ResultExecutingContext filterContext)
+        {
+            ViewBag.Importer = _importer != null;
+
+            base.OnResultExecuting(filterContext);
         }
 
         [HttpPost]
@@ -45,7 +53,7 @@ namespace Griffin.MvcContrib.Areas.Griffin.Controllers
                 var model = new IndexModel
                                 {
                                     Cultures = _repository.GetAvailableLanguages(),
-                                    Prompts = allPrompts.Select(p => new TypePrompt(p))
+                                    Prompts = allPrompts.Select(p => new Models.LocalizeTypes.TypePrompt(p))
                                 };
                 return View("Index", model);
             }
@@ -55,8 +63,8 @@ namespace Griffin.MvcContrib.Areas.Griffin.Controllers
         {
             var key = new TypePromptKey(id);
             var prompt = _repository.GetPrompt(CultureInfo.CurrentUICulture, key);
-            prompt.Subject = typeof(CommonPrompts);
-            _repository.Save(CultureInfo.CurrentUICulture, typeof(CommonPrompts), prompt.TextName,
+            prompt.TypeFullName = typeof(CommonPrompts).FullName;
+            _repository.Save(CultureInfo.CurrentUICulture, typeof(CommonPrompts).FullName, prompt.TextName,
                              prompt.TranslatedText);
             _repository.Delete(CultureInfo.CurrentUICulture, key);
             return RedirectToAction("Index");
@@ -78,7 +86,8 @@ namespace Griffin.MvcContrib.Areas.Griffin.Controllers
         public ActionResult Import(HttpPostedFileBase dataFile)
         {
             var serializer = new DataContractJsonSerializer(typeof(TypePrompt[]));
-            var prompts = (IEnumerable<Localization.Types.TypePrompt>)serializer.ReadObject(dataFile.InputStream);
+            var deserialized = serializer.ReadObject(dataFile.InputStream);
+            var prompts = (IEnumerable<TypePrompt>)deserialized;
             _importer.Import(prompts);
             return View("Imported", prompts.Count());
         }
@@ -91,8 +100,8 @@ namespace Griffin.MvcContrib.Areas.Griffin.Controllers
         [HttpPost]
         public ActionResult Export(bool commons, string filter, bool allLanguages)
         {
-            var allPrompts = GetPromptsForExport(filter, allLanguages);
-            Response.AddHeader("Content-Disposition", "attachment;filename=prompts.json");
+            var allPrompts = GetPromptsForExport(filter, commons, allLanguages);
+            Response.AddHeader("Content-Disposition", string.Format("attachment;filename=type-prompts-{0}.json", DateTime.Now.ToString("yyyyMMdd-HHmm")));
             var serializer = new DataContractJsonSerializer(typeof(List<Localization.Types.TypePrompt>));
             var ms = new MemoryStream();
             serializer.WriteObject(ms, allPrompts);
@@ -102,43 +111,45 @@ namespace Griffin.MvcContrib.Areas.Griffin.Controllers
 
         public ActionResult ExportPreview(bool commons, string filter, bool allLanguages)
         {
-            var allPrompts = GetPromptsForExport(filter, allLanguages);
+            var allPrompts = GetPromptsForExport(filter, commons, allLanguages);
 
-            var model = allPrompts.Select(x => new TypePrompt(x));
+            var model = allPrompts.Select(x => new Models.LocalizeTypes.TypePrompt(x));
             return PartialView("_ExportPreview", model);
         }
 
-        private List<Localization.Types.TypePrompt> GetPromptsForExport(string filter, bool allLanguages)
+        private List<TypePrompt> GetPromptsForExport(string filter, bool includeCommon, bool allLanguages)
         {
             var cultures = allLanguages
                                ? _repository.GetAvailableLanguages()
-                               : new[] {CultureInfo.CurrentUICulture};
+                               : new[] { CultureInfo.CurrentUICulture };
 
-            var allPrompts = new List<Localization.Types.TypePrompt>();
+            var allPrompts = new List<TypePrompt>();
             foreach (var cultureInfo in cultures)
             {
-                var sf = new SearchFilter {Path = filter};
-                var prompts = _repository.GetPrompts(cultureInfo, DefaultUICulture.Value, sf);
+                var sf = new SearchFilter { Path = filter };
+                var prompts = _repository.GetPrompts(cultureInfo, cultureInfo, sf);
                 foreach (var prompt in prompts)
                 {
                     if (!allPrompts.Any(x => x.LocaleId == prompt.LocaleId && x.Key == prompt.Key))
                         allPrompts.Add(prompt);
                 }
 
-                sf.Path = typeof (CommonPrompts).Namespace + ".CommonPrompts";
-                prompts = _repository.GetPrompts(cultureInfo, DefaultUICulture.Value, sf);
-                foreach (var prompt in prompts)
+                if (includeCommon)
                 {
-                    if (!allPrompts.Any(x => x.LocaleId == prompt.LocaleId && x.Key == prompt.Key))
-                        allPrompts.Add(prompt);
+                    sf.Path = typeof(CommonPrompts).Namespace + ".CommonPrompts";
+                    prompts = _repository.GetPrompts(cultureInfo, cultureInfo, sf);
+                    foreach (var prompt in prompts)
+                    {
+                        if (!allPrompts.Any(x => x.LocaleId == prompt.LocaleId && x.Key == prompt.Key))
+                            allPrompts.Add(prompt);
+                    }
                 }
             }
-            return allPrompts;
+            return allPrompts.Where(x => !string.IsNullOrEmpty(x.TranslatedText)).ToList();
         }
 
         public ActionResult Index()
         {
-
             var cookie = Request.Cookies["ShowMetadata"];
             var showMetadata = cookie != null && cookie.Value == "1";
 
@@ -146,12 +157,11 @@ namespace Griffin.MvcContrib.Areas.Griffin.Controllers
 
             var prompts =
                 _repository.GetPrompts(CultureInfo.CurrentUICulture, DefaultUICulture.Value, new SearchFilter()).Select(
-                    p => new TypePrompt(p)).OrderBy(p => p.TypeName).
+                    p => new Models.LocalizeTypes.TypePrompt(p)).OrderBy(p => p.TypeName).
                     ToList();
             if (!showMetadata)
                 prompts = prompts.Where(p => p.TextName == null || !p.TextName.Contains("_")).ToList();
 
-            ViewBag.Importer = _importer != null;
 
             var model = new IndexModel
                             {
@@ -169,14 +179,15 @@ namespace Griffin.MvcContrib.Areas.Griffin.Controllers
                 return;
 
             var prompt = _repository.GetPrompt(DefaultUICulture.Value,
-                                               new TypePromptKey(typeof(StringLengthAttribute), "class"));
+                                               new TypePromptKey(typeof(StringLengthAttribute).FullName, "class"));
             if (prompt == null)
             {
                 var provider = new ValidationAttributesStringProvider();
                 foreach (var typePrompt in provider.GetPrompts(DefaultUICulture.Value))
                 {
                     if (!string.IsNullOrEmpty(typePrompt.TranslatedText))
-                        _repository.Save(DefaultUICulture.Value, typePrompt.Subject, typePrompt.TextName, typePrompt.TranslatedText);
+                        _repository.Save(DefaultUICulture.Value, typePrompt.TypeFullName, typePrompt.TextName,
+                                         typePrompt.TranslatedText);
                 }
             }
         }
@@ -198,7 +209,7 @@ namespace Griffin.MvcContrib.Areas.Griffin.Controllers
                                 LocaleId = prompt.LocaleId,
                                 Path =
                                     string.Format("{0} / {1} / {2}", CultureInfo.CurrentUICulture.DisplayName,
-                                                  prompt.Subject.Name, prompt.TextName),
+                                                  prompt.TypeName, prompt.TextName),
                                 Text = prompt.TranslatedText,
                                 TextKey = prompt.Key.ToString()
                             };

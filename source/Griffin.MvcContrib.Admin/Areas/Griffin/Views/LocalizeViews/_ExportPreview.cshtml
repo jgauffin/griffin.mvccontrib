@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Griffin.MvcContrib.Areas.Griffin.Models.LocalizeTypes.TypePrompt>
+﻿@model IEnumerable<Griffin.MvcContrib.Areas.Griffin.Models.LocalizeViews.ViewPrompt>
 @{
     ViewBag.Title = "Index";
 }
@@ -6,7 +6,7 @@
 {
     <tr>
         <td>@prompt.LocaleId</td>
-        <td>@prompt.Namespace.@prompt.TypeName.@prompt.TextName</td>
+        <td>@prompt.ViewPath/@prompt.TextName</td>
         <td>@prompt.TranslatedText</td>
     </tr>
 }

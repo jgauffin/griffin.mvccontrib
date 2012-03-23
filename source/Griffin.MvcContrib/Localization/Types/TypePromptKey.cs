@@ -19,15 +19,15 @@ namespace Griffin.MvcContrib.Localization.Types
         /// <summary>
         /// Initializes a new instance of the <see cref="ViewPromptKey"/> class.
         /// </summary>
-        /// <param name="type">Type that get a localization.</param>
+        /// <param name="fullTypeName">Type.FullName for the type getting localized.</param>
         /// <param name="name">Property name (and metadata name prefixed with underscore).</param>
-        public TypePromptKey(Type type, string name)
+        public TypePromptKey(string fullTypeName, string name)
         {
-            if (type == null) throw new ArgumentNullException("type");
+            if (fullTypeName == null) throw new ArgumentNullException("type");
             if (name == null) throw new ArgumentNullException("name");
 
             var md5 = new MD5CryptoServiceProvider();
-            var retVal = md5.ComputeHash(Encoding.UTF8.GetBytes(type.FullName + name));
+            var retVal = md5.ComputeHash(Encoding.UTF8.GetBytes(fullTypeName + name));
             var sb = new StringBuilder();
             for (var i = 0; i < retVal.Length; i++)
                 sb.Append(retVal[i].ToString("x2"));

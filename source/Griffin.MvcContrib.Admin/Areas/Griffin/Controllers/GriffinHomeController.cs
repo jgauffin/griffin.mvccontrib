@@ -2,6 +2,7 @@
 
 namespace Griffin.MvcContrib.Areas.Griffin.Controllers
 {
+    [GriffinAuthorize(GriffinAdminRoles.HomePageName)]
     public class GriffinHomeController : Controller
     {
         //

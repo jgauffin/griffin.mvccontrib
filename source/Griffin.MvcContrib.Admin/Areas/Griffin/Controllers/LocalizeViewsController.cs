@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Json;
+using System.Web;
 using System.Web.Mvc;
 using Griffin.MvcContrib.Areas.Griffin.Models.LocalizeViews;
 using Griffin.MvcContrib.Localization;
@@ -10,6 +14,7 @@ using ViewPrompt = Griffin.MvcContrib.Areas.Griffin.Models.LocalizeViews.ViewPro
 
 namespace Griffin.MvcContrib.Areas.Griffin.Controllers
 {
+    [GriffinAuthorize(GriffinAdminRoles.TranslatorName)]
     [Localized]
     public class LocalizeViewsController : Controller
     {
@@ -22,6 +27,13 @@ namespace Griffin.MvcContrib.Areas.Griffin.Controllers
 
             // it's optional, since it depends on the implementation
             _importer = DependencyResolver.Current.GetService<IViewPromptImporter>();
+        }
+
+        protected override void OnResultExecuting(ResultExecutingContext filterContext)
+        {
+            ViewBag.Importer = _importer != null;
+
+            base.OnResultExecuting(filterContext);
         }
 
         [HttpPost]
@@ -133,5 +145,79 @@ namespace Griffin.MvcContrib.Areas.Griffin.Controllers
                             };
             return model;
         }
+
+
+
+        public ActionResult Import()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Import(HttpPostedFileBase dataFile)
+        {
+            var serializer = new DataContractJsonSerializer(typeof(Localization.Views.ViewPrompt[]));
+            var deserialized = serializer.ReadObject(dataFile.InputStream);
+            var prompts = (IEnumerable<Localization.Views.ViewPrompt>)deserialized;
+            _importer.Import(prompts);
+            return View("Imported", prompts.Count());
+        }
+
+        public ActionResult Export()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Export(bool commons, string filter, bool allLanguages)
+        {
+            var allPrompts = GetPromptsForExport(filter, commons, allLanguages);
+            Response.AddHeader("Content-Disposition", string.Format("attachment;filename=view-prompts-{0}.json", DateTime.Now.ToString("yyyyMMdd-HHmm")));
+            var serializer = new DataContractJsonSerializer(typeof(List<Localization.Views.ViewPrompt>));
+            var ms = new MemoryStream();
+            serializer.WriteObject(ms, allPrompts);
+            ms.Position = 0;
+            return File(ms, "application/json");
+        }
+
+        public ActionResult ExportPreview(bool commons, string filter, bool allLanguages)
+        {
+            var allPrompts = GetPromptsForExport(filter, commons, allLanguages);
+
+            var model = allPrompts.Select(x => new ViewPrompt(x));
+            return PartialView("_ExportPreview", model);
+        }
+
+        private List<Localization.Views.ViewPrompt> GetPromptsForExport(string filter, bool includeCommon, bool allLanguages)
+        {
+            var cultures = allLanguages
+                               ? _repository.GetAvailableLanguages()
+                               : new[] { CultureInfo.CurrentUICulture };
+
+            var allPrompts = new List<Localization.Views.ViewPrompt>();
+            foreach (var cultureInfo in cultures)
+            {
+                var sf = new SearchFilter { Path = filter };
+                var prompts = _repository.GetAllPrompts(cultureInfo, cultureInfo, sf);
+                foreach (var prompt in prompts)
+                {
+                    if (!allPrompts.Any(x => x.LocaleId == prompt.LocaleId && x.Key == prompt.Key))
+                        allPrompts.Add(prompt);
+                }
+
+                if (includeCommon)
+                {
+                    sf.Path = typeof(CommonPrompts).Name;
+                    prompts = _repository.GetAllPrompts(cultureInfo, cultureInfo, sf);
+                    foreach (var prompt in prompts)
+                    {
+                        if (!allPrompts.Any(x => x.LocaleId == prompt.LocaleId && x.Key == prompt.Key))
+                            allPrompts.Add(prompt);
+                    }
+                }
+            }
+            return allPrompts.Where(x=>!string.IsNullOrEmpty(x.TranslatedText)).ToList();
+        }
+
     }
 }

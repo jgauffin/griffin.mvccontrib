@@ -5,11 +5,6 @@
 }
 <div class="griffin">
     @Html.Partial("_menu")
-    @if (ViewBag.Importer)
-    {
-        @Html.ActionLink("Import prompts", "Import")
-        @Html.ActionLink("Export prompts", "Export")
-    }
     <h2>@CultureInfo.CurrentUICulture.DisplayName</h2>
     @using (Html.BeginForm("CreateLanguage", "LocalizeTypes"))
     {

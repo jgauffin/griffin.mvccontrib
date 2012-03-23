@@ -6,11 +6,11 @@
     @Html.Partial("_menu")
     <h2>
         Export texts</h2>
-    @using (Html.BeginForm("Export", "LocalizeTypes", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    @using (Html.BeginForm("Export", "LocalizeViews", FormMethod.Post, new { enctype = "multipart/form-data" }))
     {
         @Html.ValidationSummary(true)
         <div>
-            Enter a partial namespace (or empty for all) matching the prompts to export.><br />
+            Enter a partial view path (or empty for all) matching the prompts to export.><br />
             <input type="text" name="filter" /><br />
             <br />
             <label>

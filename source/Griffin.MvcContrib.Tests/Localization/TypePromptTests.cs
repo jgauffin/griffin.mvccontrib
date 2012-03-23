@@ -15,7 +15,7 @@ namespace Griffin.MvcContrib.Tests.Localization
             TypePrompt prompt = new TypePrompt();
             prompt.SubjectTypeName = GetType().AssemblyQualifiedName.Replace("1.0.0.0", "3.0.0.0");
 
-            Assert.NotNull(prompt.Subject);
+            Assert.NotNull(prompt.TypeFullName);
         }
     }
 }

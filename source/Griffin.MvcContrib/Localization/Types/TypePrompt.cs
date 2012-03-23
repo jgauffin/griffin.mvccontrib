@@ -35,72 +35,50 @@ namespace Griffin.MvcContrib.Localization.Types
 
             UpdatedAt = DateTime.Now;
             LocaleId = localeId;
-            Subject = source.Subject;
-            if (source.Subject == null)
-                throw new ArgumentException("Subject is not specified.");
+            TypeFullName = source.TypeFullName;
             Key = source.Key;
             TextName = source.TextName;
             TranslatedText = "";
         }
 
-
         /// <summary>
-        /// Gets or sets target class
+        /// Gets or sets type (class) name 
         /// </summary>
-        /// <remarks>Might be a enum, validation attribute or model type</remarks>
-        public Type Subject
+        public string TypeName
         {
             get
             {
-                if (_subject == null)
-                {
-                    if (SubjectTypeName == null)
-                        throw new InvalidOperationException("Type has not been stored for " + TextName);
-
-                    _subject = LoadType(SubjectTypeName);
-                }
-
-                return _subject;
-            }
-            set
-            {
-                _subject = value;
-                SubjectTypeName = value.AssemblyQualifiedName;
+                int pos = TypeFullName.LastIndexOf(".");
+                return pos == -1 ? TypeFullName : TypeFullName.Substring(pos + 1);
             }
         }
 
         /// <summary>
-        /// Tries to load a type.
+        /// Gets or sets namespace + class
         /// </summary>
-        /// <param name="assemblyQualifiedName">Assembly qualified name</param>
-        /// <returns>Type</returns>
-        /// <remarks>
-        /// Tries initially to load the specific version. Will try to load any version if the specified version is not found.
-        /// </remarks>
-        protected virtual Type LoadType(string assemblyQualifiedName)
-        {
-            return Type.GetType(assemblyQualifiedName, false) ??
-                   Type.GetType(assemblyQualifiedName, OnCheckAssmbly, OnCheckType, true, false);
-        }
+        [DataMember]
+        public string TypeFullName { get; set; }
 
-
-        private static Assembly OnCheckAssmbly(AssemblyName assemblyName)
-        {
-            return AppDomain.CurrentDomain
-                .GetAssemblies()
-                .FirstOrDefault(asm => asm.GetName().Name == assemblyName.Name);
-        }
-
-        private static Type OnCheckType(Assembly asm, string name, bool flag)
-        {
-            return asm.GetType(name, flag);
-        }
+        private string _subjectTypeName;
 
         /// <summary>
         /// Gets or sets assembly qualified name
         /// </summary>
         [DataMember]
-        public string SubjectTypeName { get; set; }
+        [Obsolete]
+        public string SubjectTypeName
+        {
+            get { return _subjectTypeName; }
+            set
+            {
+                if (value != null)
+                {
+                    int pos = value.IndexOf(",");
+                    TypeFullName = value.Substring(0, pos);
+                    _subjectTypeName = value;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets or sets text name
@@ -163,7 +141,7 @@ namespace Griffin.MvcContrib.Localization.Types
         /// </returns>
         public override string ToString()
         {
-            return Subject.Name + "." + TextName + ": " + TranslatedText;
+            return TypeName + "." + TextName + ": " + TranslatedText;
         }
     }
 }

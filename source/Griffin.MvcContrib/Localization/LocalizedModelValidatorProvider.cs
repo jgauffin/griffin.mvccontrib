@@ -39,7 +39,6 @@ namespace Griffin.MvcContrib.Localization
     /// Check for namespace documentation for an example on how to use the provider.
     /// </para>
     /// </remarks>
-    /// <see cref=""/>
     public class LocalizedModelValidatorProvider : DataAnnotationsModelValidatorProvider, IDisposable
     {
         private readonly ValidationAttributeAdapterFactory _adapterFactory = new ValidationAttributeAdapterFactory();

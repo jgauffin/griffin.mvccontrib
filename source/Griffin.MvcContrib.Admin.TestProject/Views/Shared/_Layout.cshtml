@@ -20,7 +20,7 @@
             </div>
             <div id="menucontainer">
                 <ul id="menu">
-                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                    <li>@Html.ActionLink("Home", "Index", "Home", new{area="Default"}, null)</li>
                     <li>@Html.ActionLink("About", "About", "Home")</li>
                     <li>@Html.ActionLink("Administration", "Index", "GriffinHome", new{area="Griffin"}, null)</li>
                 </ul>

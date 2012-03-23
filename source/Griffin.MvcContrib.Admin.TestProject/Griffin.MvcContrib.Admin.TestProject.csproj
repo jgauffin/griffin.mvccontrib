@@ -74,6 +74,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\HomeViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -138,7 +139,6 @@
   <ItemGroup>
     <Folder Include="Areas\TestArea\Models\" />
     <Folder Include="Areas\TestArea\Views\Shared\" />
-    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Griffin.MvcContrib.Admin\Griffin.MvcContrib.Admin.csproj">

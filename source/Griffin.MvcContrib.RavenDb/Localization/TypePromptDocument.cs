@@ -30,7 +30,6 @@ namespace Griffin.MvcContrib.RavenDb.Localization
             if (propertyName == null) throw new ArgumentNullException("propertyName");
 
             TextKey = key.ToString();
-            AssemblyQualifiedName = modelType.AssemblyQualifiedName;
             FullTypeName = modelType.FullName;
             TypeName = modelType.Name;
             TextName = propertyName;
@@ -46,9 +45,8 @@ namespace Griffin.MvcContrib.RavenDb.Localization
         {
             if (culture == null) throw new ArgumentNullException("culture");
             if (prompt == null) throw new ArgumentNullException("prompt");
-            AssemblyQualifiedName = prompt.Subject.AssemblyQualifiedName;
-            FullTypeName = prompt.Subject.FullName;
-            TypeName = prompt.Subject.Name;
+            FullTypeName = prompt.TypeFullName;
+            TypeName = prompt.TypeName;
             TextName = prompt.TextName;
             TextKey = prompt.Key.ToString();
             LocaleId = culture.LCID;
@@ -66,7 +64,6 @@ namespace Griffin.MvcContrib.RavenDb.Localization
         {
             if (culture == null) throw new ArgumentNullException("culture");
             if (prompt == null) throw new ArgumentNullException("prompt");
-            AssemblyQualifiedName = prompt.AssemblyQualifiedName;
             FullTypeName = prompt.FullTypeName;
             TypeName = prompt.TypeName;
             TextName = prompt.TextName;
@@ -76,11 +73,6 @@ namespace Griffin.MvcContrib.RavenDb.Localization
             UpdatedBy = prompt.UpdatedBy;
             Text = "";
         }
-
-        /// <summary>
-        /// Gets or sets Type.AssemblyQualifiedName
-        /// </summary>
-        public string AssemblyQualifiedName { get; set; }
 
         /// <summary>
         /// Gets or sets Type.FullName

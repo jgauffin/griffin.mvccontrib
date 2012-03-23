@@ -6,11 +6,7 @@ using Griffin.MvcContrib.Providers.Membership;
 
 namespace Griffin.MvcContrib.Areas.Griffin.Controllers
 {
-    public class DumpUser : MembershipUser
-    {
-    }
-
-    [Authorize]
+    [GriffinAuthorize(GriffinAdminRoles.AccountAdminName)]
     public class AccountAdminController : Controller
     {
         private readonly IAccountRepository _repository;

@@ -70,12 +70,12 @@ namespace Griffin.MvcContrib.Localization.Types
                     p => baseAttribte.IsAssignableFrom(p) && !p.IsAbstract).ToList();
             foreach (var type in attributes)
             {
-                var key = new TypePromptKey(type, "class");
+                var key = new TypePromptKey(type.FullName, "class");
                 var typePrompt = new TypePrompt
                                      {
                                          Key = key,
                                          LocaleId = CultureInfo.CurrentUICulture.LCID,
-                                         Subject = type,
+                                         TypeFullName = type.FullName,
                                          TextName = "class",
                                          UpdatedAt = DateTime.Now,
                                          UpdatedBy = Thread.CurrentPrincipal.Identity.Name

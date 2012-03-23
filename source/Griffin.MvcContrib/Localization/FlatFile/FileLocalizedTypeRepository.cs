@@ -80,26 +80,47 @@ namespace Griffin.MvcContrib.Localization.FlatFile
         /// <param name="type">Type being localized</param>
         /// <param name="name">Property name and any additonal names (such as metadata name, use underscore as delimiter)</param>
         /// <param name="translatedText">Translated text string</param>
+        [Obsolete("Use the version with fullTypeName instead.")]
         public void Save(CultureInfo culture, Type type, string name, string translatedText)
         {
+            Save(culture, type.FullName, name, translatedText);
+        }
+
+        /// <summary>
+        /// Create  or update a prompt
+        /// </summary>
+        /// <param name="culture">Culture that the prompt is for</param>
+        /// <param name="fullTypeName">Type.FullName for the type being localized</param>
+        /// <param name="name">Property name and any additonal names (such as metadata name, use underscore as delimiter)</param>
+        /// <param name="translatedText">Translated text string</param>
+        public void Save(CultureInfo culture, string fullTypeName, string name, string translatedText)
+        {
+            if (culture == null) throw new ArgumentNullException("culture");
+            if (fullTypeName == null) throw new ArgumentNullException("fullTypeName");
+            if (name == null) throw new ArgumentNullException("name");
+            if (translatedText == null) throw new ArgumentNullException("translatedText");
+            if (fullTypeName.IndexOf(".") == -1)
+                throw new ArgumentException("You must use Type.FullName", "fullTypeName");
+
+
             var lang = GetLanguage(culture);
-            var key = new TypePromptKey(type, name);
+            var key = new TypePromptKey(fullTypeName, name);
             var prompt = lang.Get(key);
             if (prompt == null)
             {
                 prompt = new TypePrompt
-                    {
-                        Key = key,
-                        LocaleId = culture.LCID,
-                        Subject = type,
-                        TextName = name,
-                        TranslatedText = translatedText,
-                        UpdatedAt = DateTime.Now,
-                        UpdatedBy = Thread.CurrentPrincipal.Identity.Name
-                    };
-                lang.Add(prompt);    
+                {
+                    Key = key,
+                    LocaleId = culture.LCID,
+                    TypeFullName = fullTypeName,
+                    TextName = name,
+                    TranslatedText = translatedText,
+                    UpdatedAt = DateTime.Now,
+                    UpdatedBy = Thread.CurrentPrincipal.Identity.Name
+                };
+                lang.Add(prompt);
             }
-            
+
             prompt.TranslatedText = translatedText;
             SaveLanguage(culture, lang);
         }

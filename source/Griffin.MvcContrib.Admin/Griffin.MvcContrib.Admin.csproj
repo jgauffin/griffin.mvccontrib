@@ -66,6 +66,8 @@
     <Compile Include="Areas\Griffin\Models\LocalizeViews\IndexModel.cs" />
     <Compile Include="Areas\Griffin\Models\LocalizeViews\TranslateModel.cs" />
     <Compile Include="Areas\Griffin\Models\LocalizeViews\ViewPrompt.cs" />
+    <Compile Include="GriffinAdminRoles.cs" />
+    <Compile Include="GriffinAuthorizeAttribute.cs" />
     <Compile Include="NamespaceDoc.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -115,6 +117,13 @@
     <EmbeddedResource Include="Areas\Griffin\Views\LocalizeTypes\Imported.cshtml" />
     <EmbeddedResource Include="Areas\Griffin\Views\LocalizeTypes\Export.cshtml" />
     <EmbeddedResource Include="Areas\Griffin\Views\LocalizeTypes\_ExportPreview.cshtml" />
+    <EmbeddedResource Include="Areas\Griffin\Views\LocalizeViews\Export.cshtml" />
+    <EmbeddedResource Include="Areas\Griffin\Views\LocalizeViews\_ExportPreview.cshtml" />
+    <EmbeddedResource Include="Areas\Griffin\Views\LocalizeViews\Import.cshtml" />
+    <EmbeddedResource Include="Areas\Griffin\Views\LocalizeViews\Imported.cshtml" />
+    <EmbeddedResource Include="Areas\Griffin\Views\LocalizeTypes\_contextMenu.cshtml" />
+    <EmbeddedResource Include="Areas\Griffin\Views\LocalizeViews\_contextMenu.cshtml" />
+    <EmbeddedResource Include="Areas\Griffin\Views\GriffinHome\_contextMenu.cshtml" />
     <None Include="Areas\Griffin\Views\Web.config" />
   </ItemGroup>
   <ItemGroup />

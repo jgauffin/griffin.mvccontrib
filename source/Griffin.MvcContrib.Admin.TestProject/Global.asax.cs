@@ -48,6 +48,10 @@ namespace Griffin.MvcContrib.Admin.TestProject
             RegisterGlobalFilters(GlobalFilters.Filters);
             RegisterRoutes(RouteTable.Routes);
 
+            // Disable role checking (user only have to be authenticated)
+            GriffinAdminRoles.Translator = null;
+            GriffinAdminRoles.HomePage = null;
+
             AddSupportForEmbeddedViews();
             SetupLocalicationProviders();
 

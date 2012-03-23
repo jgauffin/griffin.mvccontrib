@@ -50,8 +50,13 @@ namespace Griffin.MvcContrib.SqlServer.Localization
 
                 if (!string.IsNullOrEmpty(filter.TextFilter))
                 {
-                    cmd.CommandText += " AND ViewPath LIKE '@viewPath'";
-                    cmd.AddParameter("viewPath", filter.TextFilter + "%");
+                    cmd.CommandText += " AND (TextName LIKE @TextFilter OR Value LIKE @TextFilter)";
+                    cmd.AddParameter("TextFilter", '%' + filter.TextFilter + "%");
+                }
+                if (!string.IsNullOrEmpty(filter.Path))
+                {
+                    cmd.CommandText += " AND ViewPath LIKE @viewPath";
+                    cmd.AddParameter("viewPath", filter.Path + "%");
                 }
                 return MapCollection(cmd);
             }
@@ -161,6 +166,11 @@ namespace Griffin.MvcContrib.SqlServer.Localization
                 Create(prompt);
         }
 
+        /// <summary>
+        /// checks if the specified language exists.
+        /// </summary>
+        /// <param name="cultureInfo">Language to find</param>
+        /// <returns>true if found; otherwise false.</returns>
         public bool Exists(CultureInfo cultureInfo)
         {
             if (cultureInfo == null) throw new ArgumentNullException("cultureInfo");
@@ -336,9 +346,39 @@ namespace Griffin.MvcContrib.SqlServer.Localization
         public void Import(IEnumerable<ViewPrompt> viewPrompts)
         {
             if (viewPrompts == null) throw new ArgumentNullException("viewPrompts");
-            foreach (var viewPrompt in viewPrompts)
+            using (var transaction = _db.Connection.BeginTransaction())
             {
-                Update(viewPrompt);
+                var sql =
+                    @"MERGE LocalizedViews AS target
+    USING (SELECT @lcid, @TextKey, @ViewPath, @TextName, @value, @updat, @updby) AS source (LocaleId, TextKey, ViewPath, TextName, Value, UpdatedAt, UpdatedBy)
+    ON (target.LocaleId = source.LocaleId AND target.[Key] = source.TextKey)
+    WHEN MATCHED THEN 
+        UPDATE SET Value=source.Value, UpdatedAt=source.UpdatedAt, UpdatedBy=source.UpdatedBy
+	WHEN NOT MATCHED THEN	
+	    INSERT (LocaleId, [Key], ViewPath, TextName, Value, UpdatedAt, UpdatedBy)
+	    VALUES (source.LocaleId, source.TextKey, source.ViewPath, source.TextName, source.Value, source.UpdatedAt, source.UpdatedBy);
+";
+           
+                foreach (var prompt in viewPrompts)
+                {
+
+                    //var key = new TypePromptKey(type, name);
+                    using (var cmd = _db.Connection.CreateCommand())
+                    {
+                        cmd.Transaction = transaction;
+                        cmd.AddParameter("lcid", prompt.LocaleId);
+                        cmd.AddParameter("TextKey", prompt.Key.ToString());
+                        cmd.AddParameter("ViewPath", prompt.ViewPath);
+                        cmd.AddParameter("TextName", prompt.TextName);
+                        cmd.AddParameter("value", prompt.TranslatedText);
+                        cmd.AddParameter("updat", DateTime.Now);
+                        cmd.AddParameter("updby", Thread.CurrentPrincipal.Identity.Name);
+                        cmd.CommandText = sql;
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+                transaction.Commit();
             }
         }
     }

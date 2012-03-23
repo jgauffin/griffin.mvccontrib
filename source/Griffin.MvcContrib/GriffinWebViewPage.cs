@@ -12,6 +12,9 @@ namespace Griffin.MvcContrib
     {
         private ViewLocalizer _viewLocalizer;
 
+        /// <summary>
+        /// Gets class used for the view localization
+        /// </summary>
         protected virtual ViewLocalizer ViewLocalizer
         {
             get
@@ -68,10 +71,15 @@ namespace Griffin.MvcContrib
         /// GetText inspired localization
         /// </summary>
         /// <param name="text"></param>
+        /// <param name="formatterArguments">optional arguments if the string contains {} formatters</param>
         /// <returns></returns>
-        public MvcHtmlString T(string text)
+        public MvcHtmlString T(string text, params object[] formatterArguments)
         {
-            return MvcHtmlString.Create(ViewLocalizer.Translate(ViewContext.RouteData, text));
+            var translated = ViewLocalizer.Translate(ViewContext.RouteData, text);
+            return
+                MvcHtmlString.Create(formatterArguments.Length == 0
+                                         ? translated
+                                         : string.Format(translated, formatterArguments));
         }
     }
 

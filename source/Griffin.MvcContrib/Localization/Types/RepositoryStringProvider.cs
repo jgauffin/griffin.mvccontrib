@@ -105,21 +105,21 @@ namespace Griffin.MvcContrib.Localization.Types
             if (name == null) throw new ArgumentNullException("name");
 
 
-            if (!string.IsNullOrEmpty(type.Namespace) && type.Namespace.StartsWith("Griffin.MvcContrib"))
+            if (!string.IsNullOrEmpty(type.Namespace) && (type.Namespace.StartsWith("Griffin.MvcContrib") && !type.Namespace.Contains("TestProject")))
             {
                 return null;
             }
 
 
-            var key = new TypePromptKey(type, name);
+            var key = new TypePromptKey(type.FullName, name);
             var prompt = _repository.GetPrompt(CultureInfo.CurrentUICulture, key) ??
                          _repository.GetPrompt(CultureInfo.CurrentUICulture,
-                                               new TypePromptKey(typeof (CommonPrompts), name));
+                                               new TypePromptKey(typeof (CommonPrompts).FullName, name));
 
 
             if (prompt == null)
             {
-                _repository.Save(CultureInfo.CurrentUICulture, type, name, "");
+                _repository.Save(CultureInfo.CurrentUICulture, type.FullName, name, "");
             }
             else
             {

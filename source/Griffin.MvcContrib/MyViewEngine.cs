@@ -7,6 +7,9 @@ namespace Griffin.MvcContrib
     /// </summary>
     public class MyViewEngine : RazorViewEngine
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MyViewEngine"/> class.
+        /// </summary>
         public MyViewEngine()
             //  : base()
         {

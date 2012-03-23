@@ -4,8 +4,8 @@
 }
 <div class="griffin">
     @Html.Partial("_menu")
-    <h2>Import type texts</h2>
-    @using (Html.BeginForm("Import", "LocalizeTypes", FormMethod.Post, new{enctype = "multipart/form-data"}))
+    <h2>Import view texts</h2>
+    @using (Html.BeginForm("Import", "LocalizeViews", FormMethod.Post, new{enctype = "multipart/form-data"}))
     {
         @Html.ValidationSummary(true)
         <div>

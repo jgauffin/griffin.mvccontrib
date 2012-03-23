@@ -43,7 +43,19 @@ namespace Griffin.MvcContrib.Localization.Types
         /// <param name="type">Type being localized</param>
         /// <param name="name">Property name and any additonal names (such as metadata name, use underscore as delimiter)</param>
         /// <param name="translatedText">Translated text string</param>
+        [Obsolete("Use the version with full type name instead.")]
         void Save(CultureInfo culture, Type type, string name, string translatedText);
+
+
+        /// <summary>
+        /// Create  or update a prompt
+        /// </summary>
+        /// <param name="culture">Culture that the prompt is for</param>
+        /// <param name="fullTypeName">Type.FullName for the type being localized</param>
+        /// <param name="name">Property name and any additonal names (such as metadata name, use underscore as delimiter)</param>
+        /// <param name="translatedText">Translated text string</param>
+        void Save(CultureInfo culture, string fullTypeName, string name, string translatedText);
+
 
         /// <summary>
         /// Get all languages that got partial or full translations.

@@ -195,27 +195,42 @@ namespace Griffin.MvcContrib.RavenDb.Localization
         /// <param name="translatedText">Translated text string</param>
         public void Save(CultureInfo culture, Type type, string name, string translatedText)
         {
+            Save(culture, type.FullName, name,translatedText);
+        }
+
+        /// <summary>
+        /// Create  or update a prompt
+        /// </summary>
+        /// <param name="culture">Culture that the prompt is for</param>
+        /// <param name="fullTypeName">Type.FullName for the type being localized</param>
+        /// <param name="name">Property name and any additonal names (such as metadata name, use underscore as delimiter)</param>
+        /// <param name="translatedText">Translated text string</param>
+        public void Save(CultureInfo culture, string fullTypeName, string name, string translatedText)
+        {
             if (culture == null) throw new ArgumentNullException("culture");
-            if (type == null) throw new ArgumentNullException("type");
+            if (fullTypeName == null) throw new ArgumentNullException("fullTypeName");
             if (name == null) throw new ArgumentNullException("name");
             if (translatedText == null) throw new ArgumentNullException("translatedText");
+            if (fullTypeName.IndexOf(".") == -1)
+                throw new ArgumentException("You must use Type.FullName", "fullTypeName");
 
-            var key = new TypePromptKey(type, name);
+            var pos = fullTypeName.LastIndexOf(".");
+            var typeName = fullTypeName.Substring(pos + 1);
+            var key = new TypePromptKey(fullTypeName, name);
             var language = GetOrCreateLanguage(culture);
             var prompt = (from p in language.Prompts
                           where p.LocaleId == culture.LCID && p.TextKey == key.ToString()
                           select p).FirstOrDefault() ?? new TypePromptDocument
-                                                            {
-                                                                AssemblyQualifiedName = type.AssemblyQualifiedName,
-                                                                FullTypeName = type.FullName,
-                                                                LocaleId = culture.LCID,
-                                                                TextName = name,
-                                                                Text = translatedText,
-                                                                TextKey = key.ToString(),
-                                                                TypeName = type.Name,
-                                                                UpdatedAt = DateTime.Now,
-                                                                UpdatedBy = Thread.CurrentPrincipal.Identity.Name
-                                                            };
+                          {
+                              FullTypeName = fullTypeName,
+                              LocaleId = culture.LCID,
+                              TextName = name,
+                              Text = translatedText,
+                              TextKey = key.ToString(),
+                              TypeName = typeName,
+                              UpdatedAt = DateTime.Now,
+                              UpdatedBy = Thread.CurrentPrincipal.Identity.Name
+                          };
 
             prompt.Text = translatedText;
             _logger.Debug("Updating text for " + prompt.TypeName + "." + prompt.TextName + " to " + translatedText);
@@ -272,12 +287,11 @@ namespace Griffin.MvcContrib.RavenDb.Localization
 
         private static TypePrompt CreateTextPrompt(TypePromptDocument p)
         {
-            var type = Type.GetType(p.AssemblyQualifiedName);
             //var type = Type.GetType(string.Format("{0}, {1}", p.FullTypeName, p.AssemblyName), true);
             return new TypePrompt
                        {
                            LocaleId = p.LocaleId,
-                           Subject = type,
+                           TypeFullName = p.FullTypeName,
                            TextName = p.TextName,
                            Key = new TypePromptKey(p.TextKey),
                            TranslatedText = p.Text,

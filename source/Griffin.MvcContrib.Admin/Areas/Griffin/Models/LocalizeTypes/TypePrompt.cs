@@ -34,22 +34,26 @@ namespace Griffin.MvcContrib.Areas.Griffin.Models.LocalizeTypes
         /// </summary>
         public string TypeName
         {
-            get { return _prompt.Subject == null ? "Missing type: " + _prompt.SubjectTypeName :  _prompt.Subject.FullName; }
+            get { return _prompt.TypeName; }
         }
 
         public string FullTypeName
         {
-            get { return _prompt.Subject == null ? "Missing type: " + _prompt.SubjectTypeName : _prompt.Subject.AssemblyQualifiedName; }
+            get { return _prompt.TypeFullName; }
         }
 
         public string ModelName
         {
-            get { return _prompt.Subject == null ? "Missing type: " + _prompt.SubjectTypeName : _prompt.Subject.Name; }
+            get { return _prompt.TypeName; }
         }
 
         public string Namespace
         {
-            get { return _prompt.Subject == null ? "Missing type: " + _prompt.SubjectTypeName : _prompt.Subject.Namespace; }
+            get
+            {
+                var pos = _prompt.TypeFullName.LastIndexOf(".");
+                return _prompt.TypeFullName.Substring(0, pos);
+            }
         }
 
         /// <summary>

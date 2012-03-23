@@ -53,7 +53,7 @@ CREATE TABLE LocalizedViews(
         public void GetNonExistant()
         {
             var p = _repository.GetPrompt(new CultureInfo(1053),
-                                          new TypePromptKey(typeof (TestType), "FirstNameOrSomething"));
+                                          new TypePromptKey(typeof (TestType).FullName, "FirstNameOrSomething"));
             Assert.Null(p);
         }
 
@@ -72,8 +72,8 @@ CREATE TABLE LocalizedViews(
         [TestMethod]
         public void GetExisting()
         {
-            var key = new TypePromptKey(typeof (TestType), "FirstName");
-            _repository.Save(new CultureInfo(1053), typeof (TestType), "FirstName", "Förnamn");
+            var key = new TypePromptKey(typeof(TestType).FullName, "FirstName");
+            _repository.Save(new CultureInfo(1053), typeof (TestType).FullName, "FirstName", "Förnamn");
 
             var prompt = _repository.GetPrompt(new CultureInfo(1053), key);
             Assert.NotNull(prompt);
@@ -83,7 +83,7 @@ CREATE TABLE LocalizedViews(
         [TestMethod]
         public void Update()
         {
-            var key = new TypePromptKey(typeof (TestType), "FirstName");
+            var key = new TypePromptKey(typeof(TestType).FullName, "FirstName");
             _repository.Update(new CultureInfo(1053), key, "Förrenammne");
             var prompt = _repository.GetPrompt(new CultureInfo(1053), key);
             Assert.Null(prompt);
@@ -92,8 +92,8 @@ CREATE TABLE LocalizedViews(
         [TestMethod]
         public void Save()
         {
-            var key = new TypePromptKey(typeof(TestType), "FirstName");
-            _repository.Save(new CultureInfo(1053), typeof(TestType), "FirstName", "Förrenammne");
+            var key = new TypePromptKey(typeof(TestType).FullName, "FirstName");
+            _repository.Save(new CultureInfo(1053), typeof(TestType).FullName, "FirstName", "Förrenammne");
             var prompt = _repository.GetPrompt(new CultureInfo(1053), key);
             Assert.NotNull(prompt);
             Assert.Equal("Förrenammne", prompt.TranslatedText);
@@ -102,9 +102,9 @@ CREATE TABLE LocalizedViews(
         [TestMethod]
         public void TwoLanguages()
         {
-            var key = new TypePromptKey(typeof (TestType), "FirstName");
-            _repository.Save(new CultureInfo(1033), typeof (TestType), "FirstName", "FirstName");
-            _repository.Save(new CultureInfo(1053), typeof (TestType), "FirstName", "Förnamn");
+            var key = new TypePromptKey(typeof(TestType).FullName, "FirstName");
+            _repository.Save(new CultureInfo(1033), typeof (TestType).FullName, "FirstName", "FirstName");
+            _repository.Save(new CultureInfo(1053), typeof (TestType).FullName, "FirstName", "Förnamn");
 
 
             var enprompt = _repository.GetPrompt(new CultureInfo(1033), key);
