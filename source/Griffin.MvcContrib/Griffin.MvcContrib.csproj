@@ -35,6 +35,9 @@
     <DocumentationFile>bin\Release\Griffin.MvcContrib.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.4.5.4\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
@@ -53,6 +56,10 @@
   <ItemGroup>
     <Compile Include="Caching\NamespaceDoc.cs" />
     <Compile Include="Caching\NoCacheAttribute.cs" />
+    <Compile Include="Json\ClientRuleProvider.cs" />
+    <Compile Include="Json\ModelError.cs" />
+    <Compile Include="Json\NameKeyValueList.cs" />
+    <Compile Include="Json\ValidationRules.cs" />
     <Compile Include="Localization\DefaultUICulture.cs" />
     <Compile Include="Localization\Types\CommonPrompts.cs" />
     <Compile Include="Localization\Types\ITypePromptImporter.cs" />
@@ -61,9 +68,16 @@
     <Compile Include="Logging\DebugWindowLogger.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\NullLogger.cs" />
+    <Compile Include="Plugins\IMenuItem.cs" />
+    <Compile Include="Plugins\IMenuWithChildren.cs" />
+    <Compile Include="Plugins\NamespaceDoc.cs" />
+    <Compile Include="VirtualPathProvider\DiskFileLocator.cs" />
+    <Compile Include="Plugins\RoutedMenuItem.cs" />
+    <Compile Include="Plugins\PluginLoader.cs" />
     <Compile Include="SelectHelper.cs" />
     <Compile Include="VirtualPathProvider\EmbeddedViewFileProvider.cs" />
     <Compile Include="VirtualPathProvider\EmbeddedViewFixer.cs" />
+    <Compile Include="VirtualPathProvider\ExternalViewFixer.cs" />
     <Compile Include="VirtualPathProvider\GriffinVirtualPathProvider.cs" />
     <Compile Include="GriffinWebViewPage.cs" />
     <Compile Include="Html\FormItemAdapterContext.cs" />
@@ -88,6 +102,7 @@
     <Compile Include="Html\TagsExtensions.cs" />
     <Compile Include="Html\TextHtmlHelper.cs" />
     <Compile Include="VirtualPathProvider\IEmbeddedViewFixer.cs" />
+    <Compile Include="VirtualPathProvider\IExternalViewFixer.cs" />
     <Compile Include="VirtualPathProvider\IViewFileLocator.cs" />
     <Compile Include="VirtualPathProvider\IViewFileProvider.cs" />
     <Compile Include="Json\AllowCrossSiteScripting.cs" />
@@ -95,7 +110,6 @@
     <Compile Include="Json\ErrorMessage.cs" />
     <Compile Include="Json\IJsonResponseContent.cs" />
     <Compile Include="Json\JsonResponse.cs" />
-    <Compile Include="Json\MessageBox.cs" />
     <Compile Include="Json\NamespaceDoc.cs" />
     <Compile Include="Localization\FlatFile\FileLocalizedTypeRepository.cs" />
     <Compile Include="Localization\Types\ILocalizedTypesRepository.cs" />
@@ -106,6 +120,7 @@
     <Compile Include="Localization\Types\TypePromptKey.cs" />
     <Compile Include="Localization\Views\ViewPromptKey.cs" />
     <Compile Include="MyViewEngine.cs" />
+    <Compile Include="VirtualPathProvider\NamespaceDoc.cs" />
     <Compile Include="VirtualPathProvider\NamespaceMapping.cs" />
     <Compile Include="Providers\ValidationAttributeAdapterFactory.cs" />
     <Compile Include="Localization\FlatFile\ViewLocalizationFileRepository.cs" />
@@ -163,6 +178,9 @@
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

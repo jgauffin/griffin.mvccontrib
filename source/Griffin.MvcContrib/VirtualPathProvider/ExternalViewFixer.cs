@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Text;
 
@@ -9,20 +8,20 @@ namespace Griffin.MvcContrib.VirtualPathProvider
     /// </summary>
     /// <remarks>
     /// Modifies embedded views so that they works like any other views. This includes the following
+    /// 
     /// <list type="bullet">
     /// <item>Include a <c>@model</c> directive if missing</item>
     /// <item>Add a <c>@inherits</c> directive</item>
     /// <item>Add any missing @using statements (MVC and ASP.NET dependencies)</item>
-    /// <item>Specify which layout to use.</item>
     /// </list>
+    /// <para>Load the view fixer in <see cref="ViewFileProvider"/> or <see cref="EmbeddedViewFileProvider"/></para>
     /// </remarks>
-    [Obsolete("Use IExternalViewFixer instead. This class is not invoked by the framework anymore")]
-    public class EmbeddedViewFixer : IEmbeddedViewFixer, IExternalViewFixer
+    public class ExternalViewFixer : IExternalViewFixer
     {
         /// <summary>
-        ///   Initializes a new instance of the <see cref="EmbeddedViewFixer" /> class.
+        ///   Initializes a new instance of the <see cref="ExternalViewFixer" /> class.
         /// </summary>
-        public EmbeddedViewFixer()
+        public ExternalViewFixer()
         {
             WebViewPageClassName = "Griffin.MvcContrib.GriffinWebViewPage";
             LayoutPath = null;
@@ -43,7 +42,7 @@ namespace Griffin.MvcContrib.VirtualPathProvider
         /// <example>
         ///   <code>GriffinVirtualPathProvider.Current.LayoutPath = "~/Views/Shared/_Layout.cshtml";</code>
         /// </example>
-        /// <value> Default is "~/Views/Shared/_Layout.cshtml" </value>
+        /// <value>Default is the one specified in _ViewStart</value>
         public string LayoutPath { get; set; }
 
         #region IEmbeddedViewFixer Members
@@ -67,7 +66,7 @@ namespace Griffin.MvcContrib.VirtualPathProvider
             if (modelPos != -1)
             {
                 writer.Write(view.Substring(0, modelPos));
-                var modelEndPos = view.IndexOfAny(new[] {'\r', '\n'}, modelPos);
+                var modelEndPos = view.IndexOfAny(new[] { '\r', '\n' }, modelPos);
                 modelString = view.Substring(modelPos, modelEndPos - modelPos);
                 view = view.Remove(0, modelEndPos);
             }

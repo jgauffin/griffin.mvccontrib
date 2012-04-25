@@ -133,6 +133,12 @@ namespace Griffin.MvcContrib.Html.Generators
         protected abstract IEnumerable<NestedTagBuilder> GenerateTags();
 
 
+        /// <summary>
+        /// Creates the primary tag.
+        /// </summary>
+        /// <param name="tagName">Name of the tag.</param>
+        /// <returns></returns>
+        /// <remarks></remarks>
         protected NestedTagBuilder CreatePrimaryTag(string tagName)
         {
             var tagBuilder = new NestedTagBuilder(tagName);
@@ -161,6 +167,11 @@ namespace Griffin.MvcContrib.Html.Generators
                        : Convert.ToString(Context.Metadata.Model, CultureInfo.CurrentUICulture);
         }
 
+        /// <summary>
+        /// Gets the full name of the HTML field.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <returns>dot notated field name</returns>
         protected string GetFullHtmlFieldName(string name)
         {
             return _viewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(name);

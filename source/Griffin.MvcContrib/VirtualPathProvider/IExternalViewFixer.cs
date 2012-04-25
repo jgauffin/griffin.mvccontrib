@@ -1,14 +1,12 @@
-using System;
 using System.IO;
 
 namespace Griffin.MvcContrib.VirtualPathProvider
 {
     /// <summary>
-    /// Used to correct embedded views
+    /// Used to correct external view files
     /// </summary>
-    /// <remarks>The purpose of the class is to allow the embedded views to look exactly as regular views without @inherits or anything like that.</remarks>
-    [Obsolete("Use IExternalViewFixer instead. This class is not invoked by the framework anymore")]
-    public interface IEmbeddedViewFixer
+    /// <remarks>The purpose of the class is to allow the external views to look exactly as regular views without @inherits or anything like that.</remarks>
+    public interface IExternalViewFixer
     {
         /// <summary>
         /// Modify the view

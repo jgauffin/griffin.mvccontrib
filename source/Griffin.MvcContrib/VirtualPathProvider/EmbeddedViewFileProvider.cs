@@ -31,7 +31,7 @@ namespace Griffin.MvcContrib.VirtualPathProvider
     /// </example>
     public class EmbeddedViewFileProvider : IViewFileProvider
     {
-        private readonly IEmbeddedViewFixer _viewFixer;
+        private readonly IExternalViewFixer _viewFixer;
         private readonly List<MappedResource> _resourceNames = new List<MappedResource>();
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace Griffin.MvcContrib.VirtualPathProvider
         /// </summary>
         public EmbeddedViewFileProvider()
         {
-            _viewFixer = DependencyResolver.Current.GetService<IEmbeddedViewFixer>();
+            _viewFixer = DependencyResolver.Current.GetService<IExternalViewFixer>();
         }
 
 
@@ -47,7 +47,7 @@ namespace Griffin.MvcContrib.VirtualPathProvider
         /// Initializes a new instance of the <see cref="EmbeddedViewFileProvider"/> class.
         /// </summary>
         /// <param name="viewFixer">Corrects embeddable views so that the can be built properly</param>
-        public EmbeddedViewFileProvider(IEmbeddedViewFixer viewFixer)
+        public EmbeddedViewFileProvider(IExternalViewFixer viewFixer)
         {
             if (viewFixer == null) throw new ArgumentNullException("viewFixer");
             _viewFixer = viewFixer;

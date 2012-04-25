@@ -4,5 +4,11 @@
 
 <h2>@ViewBag.Title</h2>
 <p>
-     @("Put content here.")
+    @T("Put content here.")
+</p>
+<p>
+    @T("You can also use {0} formatting!", "string")
+</p>
+<p>
+    @T("And format the {0}.", T("Formatters"))
 </p>

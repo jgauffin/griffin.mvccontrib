@@ -31,7 +31,7 @@ namespace Griffin.MvcContrib.VirtualPathProvider
     /// </example>
     /// </para>
     /// </remarks>
-    /// <seealso cref="IEmbeddedViewFixer" />
+    /// <seealso cref="IExternalViewFixer" />
     public class GriffinVirtualPathProvider : System.Web.Hosting.VirtualPathProvider
     {
         private static readonly GriffinVirtualPathProvider Instance = new GriffinVirtualPathProvider();
