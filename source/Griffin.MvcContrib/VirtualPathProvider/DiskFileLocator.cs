@@ -23,7 +23,7 @@ namespace Griffin.MvcContrib.VirtualPathProvider
         {
             if (uri == null) throw new ArgumentNullException("uri");
 
-            var mapping = _mappings.OrderByDescending(x => x.Uri.Length).FirstOrDefault(x => x.Uri.StartsWith(uri));
+            var mapping = _mappings.OrderByDescending(x => x.Uri.Length).FirstOrDefault(x => uri.StartsWith(x.Uri));
             if (mapping == null)
                 return null;
 

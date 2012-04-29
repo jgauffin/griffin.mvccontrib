@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
 
 namespace Griffin.MvcContrib.Areas.Griffin.Models.LocalizeTypes
 {
@@ -7,7 +8,7 @@ namespace Griffin.MvcContrib.Areas.Griffin.Models.LocalizeTypes
         [Required]
         public string TextKey { get; set; }
 
-        [Required]
+        [Required, AllowHtml]
         public string Text { get; set; }
     }
 }
