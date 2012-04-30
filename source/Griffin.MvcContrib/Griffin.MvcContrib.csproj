@@ -59,7 +59,7 @@
     <Compile Include="Html\Generators\NamespaceDoc.cs" />
     <Compile Include="Html\NamespaceDoc.cs" />
     <Compile Include="Json\ClientRuleProvider.cs" />
-    <Compile Include="Json\ModelError.cs" />
+    <Compile Include="Json\ModelStateJson.cs" />
     <Compile Include="Json\NameKeyValueList.cs" />
     <Compile Include="Json\ValidationRules.cs" />
     <Compile Include="Localization\DefaultUICulture.cs" />

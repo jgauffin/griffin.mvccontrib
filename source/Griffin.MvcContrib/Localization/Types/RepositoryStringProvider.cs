@@ -99,7 +99,13 @@ namespace Griffin.MvcContrib.Localization.Types
 
         #endregion
 
-        private string Translate(Type type, string name)
+        /// <summary>
+        /// Translate a string
+        /// </summary>
+        /// <param name="type">Model being translated</param>
+        /// <param name="name">Property name (or <c>propertyName_metadataName</c>)</param>
+        /// <returns></returns>
+        protected virtual string Translate(Type type, string name)
         {
             if (type == null) throw new ArgumentNullException("type");
             if (name == null) throw new ArgumentNullException("name");

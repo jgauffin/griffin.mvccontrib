@@ -90,7 +90,7 @@ namespace Griffin.MvcContrib.Admin.TestProject
         {
             // you can assign a custom WebViewPage or a custom layout in EmbeddedViewFixer.
             var fixer = new ExternalViewFixer();
-            var provider = new EmbeddedViewFileProvider(fixer);
+            var provider = new EmbeddedViewFileProvider(VirtualPathUtility.ToAbsolute("~/"), fixer);
             provider.Add(new NamespaceMapping(typeof(MvcContrib.Areas.Griffin.GriffinAreaRegistration).Assembly, "Griffin.MvcContrib"));
 
             GriffinVirtualPathProvider.Current.Add(provider);

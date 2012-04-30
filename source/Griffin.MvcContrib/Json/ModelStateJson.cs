@@ -22,7 +22,7 @@ namespace Griffin.MvcContrib.Json
     /// </remarks>
     [DataContract(Name = "model-errors", Namespace = "")]
     [XmlRoot("model-errors")]
-    public class ModelErrorCollection : IJsonResponseContent, IDictionary<string, List<string>>
+    public class ModelStateJson : IJsonResponseContent, IDictionary<string, List<string>>
     {
         private readonly Dictionary<string, List<string>> _errors = new Dictionary<string, List<string>>();
 
@@ -44,7 +44,7 @@ namespace Griffin.MvcContrib.Json
         ///         }
         ///     }</code>
         /// </example>
-        public ModelErrorCollection(IEnumerable<KeyValuePair<string, ModelState>> modelState)
+        public ModelStateJson(IEnumerable<KeyValuePair<string, ModelState>> modelState)
         {
             foreach (var kvp in modelState)
             {

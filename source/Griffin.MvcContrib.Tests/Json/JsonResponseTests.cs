@@ -33,7 +33,7 @@ namespace Griffin.MvcContrib.Tests.Json
             var state = new ModelState();
             state.Errors.Add("some error");
             errors.Add(new KeyValuePair<string, ModelState>("Something", state));
-            var modelError = new Griffin.MvcContrib.Json.ModelErrorCollection(errors);
+            var modelError = new ModelStateJson(errors);
             var response = new JsonResponse(false, modelError);
 
             var actual = JsonConvert.SerializeObject(response);
