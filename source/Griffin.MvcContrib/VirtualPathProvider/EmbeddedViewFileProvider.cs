@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Web;
 using System.Web.Caching;
 using System.Web.Hosting;
 using System.Web.Mvc;
@@ -153,18 +154,12 @@ namespace Griffin.MvcContrib.VirtualPathProvider
         /// <returns> Full resource name if found; otherwise null. </returns>
         private MappedResource GetResource(string uri)
         {
-            uri = uri.TrimStart('~', '/').TrimEnd('/');
-            uri = uri.Replace('/', '.');
+            var uri2 = VirtualPathUtility.ToAbsolute(uri);
+            uri2 = uri2.TrimStart('/').TrimEnd('/');
+            uri2 = uri2.Replace('/', '.');
             var result =
                 _resourceNames.FirstOrDefault(
-                    resource => resource.ResourceName.Equals(uri, StringComparison.OrdinalIgnoreCase));
-            if (result == null)
-            {
-                uri = uri.Replace("MyIT.WebClient.", "");
-                result =
-                    _resourceNames.FirstOrDefault(
-                        resource => resource.ResourceName.Equals(uri, StringComparison.OrdinalIgnoreCase));
-            }
+                    resource => resource.ResourceName.Equals(uri2, StringComparison.OrdinalIgnoreCase));
             if (result != null)
             {
                 Debug.WriteLine("Exists: " + uri);

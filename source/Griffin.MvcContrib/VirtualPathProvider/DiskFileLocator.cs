@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Web;
 
 namespace Griffin.MvcContrib.VirtualPathProvider
 {
@@ -23,6 +24,7 @@ namespace Griffin.MvcContrib.VirtualPathProvider
         {
             if (uri == null) throw new ArgumentNullException("uri");
 
+            uri = VirtualPathUtility.ToAbsolute(uri);
             var mapping = _mappings.OrderByDescending(x => x.Uri.Length).FirstOrDefault(x => uri.StartsWith(x.Uri));
             if (mapping == null)
                 return null;
@@ -48,7 +50,7 @@ namespace Griffin.MvcContrib.VirtualPathProvider
             if (rootPath == null) throw new ArgumentNullException("rootPath");
             _mappings.Add(new Mapping
                               {
-                                  Uri = rootUri,
+                                  Uri = VirtualPathUtility.ToAbsolute(rootUri),
                                   DiskRoot = rootPath
                               });
         }

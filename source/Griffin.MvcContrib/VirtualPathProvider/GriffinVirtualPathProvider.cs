@@ -13,7 +13,7 @@ namespace Griffin.MvcContrib.VirtualPathProvider
     /// </summary>
     /// <remarks>
     /// <para>
-    /// You can easily use embedded views (using class libraries for Controllers & Views) by configuration MVC like this:
+    /// You can easily use embedded views (using class libraries for Controllers &amp; Views) by configuration MVC like this:
     /// <example>
     /// <code>
     /// // you can assign a custom WebViewPage or a custom layout.

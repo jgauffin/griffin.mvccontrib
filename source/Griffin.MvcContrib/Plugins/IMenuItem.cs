@@ -24,5 +24,11 @@ namespace Griffin.MvcContrib.Plugins
         /// <param name="helper">Uri helper (to be able to generate absolute uris)</param>
         /// <returns>Created URI</returns>
         Uri CreateUri(UrlHelper helper);
+
+        /// <summary>
+        /// Gets if the item is visible (user have the correct role)
+        /// </summary>
+        /// <returns>true if user has the correct role; otherwise false.</returns>
+        bool IsVisible { get; }
     }
 }

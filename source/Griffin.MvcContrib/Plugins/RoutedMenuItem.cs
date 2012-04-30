@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 
@@ -57,7 +58,7 @@ namespace Griffin.MvcContrib.Plugins
         /// </remarks>
         public Uri CreateUri(UrlHelper helper)
         {
-            var routeName = (string) _route["area"];
+            var routeName = (string)_route["area"];
             if (routeName != null)
             {
                 _route.Remove("area");
@@ -66,6 +67,21 @@ namespace Griffin.MvcContrib.Plugins
 
             return new Uri(helper.RouteUrl(_route), UriKind.Relative);
         }
+
+        /// <summary>
+        /// Gets if the item is visible (user have the correct role)
+        /// </summary>
+        /// <returns>true if user has the correct role; otherwise false.</returns>
+        public bool IsVisible
+        {
+            get { return string.IsNullOrEmpty(RoleName) | HttpContext.Current.User.IsInRole(RoleName); }
+        }
+
+        /// <summary>
+        /// Gets or sets the role that the user must have.
+        /// </summary>
+        /// <remarks>Set as <c>null</c> to disable role checking</remarks>
+        public string RoleName { get; set; }
 
         /// <summary>
         ///   Gets the enumerator.
