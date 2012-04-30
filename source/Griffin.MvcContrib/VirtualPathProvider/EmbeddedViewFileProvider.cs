@@ -1,10 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Web;
 using System.Web.Caching;
 using System.Web.Hosting;
 using System.Web.Mvc;
@@ -16,7 +16,7 @@ namespace Griffin.MvcContrib.VirtualPathProvider
     /// </summary>
     /// <remarks>
     /// <para>
-    ///   Requires that a <see cref="IEmbeddedViewFixer" /> is registered in your container if you want your views to look the same even if they are located in other projects.
+    ///   Requires that a <see cref="IExternalViewFixer" /> is registered in your container if you want your views to look the same even if they are located in other projects.
     /// </para>
     /// <para>Each mapping should be done to the root namespace of each assembly</para>
     /// </remarks>
@@ -31,14 +31,22 @@ namespace Griffin.MvcContrib.VirtualPathProvider
     /// </example>
     public class EmbeddedViewFileProvider : IViewFileProvider
     {
+        private readonly string _siteRoot;
         private readonly IExternalViewFixer _viewFixer;
         private readonly List<MappedResource> _resourceNames = new List<MappedResource>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EmbeddedViewFileProvider"/> class.
         /// </summary>
-        public EmbeddedViewFileProvider()
+        /// <param name="siteRoot">Root directory of the web site</param>
+        /// <example>
+        /// <code>
+        /// var embeddedProvider = new EmbeddedViewFileProvider2(VirtualPathUtility.ToAbsolute("~/"));
+        /// </code>
+        /// </example>
+        public EmbeddedViewFileProvider(string siteRoot)
         {
+            _siteRoot = siteRoot;
             _viewFixer = DependencyResolver.Current.GetService<IExternalViewFixer>();
         }
 
@@ -46,10 +54,17 @@ namespace Griffin.MvcContrib.VirtualPathProvider
         /// <summary>
         /// Initializes a new instance of the <see cref="EmbeddedViewFileProvider"/> class.
         /// </summary>
+        /// <param name="siteRoot">Root directory of the web site</param>
         /// <param name="viewFixer">Corrects embeddable views so that the can be built properly</param>
-        public EmbeddedViewFileProvider(IExternalViewFixer viewFixer)
+        /// <example>
+        /// <code>
+        /// var embeddedProvider = new EmbeddedViewFileProvider2(VirtualPathUtility.ToAbsolute("~/"), new ExternalViewFixer());
+        /// </code>
+        /// </example>
+        public EmbeddedViewFileProvider(string siteRoot, IExternalViewFixer viewFixer)
         {
             if (viewFixer == null) throw new ArgumentNullException("viewFixer");
+            _siteRoot = siteRoot;
             _viewFixer = viewFixer;
         }
 
@@ -153,23 +168,16 @@ namespace Griffin.MvcContrib.VirtualPathProvider
         /// <returns> Full resource name if found; otherwise null. </returns>
         private MappedResource GetResource(string uri)
         {
-            uri = uri.TrimStart('~', '/').TrimEnd('/');
+            if (uri.StartsWith("~"))
+                uri = VirtualPathUtility.ToAbsolute(uri);
+            if (uri.StartsWith(_siteRoot))
+                uri = uri.Remove(0, _siteRoot.Length);
+
+            uri = uri.TrimStart('/').TrimEnd('/');
             uri = uri.Replace('/', '.');
             var result =
                 _resourceNames.FirstOrDefault(
                     resource => resource.ResourceName.Equals(uri, StringComparison.OrdinalIgnoreCase));
-            if (result == null)
-            {
-                uri = uri.Replace("MyIT.WebClient.", "");
-                result =
-                    _resourceNames.FirstOrDefault(
-                        resource => resource.ResourceName.Equals(uri, StringComparison.OrdinalIgnoreCase));
-            }
-            if (result != null)
-            {
-                Debug.WriteLine("Exists: " + uri);
-            }
-
             return result;
         }
 
@@ -183,14 +191,14 @@ namespace Griffin.MvcContrib.VirtualPathProvider
 
 
                 _resourceNames.Add(new MappedResource
-                                       {
-                                           Assembly = mapping.Assembly,
-                                           AssemblyDate = new FileInfo(mapping.Assembly.Location).CreationTimeUtc,
-                                           FullResourceName = name,
-                                           ResourceRoot = mapping.FolderNamespace,
-                                           ResourceName = name.Remove(0, mapping.FolderNamespace.Length + 1)
-                                           // include the last dot
-                                       });
+                {
+                    Assembly = mapping.Assembly,
+                    AssemblyDate = new FileInfo(mapping.Assembly.Location).CreationTimeUtc,
+                    FullResourceName = name,
+                    ResourceRoot = mapping.FolderNamespace,
+                    ResourceName = name.Remove(0, mapping.FolderNamespace.Length + 1)
+                    // include the last dot
+                });
             }
         }
 
