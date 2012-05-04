@@ -74,6 +74,8 @@
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\NamespaceDoc.cs" />
     <Compile Include="Logging\NullLogger.cs" />
+    <Compile Include="Plugins\PluginFileLocator.cs" />
+    <Compile Include="Plugins\PluginFinder.cs" />
     <Compile Include="Providers\Membership\NamespaceDoc.cs" />
     <Compile Include="Providers\Profile\NamespaceDoc.cs" />
     <Compile Include="Providers\Roles\NamespaceDoc.cs" />
@@ -82,7 +84,6 @@
     <Compile Include="Plugins\NamespaceDoc.cs" />
     <Compile Include="VirtualPathProvider\DiskFileLocator.cs" />
     <Compile Include="Plugins\RoutedMenuItem.cs" />
-    <Compile Include="Plugins\PluginLoader.cs" />
     <Compile Include="SelectHelper.cs" />
     <Compile Include="VirtualPathProvider\EmbeddedViewFileProvider.cs" />
     <Compile Include="VirtualPathProvider\EmbeddedViewFixer.cs" />
@@ -171,11 +172,12 @@
     <Compile Include="Providers\Roles\RoleProvider.cs" />
     <Compile Include="VirtualPathProvider\NoCache.cs" />
     <Compile Include="VirtualPathProvider\ViewFileProvider.cs" />
+    <Compile Include="VisualStudioHelper.cs" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Folder Include="Html\SelectLists\" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="Web.config" />
   </ItemGroup>
