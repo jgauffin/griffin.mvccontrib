@@ -1,8 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Web;
 using System.Web.Compilation;
 using System.Web.Hosting;
 using Griffin.MvcContrib.Logging;
@@ -10,45 +9,16 @@ using Griffin.MvcContrib.Logging;
 namespace Griffin.MvcContrib.Plugins
 {
     /// <summary>
-    ///   Loads plugin assemblies
+    /// Finds all plugins and load them into the app domain (or use previously loaded assemblies)
     /// </summary>
     /// <remarks>
-    /// <para>This class needs to be run before Application_Start is executed. The typical approach is to load it
-    /// from a class which is invoked by the <see cref="PreApplicationStartMethodAttribute" />.
-    /// </para>
-    /// <para>
-    ///   Read http://haacked.com/archive/2010/05/16/three-hidden-extensibility-gems-in-asp-net-4.aspx
-    /// </para>
-    /// </remarks>
-    /// <example>
-    /// <code>
-    /// [assembly: PreApplicationStartMethod(typeof (YourApp.UI.PluginProvider), "LoadPlugins")]
-    /// namespace YourApp.UI
-    /// {
-    ///     // Note that the PluginLoader is a singleton
-    ///     // 
-    ///     public static class PluginProvider
-    ///     {
-    ///         public static PluginLoader Loader;
-    ///    
-    ///         public static void LoadPlugins()
-    ///         {
-    ///             var path = Directory.Exists(HostingEnvironment.MapPath("~/bin/Plugins/"))
-    ///                            ? HostingEnvironment.MapPath("~/bin/Plugins/")
-    ///                            : HostingEnvironment.MapPath("~/Plugins/");
-    ///
-    ///
-    ///             Loader = new PluginLoader(path);
-    ///         }
-    ///     }    
-    /// }
-    /// </code>
-    /// </example>
-    public class PluginLoader
+    /// Loads all plugins whos file name starts with "Plugin." </remarks>
+    /// <seealso cref="Griffin.MvcContrib.Plugins"/>
+    public class PluginFinder
     {
         private readonly List<Assembly> _assemblies = new List<Assembly>();
-        private readonly ILogger _logger = LogProvider.Current.GetLogger<PluginLoader>();
-        private readonly DirectoryInfo _pluginFolder;
+        private readonly ILogger _logger = LogProvider.Current.GetLogger<PluginFinder>();
+        private string _path;
 
         /// <summary>
         ///   Initializes the <see cref="PluginLoader" /> class.
@@ -57,7 +27,7 @@ namespace Griffin.MvcContrib.Plugins
         /// <example>
         ///   <code>var loader = new PluginLoader("~/"); // all plugins are located in the root folder.</code>
         /// </example>
-        public PluginLoader(string virtualPluginFolderPath)
+        public PluginFinder(string virtualPluginFolderPath)
         {
             if (virtualPluginFolderPath == null) throw new ArgumentNullException("virtualPluginFolderPath");
             var path = virtualPluginFolderPath.StartsWith("~")
@@ -66,12 +36,11 @@ namespace Griffin.MvcContrib.Plugins
             if (path == null)
                 throw new InvalidOperationException(string.Format("Failed to map path '{0}'.", virtualPluginFolderPath));
 
-            _pluginFolder = new DirectoryInfo(path);
-            Startup();
+            _path = path;
         }
 
         /// <summary>
-        ///   Get all plugin assemblies.
+        ///   Gets all loaded plugin assemblies.
         /// </summary>
         public IEnumerable<Assembly> Assemblies
         {
@@ -81,20 +50,11 @@ namespace Griffin.MvcContrib.Plugins
         /// <summary>
         ///   Called during startup to scan for all plugin assemblies
         /// </summary>
-        public void Startup()
+        public void Find()
         {
-            CopyPluginDlls(_pluginFolder, AppDomain.CurrentDomain.DynamicDirectory);
-        }
-
-        private void CopyPluginDlls(DirectoryInfo sourceFolder, string destinationFolder)
-        {
-            foreach (var plug in sourceFolder.GetFiles("*.dll", SearchOption.AllDirectories))
+            foreach (var file in Directory.GetFiles(_path, "Plugin.*.dll"))
             {
-                if (!File.Exists(Path.Combine(destinationFolder, plug.Name)))
-                {
-                    File.Copy(plug.FullName, Path.Combine(destinationFolder, plug.Name), false);
-                }
-                LoadPluginAssembly(plug.FullName);
+                LoadPluginAssembly(file);
             }
         }
 
@@ -104,7 +64,7 @@ namespace Griffin.MvcContrib.Plugins
 
             try
             {
-                var assembly = Assembly.Load(AssemblyName.GetAssemblyName(fullPath));
+                var assembly = Assembly.LoadFrom(fullPath);
                 BuildManager.AddReferencedAssembly(assembly);
                 _assemblies.Add(assembly);
             }

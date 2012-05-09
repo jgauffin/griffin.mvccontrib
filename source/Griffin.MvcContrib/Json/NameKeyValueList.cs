@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Serialization.Json;
 
 namespace Griffin.MvcContrib.Json
 {
@@ -47,7 +48,6 @@ namespace Griffin.MvcContrib.Json
                 inner = new Dictionary<string, string>();
                 _items.Add(propertyName, inner);
             }
-
             inner.Add(ruleName, value);
         }
 
