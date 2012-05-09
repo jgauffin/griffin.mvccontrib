@@ -88,7 +88,7 @@ namespace Griffin.MvcContrib.Plugins
 
         private void CopyPluginDlls(DirectoryInfo sourceFolder, string destinationFolder)
         {
-            foreach (var plug in sourceFolder.GetFiles(".dll", SearchOption.AllDirectories))
+            foreach (var plug in sourceFolder.GetFiles("*.dll", SearchOption.AllDirectories))
             {
                 if (!File.Exists(Path.Combine(destinationFolder, plug.Name)))
                 {
