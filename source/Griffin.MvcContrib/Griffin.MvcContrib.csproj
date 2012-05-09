@@ -35,9 +35,6 @@
     <DocumentationFile>bin\Release\Griffin.MvcContrib.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.4.5.4\lib\net40\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
@@ -59,8 +56,11 @@
     <Compile Include="Html\Generators\NamespaceDoc.cs" />
     <Compile Include="Html\NamespaceDoc.cs" />
     <Compile Include="Json\ClientRuleProvider.cs" />
+    <Compile Include="Json\JsonSerializer.cs" />
+    <Compile Include="Json\ModelResponse.cs" />
     <Compile Include="Json\ModelStateJson.cs" />
     <Compile Include="Json\NameKeyValueList.cs" />
+    <Compile Include="Json\SimpleMessage.cs" />
     <Compile Include="Json\ValidationRules.cs" />
     <Compile Include="Localization\DefaultUICulture.cs" />
     <Compile Include="Localization\FlatFile\NamespaceDoc.cs" />
@@ -129,7 +129,6 @@
     <Compile Include="Localization\FlatFile\TypePromptCollection.cs" />
     <Compile Include="Localization\Types\TypePromptKey.cs" />
     <Compile Include="Localization\Views\ViewPromptKey.cs" />
-    <Compile Include="MyViewEngine.cs" />
     <Compile Include="VirtualPathProvider\NamespaceDoc.cs" />
     <Compile Include="VirtualPathProvider\NamespaceMapping.cs" />
     <Compile Include="Providers\ValidationAttributeAdapterFactory.cs" />
@@ -190,9 +189,6 @@
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

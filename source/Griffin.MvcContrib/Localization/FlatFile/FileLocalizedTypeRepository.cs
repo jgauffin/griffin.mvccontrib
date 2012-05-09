@@ -222,6 +222,11 @@ namespace Griffin.MvcContrib.Localization.FlatFile
         }
 
 
+        /// <summary>
+        /// Gets language for the specified culture
+        /// </summary>
+        /// <param name="culture">The culture.</param>
+        /// <returns>Prompts (or an empty collection)</returns>
         protected TypePromptCollection GetLanguage(CultureInfo culture)
         {
             TypePromptCollection prompts;
@@ -277,7 +282,7 @@ namespace Griffin.MvcContrib.Localization.FlatFile
         /// Creates for language.
         /// </summary>
         /// <param name="culture">The culture.</param>
-        /// <returns></returns>
+        /// <returns>Collection of prompts</returns>
         public TypePromptCollection CreateForLanguage(CultureInfo culture)
         {
             var prompts = new TypePromptCollection(culture);
@@ -286,7 +291,11 @@ namespace Griffin.MvcContrib.Localization.FlatFile
             return prompts;
         }
 
-
+        /// <summary>
+        /// Load a language
+        /// </summary>
+        /// <param name="culture">Culture to get.</param>
+        /// <returns>Collection if found; otherwise <c>null</c>.</returns>
         protected TypePromptCollection LoadLanguage(CultureInfo culture)
         {
             var filename = GetFullPath(culture);

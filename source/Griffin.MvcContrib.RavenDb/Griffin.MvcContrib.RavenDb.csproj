@@ -78,6 +78,7 @@
     <Compile Include="Localization\ViewLocalizationRepository.cs" />
     <Compile Include="Localization\ViewPromptDocument.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Providers\DeletedEventArgs.cs" />
     <Compile Include="Providers\RavenDbAccountRepository.cs" />
     <Compile Include="Providers\RavenDbRoleRepository.cs" />
     <Compile Include="Providers\Role.cs" />

@@ -21,6 +21,7 @@ namespace Griffin.MvcContrib.Json
     /// controller.
     /// </para>
     /// </remarks>
+    /// <seealso cref="JsonSerializer"/>
     [CompilerGenerated]
     internal class NamespaceDoc
     {

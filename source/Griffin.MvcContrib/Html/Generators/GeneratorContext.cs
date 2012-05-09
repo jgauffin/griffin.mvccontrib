@@ -8,6 +8,13 @@ namespace Griffin.MvcContrib.Html.Generators
     /// </summary>
     public class GeneratorContext
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GeneratorContext"/> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="fullName">The full name (dot notation). If it's a complex/nested model.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <param name="htmlAttributes">The HTML attributes.</param>
         public GeneratorContext(string name, string fullName, ModelMetadata metadata,
                                 RouteValueDictionary htmlAttributes)
         {
@@ -17,6 +24,10 @@ namespace Griffin.MvcContrib.Html.Generators
             HtmlAttributes = htmlAttributes;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GeneratorContext"/> class.
+        /// </summary>
+        /// <param name="context">The context.</param>
         protected GeneratorContext(GeneratorContext context)
         {
             Name = context.Name;

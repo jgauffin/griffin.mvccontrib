@@ -7,6 +7,7 @@ namespace Griffin.MvcContrib.Json
     /// <summary>
     ///   Double dictionary used by <see cref="ValidationRules" /> .
     /// </summary>
+    /// <remarks>Created to get a proper serialization of the items. Feel free to contribute a nicer solution.</remarks>
     public class NameKeyValueList : IDictionary<string, Dictionary<string, string>>
     {
         public Dictionary<string, Dictionary<string, string>> _items =

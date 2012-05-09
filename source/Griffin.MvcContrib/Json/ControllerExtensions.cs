@@ -1,5 +1,4 @@
 ﻿using System.Web.Mvc;
-using Newtonsoft.Json;
 
 namespace Griffin.MvcContrib.Json
 {
@@ -19,7 +18,7 @@ namespace Griffin.MvcContrib.Json
         {
             return new ContentResult
                        {
-                           Content = JsonConvert.SerializeObject(new JsonResponse(success, content)),
+                           Content = JsonSerializer.Current.Serialize(new JsonResponse(success, content)),
                            ContentType = "application/json"
                        };
         }

@@ -16,6 +16,9 @@ namespace Griffin.MvcContrib.SqlServer.Localization
     /// </summary>
     public class SqlLocalizedTypesRepository : ILocalizedTypesRepository, ITypePromptImporter
     {
+        /// <summary>
+        /// database context
+        /// </summary>
         protected readonly ILocalizationDbContext _db;
 
         /// <summary>

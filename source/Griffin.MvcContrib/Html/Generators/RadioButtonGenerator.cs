@@ -17,6 +17,10 @@ namespace Griffin.MvcContrib.Html.Generators
         {
         }
 
+        /// <summary>
+        /// Generates the tag(s).
+        /// </summary>
+        /// <returns></returns>
         protected override IEnumerable<NestedTagBuilder> GenerateTags()
         {
             if (typeof (Enum).IsAssignableFrom(Context.Metadata.ModelType))
@@ -25,7 +29,11 @@ namespace Griffin.MvcContrib.Html.Generators
             return GenerateForSingleBox();
         }
 
-        private IEnumerable<NestedTagBuilder> GenerateForSingleBox()
+        /// <summary>
+        /// Generate a single input box
+        /// </summary>
+        /// <returns></returns>
+        protected virtual IEnumerable<NestedTagBuilder> GenerateForSingleBox()
         {
             var tags = new NestedTagBuilder[2];
 
@@ -49,6 +57,11 @@ namespace Griffin.MvcContrib.Html.Generators
             return tags;
         }
 
+        /// <summary>
+        /// Generate ratio buttons for an enum
+        /// </summary>
+        /// <param name="context">Generation context.</param>
+        /// <returns></returns>
         public virtual IEnumerable<NestedTagBuilder> GenerateForEnum(GeneratorContext context)
         {
             Setup(context);

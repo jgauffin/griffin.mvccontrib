@@ -4,12 +4,23 @@ using System.Web.Mvc;
 
 namespace Griffin.MvcContrib.Html.Generators
 {
+    /// <summary>
+    /// Used to generate a textarea HTML element.
+    /// </summary>
     public class TextAreaGenerator : FormTagGenerator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TextAreaGenerator"/> class.
+        /// </summary>
+        /// <param name="viewContext">The view context.</param>
         public TextAreaGenerator(ViewContext viewContext) : base(viewContext)
         {
         }
 
+        /// <summary>
+        /// Generates the tags.
+        /// </summary>
+        /// <returns>A textarea with a title attribute if Watermark metadata is set.</returns>
         protected override IEnumerable<NestedTagBuilder> GenerateTags()
         {
             var tag = CreatePrimaryTag("textarea");
@@ -21,17 +32,4 @@ namespace Griffin.MvcContrib.Html.Generators
         }
     }
 
-    public class MyCustomTextAreaGenerator : TextAreaGenerator
-    {
-        public MyCustomTextAreaGenerator(ViewContext viewContext) : base(viewContext)
-        {
-        }
-
-        protected override IEnumerable<NestedTagBuilder> GenerateTags()
-        {
-            var generatedTags = base.GenerateTags().ToArray();
-            generatedTags[0].MergeAttribute("title", "You are so dirty!");
-            return generatedTags;
-        }
-    }
 }

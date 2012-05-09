@@ -55,7 +55,7 @@ namespace Griffin.MvcContrib.Localization.Views
         /// <param name="other">An object to compare with this object.</param>
         public bool Equals(ViewPromptKey other)
         {
-            return other._id.Equals(_id);
+            return other != null && other._id.Equals(_id);
         }
 
         #endregion
@@ -119,6 +119,32 @@ namespace Griffin.MvcContrib.Localization.Views
             return area != null
                        ? string.Format("/{0}/{1}/{2}", area, controllerName, actionName)
                        : string.Format("/{0}/{1}", controllerName, actionName);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="System.Object"/> is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The <see cref="System.Object"/> to compare with this instance.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != typeof (ViewPromptKey)) return false;
+            return Equals((ViewPromptKey) obj);
+        }
+
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode()
+        {
+            return (_id != null ? _id.GetHashCode() : 0);
         }
     }
 }

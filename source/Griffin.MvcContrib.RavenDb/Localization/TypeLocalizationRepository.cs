@@ -263,6 +263,11 @@ namespace Griffin.MvcContrib.RavenDb.Localization
             _documentSession.SaveChanges();
         }
 
+        /// <summary>
+        /// Delete a prompt.
+        /// </summary>
+        /// <param name="culture">Culture to delete the prompt for</param>
+        /// <param name="key">Key</param>
         public void Delete(CultureInfo culture, TypePromptKey key)
         {
             if (culture == null) throw new ArgumentNullException("culture");

@@ -21,7 +21,7 @@ namespace Griffin.MvcContrib.Plugins
         private string _path;
 
         /// <summary>
-        ///   Initializes the <see cref="PluginLoader" /> class.
+        ///   Initializes the <see cref="PluginFinder" /> class.
         /// </summary>
         /// <param name="virtualPluginFolderPath"> App relative path to plugin folder </param>
         /// <example>
