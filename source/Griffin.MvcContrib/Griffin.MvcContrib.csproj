@@ -76,6 +76,8 @@
     <Compile Include="Logging\NullLogger.cs" />
     <Compile Include="Plugins\PluginFileLocator.cs" />
     <Compile Include="Plugins\PluginFinder.cs" />
+    <Compile Include="Localization\Types\DelegateValidationAttributeAdapterFactory.cs" />
+    <Compile Include="Localization\Types\IValidationAttributeAdapterFactory.cs" />
     <Compile Include="Providers\Membership\NamespaceDoc.cs" />
     <Compile Include="Providers\Profile\NamespaceDoc.cs" />
     <Compile Include="Providers\Roles\NamespaceDoc.cs" />
@@ -131,7 +133,7 @@
     <Compile Include="Localization\Views\ViewPromptKey.cs" />
     <Compile Include="VirtualPathProvider\NamespaceDoc.cs" />
     <Compile Include="VirtualPathProvider\NamespaceMapping.cs" />
-    <Compile Include="Providers\ValidationAttributeAdapterFactory.cs" />
+    <Compile Include="Localization\Types\ValidationAttributeAdapterFactory.cs" />
     <Compile Include="Localization\FlatFile\ViewLocalizationFileRepository.cs" />
     <Compile Include="Localization\MetadataLanguageProvider.cs" />
     <Compile Include="Localization\Types\ILocalizedStringProvider.cs" />

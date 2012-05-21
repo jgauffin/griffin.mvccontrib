@@ -70,7 +70,6 @@ namespace Griffin.MvcContrib.Localization
                 var provider = HttpContext.Current.Items["ILocalizedStringProvider"] as ILocalizedStringProvider;
                 if (provider == null)
                 {
-                    Trace.WriteLine("** Resolving provider ");
                     provider = DependencyResolver.Current.GetService<ILocalizedStringProvider>();
                     HttpContext.Current.Items["ILocalizedStringProvider"] = provider;
                 }
