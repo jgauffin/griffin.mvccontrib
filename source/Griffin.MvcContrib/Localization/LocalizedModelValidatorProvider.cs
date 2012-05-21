@@ -154,8 +154,21 @@ namespace Griffin.MvcContrib.Localization
                         formattedError = err.Message;
                     }
 
-                    validators.Add(new MyValidator(attr, errorMessage, metadata, context,
-                                                   _adapterFactory.Create(attr, formattedError)));
+                    IEnumerable<ModelClientValidationRule> clientValidationRules;
+                    if (attr is IClientValidatable)
+                    {
+                        clientValidationRules = ((IClientValidatable)attr).GetClientValidationRules(metadata, context);
+                        foreach (ModelClientValidationRule rule in clientValidationRules)
+                        {
+                            rule.ErrorMessage = formattedError;
+                        }
+                    }
+                    else
+                    {
+                        clientValidationRules = _adapterFactory.Create(attr, formattedError);
+                    }
+
+                    validators.Add(new MyValidator(attr, errorMessage, metadata, context, clientValidationRules));
                 }
             }
 
