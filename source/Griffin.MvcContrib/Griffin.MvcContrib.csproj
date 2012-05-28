@@ -53,21 +53,47 @@
   <ItemGroup>
     <Compile Include="Caching\NamespaceDoc.cs" />
     <Compile Include="Caching\NoCacheAttribute.cs" />
+    <Compile Include="Html\Generators\NamespaceDoc.cs" />
     <Compile Include="Html\Generators\DefaultTagBuilderFactory.cs" />
+    <Compile Include="Html\NamespaceDoc.cs" />
     <Compile Include="Html\Generators\ITagBuilder.cs" />
+    <Compile Include="Json\ClientRuleProvider.cs" />
     <Compile Include="Html\Generators\ITagBuilderContext.cs" />
+    <Compile Include="Json\JsonSerializer.cs" />
     <Compile Include="Html\Generators\ITagBuilderFactory.cs" />
+    <Compile Include="Json\ModelResponse.cs" />
+    <Compile Include="Json\ModelStateJson.cs" />
+    <Compile Include="Json\NameKeyValueList.cs" />
+    <Compile Include="Json\SimpleMessage.cs" />
+    <Compile Include="Json\ValidationRules.cs" />
     <Compile Include="Localization\DefaultUICulture.cs" />
+    <Compile Include="Localization\FlatFile\NamespaceDoc.cs" />
     <Compile Include="Localization\Types\CommonPrompts.cs" />
     <Compile Include="Localization\Types\ITypePromptImporter.cs" />
+    <Compile Include="Localization\Types\NamespaceDoc.cs" />
     <Compile Include="Localization\Types\ValidationAttributesStringProvider.cs" />
     <Compile Include="Localization\Views\IViewPromptImporter.cs" />
+    <Compile Include="Localization\Views\NamespaceDoc.cs" />
     <Compile Include="Logging\DebugWindowLogger.cs" />
     <Compile Include="Logging\ILogger.cs" />
+    <Compile Include="Logging\NamespaceDoc.cs" />
     <Compile Include="Logging\NullLogger.cs" />
+    <Compile Include="Plugins\PluginFileLocator.cs" />
+    <Compile Include="Plugins\PluginFinder.cs" />
+    <Compile Include="Localization\Types\DelegateValidationAttributeAdapterFactory.cs" />
+    <Compile Include="Localization\Types\IValidationAttributeAdapterFactory.cs" />
+    <Compile Include="Providers\Membership\NamespaceDoc.cs" />
+    <Compile Include="Providers\Profile\NamespaceDoc.cs" />
+    <Compile Include="Providers\Roles\NamespaceDoc.cs" />
+    <Compile Include="Plugins\IMenuItem.cs" />
+    <Compile Include="Plugins\IMenuWithChildren.cs" />
+    <Compile Include="Plugins\NamespaceDoc.cs" />
+    <Compile Include="VirtualPathProvider\DiskFileLocator.cs" />
+    <Compile Include="Plugins\RoutedMenuItem.cs" />
     <Compile Include="SelectHelper.cs" />
     <Compile Include="VirtualPathProvider\EmbeddedViewFileProvider.cs" />
     <Compile Include="VirtualPathProvider\EmbeddedViewFixer.cs" />
+    <Compile Include="VirtualPathProvider\ExternalViewFixer.cs" />
     <Compile Include="VirtualPathProvider\GriffinVirtualPathProvider.cs" />
     <Compile Include="GriffinWebViewPage.cs" />
     <Compile Include="Html\FormItemAdapterContext.cs" />
@@ -92,6 +118,7 @@
     <Compile Include="Html\TagsExtensions.cs" />
     <Compile Include="Html\TextHtmlHelper.cs" />
     <Compile Include="VirtualPathProvider\IEmbeddedViewFixer.cs" />
+    <Compile Include="VirtualPathProvider\IExternalViewFixer.cs" />
     <Compile Include="VirtualPathProvider\IViewFileLocator.cs" />
     <Compile Include="VirtualPathProvider\IViewFileProvider.cs" />
     <Compile Include="Json\AllowCrossSiteScripting.cs" />
@@ -99,7 +126,6 @@
     <Compile Include="Json\ErrorMessage.cs" />
     <Compile Include="Json\IJsonResponseContent.cs" />
     <Compile Include="Json\JsonResponse.cs" />
-    <Compile Include="Json\MessageBox.cs" />
     <Compile Include="Json\NamespaceDoc.cs" />
     <Compile Include="Localization\FlatFile\FileLocalizedTypeRepository.cs" />
     <Compile Include="Localization\Types\ILocalizedTypesRepository.cs" />
@@ -109,9 +135,9 @@
     <Compile Include="Localization\FlatFile\TypePromptCollection.cs" />
     <Compile Include="Localization\Types\TypePromptKey.cs" />
     <Compile Include="Localization\Views\ViewPromptKey.cs" />
-    <Compile Include="MyViewEngine.cs" />
+    <Compile Include="VirtualPathProvider\NamespaceDoc.cs" />
     <Compile Include="VirtualPathProvider\NamespaceMapping.cs" />
-    <Compile Include="Providers\ValidationAttributeAdapterFactory.cs" />
+    <Compile Include="Localization\Types\ValidationAttributeAdapterFactory.cs" />
     <Compile Include="Localization\FlatFile\ViewLocalizationFileRepository.cs" />
     <Compile Include="Localization\MetadataLanguageProvider.cs" />
     <Compile Include="Localization\Types\ILocalizedStringProvider.cs" />
@@ -151,10 +177,12 @@
     <Compile Include="Providers\Roles\RoleProvider.cs" />
     <Compile Include="VirtualPathProvider\NoCache.cs" />
     <Compile Include="VirtualPathProvider\ViewFileProvider.cs" />
+    <Compile Include="VisualStudioHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Html\SelectLists\" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="Web.config" />
   </ItemGroup>

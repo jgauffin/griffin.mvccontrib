@@ -11,24 +11,16 @@ namespace Griffin.MvcContrib.Json
         /// Return a structured JSON response.
         /// </summary>
         /// <param name="controller">Controller returning the result</param>
+        /// <param name="success">Request was successful (false probably means that you want to return <see cref="ErrorMessage"/> or <see cref="ModelError"/>)</param>
         /// <param name="content">Content to return</param>
         /// <returns>Structured json</returns>
-        public static JsonResult JsonResponse(this Controller controller, IJsonResponseContent content)
+        public static ActionResult JsonResponse(this Controller controller, bool success, IJsonResponseContent content)
         {
-            return new JsonResult {Data = content};
-        }
-
-        /// <summary>
-        /// Return a structured JSON response.
-        /// </summary>
-        /// <param name="controller">Controller returning the result</param>
-        /// <param name="content">Content to return</param>
-        /// <param name="requestBehavior">How HTTP Requests should be treaded.</param>
-        /// <returns>Structured json</returns>
-        public static JsonResult JsonResponse(this Controller controller, IJsonResponseContent content,
-                                              JsonRequestBehavior requestBehavior)
-        {
-            return new JsonResult {Data = content, JsonRequestBehavior = requestBehavior};
+            return new ContentResult
+                       {
+                           Content = JsonSerializer.Current.Serialize(new JsonResponse(success, content)),
+                           ContentType = "application/json"
+                       };
         }
     }
 }

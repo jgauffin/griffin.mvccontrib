@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Text;
 
@@ -15,7 +16,8 @@ namespace Griffin.MvcContrib.VirtualPathProvider
     /// <item>Specify which layout to use.</item>
     /// </list>
     /// </remarks>
-    public class EmbeddedViewFixer : IEmbeddedViewFixer
+    [Obsolete("Use IExternalViewFixer instead. This class is not invoked by the framework anymore")]
+    public class EmbeddedViewFixer : IEmbeddedViewFixer, IExternalViewFixer
     {
         /// <summary>
         ///   Initializes a new instance of the <see cref="EmbeddedViewFixer" /> class.
@@ -23,7 +25,7 @@ namespace Griffin.MvcContrib.VirtualPathProvider
         public EmbeddedViewFixer()
         {
             WebViewPageClassName = "Griffin.MvcContrib.GriffinWebViewPage";
-            LayoutPath = "~/Views/Shared/_Layout.cshtml";
+            LayoutPath = null;
         }
 
         /// <summary>
@@ -77,7 +79,7 @@ namespace Griffin.MvcContrib.VirtualPathProvider
 
             var basePrefix = "@inherits " + WebViewPageClassName;
 
-            if (virtualPath.ToLower().Contains("__viewstart"))
+            if (virtualPath.ToLower().Contains("_viewstart"))
                 writer.WriteLine("@inherits System.Web.WebPages.StartPage");
             else if (modelString == "@model object")
                 writer.WriteLine(basePrefix + "<dynamic>");

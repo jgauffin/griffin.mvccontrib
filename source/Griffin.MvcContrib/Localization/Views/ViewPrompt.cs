@@ -79,9 +79,14 @@ namespace Griffin.MvcContrib.Localization.Views
 
         #region Implementation of IEquatable<ViewPrompt>
 
+        /// <summary>
+        /// Equalses the specified other.
+        /// </summary>
+        /// <param name="other">The other.</param>
+        /// <returns></returns>
         public bool Equals(ViewPrompt other)
         {
-            return other.Key.Equals(Key);
+            return other != null && other.Key.Equals(Key);
         }
 
         #endregion

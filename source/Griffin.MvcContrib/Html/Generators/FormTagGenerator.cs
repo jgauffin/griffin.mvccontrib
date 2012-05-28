@@ -59,15 +59,20 @@ namespace Griffin.MvcContrib.Html.Generators
         /// <summary>
         /// Generate options
         /// </summary>
-        /// <param name="items"></param>
-        /// <param name="selectedValue"></param>
-        /// <param name="formatter"></param>
-        /// <returns></returns>
+        /// <param name="items">Items used to generate options</param>
+        /// <param name="selectedValue">Selected value</param>
+        /// <param name="formatter">Formatter used to find label/value. May be null if the list contains <c>SelectListItem</c></param>
+        /// <returns>Generated <c>option</c> tags</returns>
         protected IEnumerable<NestedTagBuilder> GenerateOptions(IEnumerable items, string selectedValue,
                                                                 ISelectItemFormatter formatter)
         {
             if (formatter == null)
-                return GenerateOptions(items, selectedValue);
+            {
+                if (!(items is IEnumerable<SelectListItem>))
+                    throw new InvalidOperationException("No formatter was specified and the list do not contain SelectListItems");
+
+                return GenerateOptions((IEnumerable<SelectListItem>)items, selectedValue);
+            }
 
             var listItems = new List<NestedTagBuilder>();
             foreach (var item in items)
@@ -84,7 +89,14 @@ namespace Griffin.MvcContrib.Html.Generators
             return listItems;
         }
 
-        protected IEnumerable<NestedTagBuilder> GenerateOptions(IEnumerable items, string selectedValue)
+
+        /// <summary>
+        /// Generate options from a a list of items
+        /// </summary>
+        /// <param name="items">Items to generate option tags for</param>
+        /// <param name="selectedValue">Selected value</param>
+        /// <returns>Generated option tags</returns>
+        protected virtual IEnumerable<NestedTagBuilder> GenerateOptions(IEnumerable<SelectListItem> items, string selectedValue)
         {
             var listItems = new List<NestedTagBuilder>();
             foreach (SelectListItem listItem in items)
@@ -127,6 +139,13 @@ namespace Griffin.MvcContrib.Html.Generators
         protected abstract IEnumerable<NestedTagBuilder> GenerateTags();
 
 
+        /// <summary>
+        /// Generates the primary/root tag (which will contain child tags if required)
+        /// </summary>
+        /// <param name="tagName">Name of the tag.</param>
+        /// <returns>Tag builder for the tag</returns>
+        /// <remarks>Adds all HTML attributes which has been specified in the Context, the name and the ID. Will
+        /// also add any validation state members.</remarks>
         protected NestedTagBuilder CreatePrimaryTag(string tagName)
         {
             var tagBuilder = new NestedTagBuilder(tagName);
@@ -142,7 +161,7 @@ namespace Griffin.MvcContrib.Html.Generators
         /// </summary>
         /// <returns>Model value</returns>
         /// <remarks>Value will either be the one from the previous POST or the one assigned in the model.</remarks>
-        protected string GetValue()
+        protected virtual string GetValue()
         {
             ModelState modelState;
             if (Context.ViewContext.ViewData.ModelState.TryGetValue(Context.Name, out modelState) && modelState.Value != null)
@@ -155,6 +174,11 @@ namespace Griffin.MvcContrib.Html.Generators
                        : Convert.ToString(Context.Metadata.Model, CultureInfo.CurrentUICulture);
         }
 
+        /// <summary>
+        /// Gets the full name of the HTML field.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <returns>dot notated field name</returns>
         protected string GetFullHtmlFieldName(string name)
         {
             return Context.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(name);

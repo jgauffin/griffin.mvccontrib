@@ -35,6 +35,15 @@ namespace Griffin.MvcContrib.Html
         }
 
 
+        /// <summary>
+        /// Begins the form.
+        /// </summary>
+        /// <param name="actionName">Name of the action.</param>
+        /// <param name="controllerName">Name of the controller.</param>
+        /// <param name="method">The method.</param>
+        /// <param name="routeValues">The route values.</param>
+        /// <param name="htmlAttributes">The HTML attributes.</param>
+        /// <returns></returns>
         public virtual MvcForm BeginForm(string actionName = null, string controllerName = null,
                                          FormMethod method = FormMethod.Post, object routeValues = null,
                                          object htmlAttributes = null)
@@ -56,11 +65,11 @@ namespace Griffin.MvcContrib.Html
         }
 
         /// <summary>
-        /// 
+        /// Creates the input context.
         /// </summary>
-        /// <typeparam name="TProperty"></typeparam>
-        /// <param name="property"></param>
-        /// <param name="htmlAttributes"></param>
+        /// <typeparam name="TProperty">The type of the property.</typeparam>
+        /// <param name="property">The property.</param>
+        /// <param name="htmlAttributes">The HTML attributes.</param>
         /// <returns></returns>
         protected virtual GeneratorContext CreateInputContext<TProperty>(Expression<Func<TModel, TProperty>> property,
                                                                          object htmlAttributes = null)
@@ -88,11 +97,11 @@ namespace Griffin.MvcContrib.Html
         }
 
         /// <summary>
-        /// Create an 
+        /// Create an
         /// </summary>
-        /// <typeparam name="TProperty"></typeparam>
-        /// <param name="property"></param>
-        /// <param name="htmlAttributes"></param>
+        /// <typeparam name="TProperty">The type of the property.</typeparam>
+        /// <param name="property">The property.</param>
+        /// <param name="htmlAttributes">The HTML attributes.</param>
         /// <returns></returns>
         public virtual MvcHtmlString EditorFor<TProperty>(Expression<Func<TModel, TProperty>> property,
                                                           object htmlAttributes = null)
@@ -103,6 +112,13 @@ namespace Griffin.MvcContrib.Html
             return InvokeFormItemAdapters(context.Metadata, generatedTags).ToMvcString();
         }
 
+        /// <summary>
+        /// Texts the box for.
+        /// </summary>
+        /// <typeparam name="TProperty">The type of the property.</typeparam>
+        /// <param name="property">The property.</param>
+        /// <param name="htmlAttributes">The HTML attributes.</param>
+        /// <returns></returns>
         public virtual MvcHtmlString TextBoxFor<TProperty>(Expression<Func<TModel, TProperty>> property,
                                                            object htmlAttributes = null)
         {
@@ -112,6 +128,15 @@ namespace Griffin.MvcContrib.Html
             return InvokeFormItemAdapters(context.Metadata, generatedTags).ToMvcString();
         }
 
+        /// <summary>
+        /// Texts the area for.
+        /// </summary>
+        /// <typeparam name="TProperty">The type of the property.</typeparam>
+        /// <param name="property">The property.</param>
+        /// <param name="rows">The rows.</param>
+        /// <param name="columns">The columns.</param>
+        /// <param name="htmlAttributes">The HTML attributes.</param>
+        /// <returns></returns>
         public virtual MvcHtmlString TextAreaFor<TProperty>(Expression<Func<TModel, TProperty>> property, int rows = 5,
                                                             int columns = 40, object htmlAttributes = null)
         {
@@ -137,6 +162,13 @@ namespace Griffin.MvcContrib.Html
             
                 }*/
 
+        /// <summary>
+        /// Dropdowns for.
+        /// </summary>
+        /// <typeparam name="TProperty">The type of the property.</typeparam>
+        /// <param name="property">The property.</param>
+        /// <param name="htmlAttributes">The HTML attributes.</param>
+        /// <returns></returns>
         public virtual MvcHtmlString DropdownFor<TProperty>(Expression<Func<TModel, TProperty>> property,
                                                             object htmlAttributes = null)
             where TProperty : struct, IConvertible, IFormattable, IComparable
@@ -152,11 +184,11 @@ namespace Griffin.MvcContrib.Html
         /// <summary>
         /// Generate a drop down list.
         /// </summary>
-        /// <typeparam name="TProperty"></typeparam>
-        /// <param name="property"></param>
-        /// <param name="items"></param>
-        /// <param name="selectedItem"></param>
-        /// <param name="htmlAttributes"></param>
+        /// <typeparam name="TProperty">The type of the property.</typeparam>
+        /// <param name="property">The property.</param>
+        /// <param name="items">The items.</param>
+        /// <param name="selectedItem">The selected item.</param>
+        /// <param name="htmlAttributes">The HTML attributes.</param>
         /// <returns></returns>
         public virtual MvcHtmlString DropdownFor<TProperty>(Expression<Func<TModel, TProperty>> property,
                                                             IEnumerable<SelectListItem> items,

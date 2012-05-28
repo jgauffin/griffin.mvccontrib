@@ -3,18 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Security;
 using Griffin.MvcContrib.Providers.Membership;
-using Griffin.MvcContrib.RavenDb.Providers;
 using Raven.Client;
 
 namespace Griffin.MvcContrib.RavenDb.Providers
 {
+    /// <summary>
+    /// Raven implementation of the account repository
+    /// </summary>
     public class RavenDbAccountRepository : IAccountRepository
     {
         private readonly IDocumentSession _documentSession;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RavenDbAccountRepository"/> class.
+        /// </summary>
+        /// <param name="documentSession">The document session.</param>
         public RavenDbAccountRepository(IDocumentSession documentSession)
         {
-            this._documentSession = documentSession;
+            _documentSession = documentSession;
         }
 
         #region Implementation of IAccountRepository
@@ -93,7 +99,9 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         {
             if (email == null) throw new ArgumentNullException("email");
 
-            return _documentSession.Query<AccountDocument>().Where(user => user.Email == email).Select(user => user.UserName).FirstOrDefault();
+            return
+                _documentSession.Query<AccountDocument>().Where(user => user.Email == email).Select(
+                    user => user.UserName).FirstOrDefault();
         }
 
         /// <summary>
@@ -120,11 +128,6 @@ namespace Griffin.MvcContrib.RavenDb.Providers
                 return false;
             }
         }
-
-        /// <summary>
-        /// Invoked when a member has been deleted.
-        /// </summary>
-        public event EventHandler<DeletedEventArgs> Deleted = delegate { };
 
         /// <summary>
         /// Get number of users that are online
@@ -158,7 +161,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <returns>A collection of users or an empty collection if no users was found.</returns>
         public IEnumerable<IMembershipAccount> FindNewAccounts(int pageIndex, int pageSize, out int totalRecords)
         {
-            IQueryable<AccountDocument> query = _documentSession.Query<AccountDocument>().Where(p => p.IsApproved==false);
+            var query = _documentSession.Query<AccountDocument>().Where(p => p.IsApproved == false);
             query = CountAndPageQuery(pageIndex, pageSize, out totalRecords, query);
             return query.ToList();
         }
@@ -171,20 +174,12 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <param name="pageSize">Number of items per page</param>
         /// <param name="totalRecords">total number of records that partially matched the specified user name</param>
         /// <returns>A collection of users or an empty collection if no users was found.</returns>
-        public IEnumerable<IMembershipAccount> FindByUserName(string usernameToMatch, int pageIndex, int pageSize, out int totalRecords)
+        public IEnumerable<IMembershipAccount> FindByUserName(string usernameToMatch, int pageIndex, int pageSize,
+                                                              out int totalRecords)
         {
             var query = _documentSession.Query<AccountDocument>().Where(user => user.UserName.Contains(usernameToMatch));
             query = CountAndPageQuery(pageIndex, pageSize, out totalRecords, query);
             return query.ToList();
-        }
-
-        private IQueryable<AccountDocument> CountAndPageQuery(int pageIndex, int pageSize, out int totalRecords, IQueryable<AccountDocument> query)
-        {
-            totalRecords = query.Count();
-            query = pageIndex == 1
-                        ? _documentSession.Query<AccountDocument>().Take(pageSize)
-                        : _documentSession.Query<AccountDocument>().Skip((pageIndex - 1)*pageSize).Take(pageSize);
-            return query;
         }
 
         /// <summary>
@@ -195,13 +190,24 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <param name="pageSize">Number of items per page</param>
         /// <param name="totalRecords">total number of records that matched the specified email</param>
         /// <returns>A collection of users or an empty collection if no users was found.</returns>
-        public IEnumerable<IMembershipAccount> FindByEmail(string emailToMatch, int pageIndex, int pageSize, out int totalRecords)
+        public IEnumerable<IMembershipAccount> FindByEmail(string emailToMatch, int pageIndex, int pageSize,
+                                                           out int totalRecords)
         {
             var query = _documentSession.Query<AccountDocument>().Where(user => user.Email == emailToMatch);
             query = CountAndPageQuery(pageIndex, pageSize, out totalRecords, query);
             return query.ToList();
         }
 
+        /// <summary>
+        /// Create a new membership account
+        /// </summary>
+        /// <param name="providerUserKey">Primary key in the data source</param>
+        /// <param name="applicationName">Name of the application that the account is created for</param>
+        /// <param name="username">User name</param>
+        /// <param name="email">Email address</param>
+        /// <returns>
+        /// Created account
+        /// </returns>
         public IMembershipAccount Create(object providerUserKey, string applicationName, string username, string email)
         {
             var account = new AccountDocument
@@ -215,14 +221,21 @@ namespace Griffin.MvcContrib.RavenDb.Providers
             return account;
         }
 
-        #endregion
-    }
+        /// <summary>
+        /// Invoked when a member has been deleted.
+        /// </summary>
+        public event EventHandler<DeletedEventArgs> Deleted = delegate { };
 
-    public class DeletedEventArgs : EventArgs
-    {
-        public DeletedEventArgs(IMembershipAccount account)
+        private IQueryable<AccountDocument> CountAndPageQuery(int pageIndex, int pageSize, out int totalRecords,
+                                                              IQueryable<AccountDocument> query)
         {
-            
+            totalRecords = query.Count();
+            query = pageIndex == 1
+                        ? _documentSession.Query<AccountDocument>().Take(pageSize)
+                        : _documentSession.Query<AccountDocument>().Skip((pageIndex - 1)*pageSize).Take(pageSize);
+            return query;
         }
+
+        #endregion
     }
 }

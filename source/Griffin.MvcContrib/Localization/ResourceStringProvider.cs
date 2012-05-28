@@ -158,7 +158,7 @@ namespace Griffin.MvcContrib.Localization
         /// </summary>
         /// <param name="name">String table item key</param>
         /// <returns>string if found; otherwise null.</returns>
-        private string GetString(string name)
+        protected virtual string GetString(string name)
         {
             var result =  _resourceManagers.Select(resourceManager => resourceManager.GetString(name)).FirstOrDefault(value => value != null);
             return result;

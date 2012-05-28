@@ -23,6 +23,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Web;
 using System.Web.Mvc;
 using Griffin.MvcContrib.Localization.Types;
@@ -38,6 +39,10 @@ namespace Griffin.MvcContrib.Localization
     /// <para>
     /// Check for namespace documentation for an example on how to use the provider.
     /// </para>
+    /// <para>Are you missing validation rules for an attribute? Do not try to use the original validation rules. The standard attributes
+    /// uses some nasty delegates to handle the error message. Screwing with them should be handled with care. You should therefore patch
+    /// <see cref="ValidationAttributeAdapterFactory"/> instead of messing with something in here.
+    /// </para>
     /// </remarks>
     public class LocalizedModelValidatorProvider : DataAnnotationsModelValidatorProvider, IDisposable
     {
@@ -50,6 +55,7 @@ namespace Griffin.MvcContrib.Localization
         /// </summary>
         /// <param name="stringProvider">The string provider.</param>
         public LocalizedModelValidatorProvider(ILocalizedStringProvider stringProvider)
+            : this()
         {
             _stringProviderDontUsedirectly = stringProvider;
         }
@@ -80,7 +86,6 @@ namespace Griffin.MvcContrib.Localization
                 var provider = HttpContext.Current.Items["ILocalizedStringProvider"] as ILocalizedStringProvider;
                 if (provider == null)
                 {
-                    Trace.WriteLine("** Resolving provider " );
                     provider = DependencyResolver.Current.GetService<ILocalizedStringProvider>();
                     HttpContext.Current.Items["ILocalizedStringProvider"] = provider;
                 }
@@ -157,6 +162,14 @@ namespace Griffin.MvcContrib.Localization
                     validators.Add(new MyValidator(attr, errorMessage, metadata, context,
                                                    _adapterFactory.Create(attr, formattedError)));
                 }
+                else
+                {
+                    var clientValidable = attr as IClientValidatable;
+                    var clientRules = clientValidable == null
+                                          ? new ModelClientValidationRule[0]
+                                          : clientValidable.GetClientValidationRules(metadata, context);
+                    validators.Add(new MyValidator(attr, attr.ErrorMessage, metadata, context, clientRules));
+                }
             }
 
             return validators;
@@ -167,16 +180,16 @@ namespace Griffin.MvcContrib.Localization
         private class MyValidator : ModelValidator
         {
             private readonly ValidationAttribute _attribute;
-            private readonly IEnumerable<ModelClientValidationRule> _create;
+            private readonly IEnumerable<ModelClientValidationRule> _clientRules;
             private readonly string _errorMsg;
 
             public MyValidator(ValidationAttribute attribute, string errorMsg, ModelMetadata metadata,
-                               ControllerContext controllerContext, IEnumerable<ModelClientValidationRule> create)
+                               ControllerContext controllerContext, IEnumerable<ModelClientValidationRule> clientRules)
                 : base(metadata, controllerContext)
             {
                 _attribute = attribute;
                 _errorMsg = errorMsg;
-                _create = create;
+                _clientRules = clientRules;
             }
 
             public override bool IsRequired
@@ -186,7 +199,7 @@ namespace Griffin.MvcContrib.Localization
 
             public override IEnumerable<ModelClientValidationRule> GetClientValidationRules()
             {
-                return _create;
+                return _clientRules;
             }
 
             public override IEnumerable<ModelValidationResult> Validate(object container)
@@ -207,9 +220,11 @@ namespace Griffin.MvcContrib.Localization
 
         #endregion
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
         public void Dispose()
         {
-            Trace.WriteLine("**disposing**");
         }
     }
 }

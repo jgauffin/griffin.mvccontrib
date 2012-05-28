@@ -1,13 +1,18 @@
 ﻿namespace Griffin.MvcContrib.RavenDb.Providers
 {
+    /// <summary>
+    /// Role document
+    /// </summary>
     public class Role
     {
         /// <summary>
-        /// Gets role name
+        /// Gets or sets role name
         /// </summary>
         public string Name { get; set; }
 
-
+        /// <summary>
+        /// Gets or sets application that the role exists in
+        /// </summary>
         public string ApplicationName { get; set; }
     }
 }

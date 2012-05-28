@@ -55,26 +55,38 @@ namespace Griffin.MvcContrib.Localization.Types
         /// <param name="other">An object to compare with this object.</param>
         public bool Equals(TypePromptKey other)
         {
-            return other._id.Equals(_id);
+            return other != null && other._id.Equals(_id);
         }
 
+        #endregion
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="typePromptKey"></param>
+        /// <param name="typePromptKey2"></param>
+        /// <returns></returns>
         public static bool operator ==(TypePromptKey typePromptKey, TypePromptKey typePromptKey2)
         {
-            if ((object)typePromptKey == null || ((object)typePromptKey2) == null)
-                return Object.Equals(typePromptKey, typePromptKey2);
+            if ((object) typePromptKey == null || ((object) typePromptKey2) == null)
+                return Equals(typePromptKey, typePromptKey2);
 
             return typePromptKey.Equals(typePromptKey2);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="viewPromptKey"></param>
+        /// <param name="viewPromptKey2"></param>
+        /// <returns></returns>
         public static bool operator !=(TypePromptKey viewPromptKey, TypePromptKey viewPromptKey2)
         {
             if (viewPromptKey == null || viewPromptKey2 == null)
-                return !Object.Equals(viewPromptKey, viewPromptKey2);
+                return !Equals(viewPromptKey, viewPromptKey2);
 
             return !(viewPromptKey.Equals(viewPromptKey2));
         }
-
-        #endregion
 
         /// <summary>
         /// Returns a <see cref="System.String"/> that represents this instance.
@@ -85,6 +97,32 @@ namespace Griffin.MvcContrib.Localization.Types
         public override string ToString()
         {
             return _id;
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="System.Object"/> is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The <see cref="System.Object"/> to compare with this instance.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != typeof (TypePromptKey)) return false;
+            return Equals((TypePromptKey) obj);
+        }
+
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode()
+        {
+            return (_id != null ? _id.GetHashCode() : 0);
         }
     }
 }

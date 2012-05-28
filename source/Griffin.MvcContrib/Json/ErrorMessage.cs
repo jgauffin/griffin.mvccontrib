@@ -1,12 +1,16 @@
+using System.Runtime.Serialization;
+using System.Xml.Serialization;
+
 namespace Griffin.MvcContrib.Json
 {
     /// <summary>
     /// Display an error message for the user
     /// </summary>
+    [XmlRoot("error")]
+    [DataContract(Name = "error", Namespace = "")]
     public class ErrorMessage : IJsonResponseContent
     {
-        private readonly string _message;
-        private readonly string _propertyName;
+        private string _message;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ErrorMessage"/> class.
@@ -18,30 +22,17 @@ namespace Griffin.MvcContrib.Json
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ErrorMessage"/> class.
+        /// Gets the message
         /// </summary>
-        /// <param name="propertyName">Name of the property that the error is for.</param>
-        /// <param name="message">The message to display.</param>
-        public ErrorMessage(string propertyName, string message)
-        {
-            _propertyName = propertyName;
-            _message = message;
-        }
-
-        /// <summary>
-        /// Gets property that the error is for, or <c>null</c> for a general error.
-        /// </summary>
-        public string PropertyName
-        {
-            get { return _propertyName; }
-        }
+        [DataMember(Name = "message")]
+        public string Message { get { return _message; } protected set { _message = value; }}
 
         /// <summary>
         /// Gets message to display
         /// </summary>
-        public string Message
+        public override string  ToString()
         {
-            get { return _message; }
+            return _message;
         }
     }
 }

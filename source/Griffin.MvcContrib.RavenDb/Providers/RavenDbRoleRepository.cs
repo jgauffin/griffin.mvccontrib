@@ -6,10 +6,17 @@ using Raven.Client;
 
 namespace Griffin.MvcContrib.RavenDb.Providers
 {
+    /// <summary>
+    /// Used to load roles from raven
+    /// </summary>
     public class RavenDbRoleRepository : IRoleRepository
     {
         private readonly IDocumentSession _session;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RavenDbRoleRepository"/> class.
+        /// </summary>
+        /// <param name="session">The session.</param>
         public RavenDbRoleRepository(IDocumentSession session)
         {
             _session = session;
@@ -25,7 +32,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <returns>User if found; otherwise null.</returns>
         public IUserWithRoles GetUser(string applicationName, string username)
         {
-            return _session.Query<AccountDocument>().Where(usr => usr.UserName == username).FirstOrDefault();
+            return _session.Query<AccountDocument>().FirstOrDefault(usr => usr.UserName == username);
         }
 
         /// <summary>
@@ -60,7 +67,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <param name="username">User name</param>
         public void AddUserToRole(string applicationName, string roleName, string username)
         {
-            var user = _session.Query<AccountDocument>().Where(usr => usr.UserName == username).FirstOrDefault();
+            var user = _session.Query<AccountDocument>().FirstOrDefault(usr => usr.UserName == username);
             if (user == null)
                 throw new ProviderException("Failed to find user " + username);
 
@@ -77,7 +84,7 @@ namespace Griffin.MvcContrib.RavenDb.Providers
         /// <param name="username">User to remove</param>
         public void RemoveUserFromRole(string applicationName, string roleName, string username)
         {
-            var user = _session.Query<AccountDocument>().Where(usr => usr.UserName == username).FirstOrDefault();
+            var user = _session.Query<AccountDocument>().FirstOrDefault(usr => usr.UserName == username);
             if (user == null)
                 throw new ProviderException("Failed to find user " + username);
 
@@ -107,11 +114,28 @@ namespace Griffin.MvcContrib.RavenDb.Providers
             return _session.Query<Role>().Count(r => r.Name == roleName) != 0;
         }
 
+        /// <summary>
+        /// Get number of users in a role
+        /// </summary>
+        /// <param name="applicationName">Application to check for</param>
+        /// <param name="roleName">Name of role</param>
+        /// <returns>
+        /// Number of users
+        /// </returns>
         public int GetNumberOfUsersInRole(string applicationName, string roleName)
         {
             return _session.Query<AccountDocument>().Count(usr => usr.Roles.Contains(roleName));
         }
 
+        /// <summary>
+        /// Finds the users in a role.
+        /// </summary>
+        /// <param name="applicationName">Application to look in</param>
+        /// <param name="roleName">Name of the role.</param>
+        /// <param name="userNameToMatch">The user name to match.</param>
+        /// <returns>
+        /// A list of user names.
+        /// </returns>
         public IEnumerable<string> FindUsersInRole(string applicationName, string roleName, string userNameToMatch)
         {
             return
@@ -120,6 +144,14 @@ namespace Griffin.MvcContrib.RavenDb.Providers
                         usr => usr.UserName);
         }
 
+        /// <summary>
+        /// Finds the users in a role.
+        /// </summary>
+        /// <param name="applicationName">Application to look in</param>
+        /// <param name="roleName">Name of the role.</param>
+        /// <returns>
+        /// A list of user names.
+        /// </returns>
         public IEnumerable<string> GetUsersInRole(string applicationName, string roleName)
         {
             return

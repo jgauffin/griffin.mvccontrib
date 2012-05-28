@@ -27,6 +27,7 @@ namespace Griffin.MvcContrib.VirtualPathProvider
     public class ViewFileProvider : IViewFileProvider
     {
         private readonly IViewFileLocator _viewFileLocator;
+        private readonly IExternalViewFixer _viewFixer;
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="ViewFileProvider" /> class.
@@ -36,6 +37,18 @@ namespace Griffin.MvcContrib.VirtualPathProvider
         {
             if (viewFileLocator == null) throw new ArgumentNullException("viewFileLocator");
             _viewFileLocator = viewFileLocator;
+        }
+
+        /// <summary>
+        ///   Initializes a new instance of the <see cref="ViewFileProvider" /> class.
+        /// </summary>
+        /// <param name="viewFileLocator"> The view file locator. </param>
+        /// <param name="viewFixer">Used to modify external views so that can be written as any other view.</param>
+        public ViewFileProvider(IViewFileLocator viewFileLocator, IExternalViewFixer viewFixer)
+        {
+            if (viewFileLocator == null) throw new ArgumentNullException("viewFileLocator");
+            _viewFileLocator = viewFileLocator;
+            _viewFixer = viewFixer;
         }
 
         #region IViewFileProvider Members
@@ -108,9 +121,15 @@ namespace Griffin.MvcContrib.VirtualPathProvider
 
         #endregion
 
-        private static Stream CorrectView(string virtualPath, FileStream fileStream)
+        /// <summary>
+        /// Used to adjust the external views before they are returned
+        /// </summary>
+        /// <param name="virtualPath">Path to requested view</param>
+        /// <param name="fileStream">Loaded file</param>
+        /// <returns>Stream to use</returns>
+        protected virtual Stream CorrectView(string virtualPath, FileStream fileStream)
         {
-            var fixer = DependencyResolver.Current.GetService<IEmbeddedViewFixer>();
+            var fixer = _viewFixer ?? DependencyResolver.Current.GetService<IExternalViewFixer>();
             if (fixer == null)
             {
                 return fileStream;

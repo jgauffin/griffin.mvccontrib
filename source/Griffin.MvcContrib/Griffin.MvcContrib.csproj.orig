@@ -1,0 +1,207 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0D102D58-4D79-444D-B633-F7ACD3B6D749}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Griffin.MvcContrib</RootNamespace>
+    <AssemblyName>Griffin.MvcContrib</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\source\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\Griffin.MvcContrib.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\Griffin.MvcContrib.XML</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.4.5.4\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Web.WebPages, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Caching\NamespaceDoc.cs" />
+    <Compile Include="Caching\NoCacheAttribute.cs" />
+<<<<<<< HEAD
+    <Compile Include="Html\Generators\NamespaceDoc.cs" />
+    <Compile Include="Html\NamespaceDoc.cs" />
+=======
+    <Compile Include="Json\ClientRuleProvider.cs" />
+    <Compile Include="Json\ModelError.cs" />
+    <Compile Include="Json\NameKeyValueList.cs" />
+    <Compile Include="Json\ValidationRules.cs" />
+>>>>>>> origin/master
+    <Compile Include="Localization\DefaultUICulture.cs" />
+    <Compile Include="Localization\FlatFile\NamespaceDoc.cs" />
+    <Compile Include="Localization\Types\CommonPrompts.cs" />
+    <Compile Include="Localization\Types\ITypePromptImporter.cs" />
+    <Compile Include="Localization\Types\NamespaceDoc.cs" />
+    <Compile Include="Localization\Types\ValidationAttributesStringProvider.cs" />
+    <Compile Include="Localization\Views\IViewPromptImporter.cs" />
+    <Compile Include="Localization\Views\NamespaceDoc.cs" />
+    <Compile Include="Logging\DebugWindowLogger.cs" />
+    <Compile Include="Logging\ILogger.cs" />
+    <Compile Include="Logging\NamespaceDoc.cs" />
+    <Compile Include="Logging\NullLogger.cs" />
+<<<<<<< HEAD
+    <Compile Include="Providers\Membership\NamespaceDoc.cs" />
+    <Compile Include="Providers\Profile\NamespaceDoc.cs" />
+    <Compile Include="Providers\Roles\NamespaceDoc.cs" />
+=======
+    <Compile Include="Plugins\IMenuItem.cs" />
+    <Compile Include="Plugins\IMenuWithChildren.cs" />
+    <Compile Include="Plugins\NamespaceDoc.cs" />
+    <Compile Include="VirtualPathProvider\DiskFileLocator.cs" />
+    <Compile Include="Plugins\RoutedMenuItem.cs" />
+    <Compile Include="Plugins\PluginLoader.cs" />
+>>>>>>> origin/master
+    <Compile Include="SelectHelper.cs" />
+    <Compile Include="VirtualPathProvider\EmbeddedViewFileProvider.cs" />
+    <Compile Include="VirtualPathProvider\EmbeddedViewFixer.cs" />
+    <Compile Include="VirtualPathProvider\ExternalViewFixer.cs" />
+    <Compile Include="VirtualPathProvider\GriffinVirtualPathProvider.cs" />
+    <Compile Include="GriffinWebViewPage.cs" />
+    <Compile Include="Html\FormItemAdapterContext.cs" />
+    <Compile Include="Html\Generators\CheckBoxGenerator.cs" />
+    <Compile Include="Html\Generators\GeneratorContext.cs" />
+    <Compile Include="Html\HtmlHelperFor.cs" />
+    <Compile Include="Html\Generators\FormTagGenerator.cs" />
+    <Compile Include="Html\HtmlTagAdapterContext.cs" />
+    <Compile Include="Html\IdNameFormatter.cs" />
+    <Compile Include="Html\IdTitleFormatter.cs" />
+    <Compile Include="Html\IFormItemAdapter.cs" />
+    <Compile Include="Html\IHtmlTagAdapter.cs" />
+    <Compile Include="Html\ISelectFormatter.cs" />
+    <Compile Include="Html\FormHtmlHelper.cs" />
+    <Compile Include="Html\NestedTagBuilder.cs" />
+    <Compile Include="Html\Generators\RadioButtonGenerator.cs" />
+    <Compile Include="Html\ReflectiveSelectItemFormatter.cs" />
+    <Compile Include="Html\Generators\SelectContext.cs" />
+    <Compile Include="Html\Generators\SelectGenerator.cs" />
+    <Compile Include="Html\Generators\TextAreaGenerator.cs" />
+    <Compile Include="Html\Generators\TextBoxGenerator.cs" />
+    <Compile Include="Html\TagsExtensions.cs" />
+    <Compile Include="Html\TextHtmlHelper.cs" />
+    <Compile Include="VirtualPathProvider\IEmbeddedViewFixer.cs" />
+    <Compile Include="VirtualPathProvider\IExternalViewFixer.cs" />
+    <Compile Include="VirtualPathProvider\IViewFileLocator.cs" />
+    <Compile Include="VirtualPathProvider\IViewFileProvider.cs" />
+    <Compile Include="Json\AllowCrossSiteScripting.cs" />
+    <Compile Include="Json\ControllerExtensions.cs" />
+    <Compile Include="Json\ErrorMessage.cs" />
+    <Compile Include="Json\IJsonResponseContent.cs" />
+    <Compile Include="Json\JsonResponse.cs" />
+    <Compile Include="Json\NamespaceDoc.cs" />
+    <Compile Include="Localization\FlatFile\FileLocalizedTypeRepository.cs" />
+    <Compile Include="Localization\Types\ILocalizedTypesRepository.cs" />
+    <Compile Include="Localization\Types\RepositoryStringProvider.cs" />
+    <Compile Include="Localization\SearchFilter.cs" />
+    <Compile Include="Localization\Types\TypePrompt.cs" />
+    <Compile Include="Localization\FlatFile\TypePromptCollection.cs" />
+    <Compile Include="Localization\Types\TypePromptKey.cs" />
+    <Compile Include="Localization\Views\ViewPromptKey.cs" />
+    <Compile Include="MyViewEngine.cs" />
+    <Compile Include="VirtualPathProvider\NamespaceDoc.cs" />
+    <Compile Include="VirtualPathProvider\NamespaceMapping.cs" />
+    <Compile Include="Providers\ValidationAttributeAdapterFactory.cs" />
+    <Compile Include="Localization\FlatFile\ViewLocalizationFileRepository.cs" />
+    <Compile Include="Localization\MetadataLanguageProvider.cs" />
+    <Compile Include="Localization\Types\ILocalizedStringProvider.cs" />
+    <Compile Include="Localization\LocalizedAttribute.cs" />
+    <Compile Include="Localization\LocalizedCacheAttribute.cs" />
+    <Compile Include="Localization\LocalizedMetadataProvider.cs" />
+    <Compile Include="Localization\LocalizedModelValidatorProvider.cs" />
+    <Compile Include="Localization\NamespaceDoc.cs" />
+    <Compile Include="Localization\ResourceStringProvider.cs" />
+    <Compile Include="Localization\Views\IViewLocalizationRepository.cs" />
+    <Compile Include="Localization\Views\ViewPrompt.cs" />
+    <Compile Include="Localization\FlatFile\ViewPromptCollection.cs" />
+    <Compile Include="Localization\Views\ViewLocalizer.cs" />
+    <Compile Include="Logging\LogProvider.cs" />
+    <Compile Include="NamespaceDoc.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Providers\Membership\IAccountPasswordInfo.cs" />
+    <Compile Include="Providers\Membership\IAccountRepository.cs" />
+    <Compile Include="Providers\Membership\IPasswordPolicy.cs" />
+    <Compile Include="Providers\Membership\IPasswordStrategy.cs" />
+    <Compile Include="Providers\Membership\IMembershipAccount.cs" />
+    <Compile Include="Providers\Membership\MembershipProvider.cs" />
+    <Compile Include="Providers\Membership\PasswordExtensions.cs" />
+    <Compile Include="Providers\Membership\PasswordPolicy.cs" />
+    <Compile Include="Providers\Membership\PasswordStrategies\ClearTextStrategy.cs" />
+    <Compile Include="Providers\Membership\PasswordStrategies\HashPasswordStrategy.cs" />
+    <Compile Include="Providers\Membership\PasswordStrategies\PasswordPolicyExtensions.cs" />
+    <Compile Include="Providers\Membership\PasswordStrategies\TripleDesStrategy.cs" />
+    <Compile Include="Providers\Membership\SqlRepository\ISqlAdapter.cs" />
+    <Compile Include="Providers\Membership\SqlRepository\SqlAccountRepository.cs" />
+    <Compile Include="Providers\Membership\SqlRepository\SqlExtensions.cs" />
+    <Compile Include="Providers\Membership\SqlRepository\MembershipAccount.cs" />
+    <Compile Include="Providers\NamespaceDoc.cs" />
+    <Compile Include="Providers\Profile\ProfileProvider.cs" />
+    <Compile Include="Providers\Roles\IRoleRepository.cs" />
+    <Compile Include="Providers\Roles\IUserWithRoles.cs" />
+    <Compile Include="Providers\Roles\RoleProvider.cs" />
+    <Compile Include="VirtualPathProvider\NoCache.cs" />
+    <Compile Include="VirtualPathProvider\ViewFileProvider.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

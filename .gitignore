@@ -24,19 +24,6 @@ Thumbs.db
 *.lib
 *.sbr
 obj/
-documentation/Help/html/
-documentation/Help/fti/
-documentation/Help/*/
-documentation/Help/*.png
-documentation/Help/*.js
-documentation/Help/*.aspx
-documentation/Help/*.html
-documentation/Help/*.config
-documentation/Help/*.css
-documentation/Help/*.xml
-documentation/Help/*.bmp
-documentation/Help/*.ico
-documentation/Help/*.gif
 icons
 [Rr]elease*/
 _ReSharper*/
@@ -52,3 +39,6 @@ source/Griffin.MvcContrib.Admin/App_Data/*.dat
 source/Griffin.MvcContrib.Admin/App_Data/*.dat
 source/Samples/MvcContrib.Admin/AdminTest/Data/
 */packages/*
+!*NuGet.exe
+source/Griffin.MvcContrib/Help/*
+!source/Griffin.MvcContrib/Help/documentation.chm
