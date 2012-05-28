@@ -33,25 +33,15 @@ namespace Griffin.MvcContrib.Html.Generators
     /// <remarks>
     /// Tag generators are used in MVC views to generate HTML tags with the help of html helpers.
     /// </remarks>
-    public abstract class FormTagGenerator
+    public abstract class FormTagGenerator : ITagBuilder
     {
-        private readonly ViewContext _viewContext;
         private ILocalizedStringProvider _languageProvider;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FormTagGenerator"/> class.
-        /// </summary>
-        /// <param name="viewContext">The view context.</param>
-        protected FormTagGenerator(ViewContext viewContext)
-        {
-            _viewContext = viewContext;
-        }
 
         /// <summary>
         /// Gets generator context
         /// </summary>
         /// <remarks>Contains information used to generate tags such as ModelMetaData.</remarks>
-        protected GeneratorContext Context { get; private set; }
+        protected ITagBuilderContext Context { get; private set; }
 
         /// <summary>
         /// Gets provider used to load localized strings from any source
@@ -114,7 +104,7 @@ namespace Griffin.MvcContrib.Html.Generators
         /// I know, really. Setup/Init methods are a pain and spawn of satan and all that. But I couldn't figure out a  better solution.
         /// </summary>
         /// <param name="context"></param>
-        protected virtual void Setup(GeneratorContext context)
+        protected virtual void Setup(ITagBuilderContext context)
         {
             Context = context;
         }
@@ -124,12 +114,16 @@ namespace Griffin.MvcContrib.Html.Generators
         /// </summary>
         /// <param name="context">Context specific information</param>
         /// <returns>Generated HTML tags</returns>
-        public IEnumerable<NestedTagBuilder> Generate(GeneratorContext context)
+        public IEnumerable<NestedTagBuilder> Generate(ITagBuilderContext context)
         {
             Setup(context);
             return GenerateTags();
         }
 
+        /// <summary>
+        /// Generated all used tags.
+        /// </summary>
+        /// <returns></returns>
         protected abstract IEnumerable<NestedTagBuilder> GenerateTags();
 
 
@@ -151,7 +145,7 @@ namespace Griffin.MvcContrib.Html.Generators
         protected string GetValue()
         {
             ModelState modelState;
-            if (_viewContext.ViewData.ModelState.TryGetValue(Context.Name, out modelState) && modelState.Value != null)
+            if (Context.ViewContext.ViewData.ModelState.TryGetValue(Context.Name, out modelState) && modelState.Value != null)
             {
                 return Convert.ToString(modelState.Value, CultureInfo.CurrentUICulture);
             }
@@ -163,13 +157,13 @@ namespace Griffin.MvcContrib.Html.Generators
 
         protected string GetFullHtmlFieldName(string name)
         {
-            return _viewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(name);
+            return Context.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(name);
         }
 
         private void SetValidationState(NestedTagBuilder tagBuilder, string fullName)
         {
             ModelState modelState;
-            if (_viewContext.ViewData.ModelState.TryGetValue(fullName, out modelState) && modelState.Errors.Count > 0)
+            if (Context.ViewContext.ViewData.ModelState.TryGetValue(fullName, out modelState) && modelState.Errors.Count > 0)
             {
                 tagBuilder.AddCssClass(HtmlHelper.ValidationInputCssClassName);
             }

@@ -18,13 +18,7 @@ namespace Griffin.MvcContrib.Html
     // ReSharper disable PossibleMultipleEnumeration
     public class FormHtmlHelper<TModel> : HtmlHelperFor<TModel>
     {
-        private static CheckBoxGenerator _checkBoxGenerator;
-        private static RadioButtonGenerator _radioButtonGenerator;
-        private static SelectGenerator _selectGenerator;
-        private static TextAreaGenerator _textAreaGenerator;
-        private static TextBoxGenerator _textBoxGenerator;
-        private HiddenInputGenerator _hiddenInputGenerator;
-        private PasswordInputGenerator _passwordInputGenerator;
+        private readonly ITagBuilderFactory _tagBuilderFactory;
 
 
         /// <summary>
@@ -34,23 +28,10 @@ namespace Griffin.MvcContrib.Html
         public FormHtmlHelper(HtmlHelper<TModel> helper)
             : base(helper)
         {
+
             var resolver = DependencyResolver.Current;
-            if (_textBoxGenerator == null)
-                _textBoxGenerator = resolver.GetService<TextBoxGenerator>() ?? new TextBoxGenerator(helper.ViewContext);
+            _tagBuilderFactory = resolver.GetService<ITagBuilderFactory>();
 
-            if (_textAreaGenerator == null)
-                _textAreaGenerator = resolver.GetService<TextAreaGenerator>() ??
-                                     new TextAreaGenerator(helper.ViewContext);
-
-            if (_checkBoxGenerator == null)
-                _checkBoxGenerator = resolver.GetService<CheckBoxGenerator>() ??
-                                     new CheckBoxGenerator(helper.ViewContext);
-
-            if (_radioButtonGenerator == null)
-                _radioButtonGenerator = resolver.GetService<RadioButtonGenerator>() ??
-                                        new RadioButtonGenerator(helper.ViewContext);
-            if (_selectGenerator == null)
-                _selectGenerator = resolver.GetService<SelectGenerator>() ?? new SelectGenerator(helper.ViewContext);
         }
 
 
@@ -103,7 +84,7 @@ namespace Griffin.MvcContrib.Html
                 attributes.Add(validationAttribute.Key, validationAttribute.Value);
             }
 
-            return new GeneratorContext(name, fullName, metadata, attributes);
+            return new GeneratorContext(name, fullName, metadata, attributes, ViewContext);
         }
 
         /// <summary>
@@ -117,7 +98,8 @@ namespace Griffin.MvcContrib.Html
                                                           object htmlAttributes = null)
         {
             var context = CreateInputContext(property, htmlAttributes);
-            var generatedTags = _textBoxGenerator.Generate(context);
+            var builder = _tagBuilderFactory.Create("input");
+            var generatedTags = builder.Generate(context);
             return InvokeFormItemAdapters(context.Metadata, generatedTags).ToMvcString();
         }
 
@@ -125,7 +107,8 @@ namespace Griffin.MvcContrib.Html
                                                            object htmlAttributes = null)
         {
             var context = CreateInputContext(property, htmlAttributes);
-            var generatedTags = _textBoxGenerator.Generate(context);
+            var builder = _tagBuilderFactory.Create("input");
+            var generatedTags = builder.Generate(context);
             return InvokeFormItemAdapters(context.Metadata, generatedTags).ToMvcString();
         }
 
@@ -135,7 +118,8 @@ namespace Griffin.MvcContrib.Html
             var context = CreateInputContext(property, htmlAttributes);
             context.HtmlAttributes.Add("rows", rows);
             context.HtmlAttributes.Add("cols", columns);
-            var generatedTags = _textAreaGenerator.Generate(context);
+            var builder = _tagBuilderFactory.Create("input");
+            var generatedTags = builder.Generate(context);
             return InvokeFormItemAdapters(context.Metadata, generatedTags).ToMvcString();
         }
 
@@ -159,7 +143,8 @@ namespace Griffin.MvcContrib.Html
         {
             var ctx = CreateInputContext(property, htmlAttributes);
             var context = new SelectContext(ctx, null, null);
-            var generatedTags = _selectGenerator.Generate(context);
+            var builder = _tagBuilderFactory.Create("input");
+            var generatedTags = builder.Generate(context);
             return InvokeFormItemAdapters(context.Metadata, generatedTags).ToMvcString();
         }
 
@@ -179,7 +164,8 @@ namespace Griffin.MvcContrib.Html
         {
             var ctx = CreateInputContext(property, htmlAttributes);
             var context = new SelectContext(ctx, null, items);
-            var generatedTags = _selectGenerator.Generate(context);
+            var builder = _tagBuilderFactory.Create("input");
+            var generatedTags = builder.Generate(context);
             return InvokeFormItemAdapters(context.Metadata, generatedTags).ToMvcString();
         }
 
@@ -194,7 +180,8 @@ namespace Griffin.MvcContrib.Html
                                                             object htmlAttributes = null)
         {
             var context = CreateInputContext(property, htmlAttributes);
-            var generatedTags = _checkBoxGenerator.Generate(context);
+            var builder = _tagBuilderFactory.Create("input");
+            var generatedTags = builder.Generate(context);
             return InvokeFormItemAdapters(context.Metadata, generatedTags).ToMvcString();
         }
 
@@ -212,7 +199,8 @@ namespace Griffin.MvcContrib.Html
         {
             var context = CreateInputContext(property, htmlAttributes);
             context.HtmlAttributes.Add("value", value);
-            var generatedTags = _radioButtonGenerator.Generate(context);
+            var builder = _tagBuilderFactory.Create("input");
+            var generatedTags = builder.Generate(context);
             return InvokeFormItemAdapters(context.Metadata, generatedTags).ToMvcString();
         }
 
@@ -228,7 +216,8 @@ namespace Griffin.MvcContrib.Html
             where TProperty : struct, IConvertible, IFormattable, IComparable
         {
             var context = CreateInputContext(property, htmlAttributes);
-            var generatedTags = _radioButtonGenerator.Generate(context);
+            var builder = _tagBuilderFactory.Create("input");
+            var generatedTags = builder.Generate(context);
             return InvokeFormItemAdapters(context.Metadata, generatedTags).ToMvcString();
         }
 
@@ -245,7 +234,8 @@ namespace Griffin.MvcContrib.Html
             where TProperty : struct, IConvertible, IFormattable, IComparable
         {
             var context = CreateInputContext(property, htmlAttributes);
-            var generatedTags = _radioButtonGenerator.Generate(context);
+            var builder = _tagBuilderFactory.Create("input");
+            var generatedTags = builder.Generate(context);
             return InvokeFormItemAdapters(context.Metadata, generatedTags).ToMvcString();
         }
 
@@ -261,7 +251,8 @@ namespace Griffin.MvcContrib.Html
             where TProperty : struct, IConvertible, IFormattable, IComparable
         {
             var context = CreateInputContext(property, htmlAttributes);
-            var generatedTags = _checkBoxGenerator.Generate(context);
+            var builder = _tagBuilderFactory.Create("input");
+            var generatedTags = builder.Generate(context);
             return InvokeFormItemAdapters(context.Metadata, generatedTags).ToMvcString();
         }
 

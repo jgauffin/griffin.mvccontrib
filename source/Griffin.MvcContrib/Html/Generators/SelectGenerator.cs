@@ -9,15 +9,6 @@ namespace Griffin.MvcContrib.Html.Generators
     /// </summary>
     public class SelectGenerator : FormTagGenerator
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SelectGenerator"/> class.
-        /// </summary>
-        /// <param name="viewContext">The view context.</param>
-        public SelectGenerator(ViewContext viewContext)
-            : base(viewContext)
-        {
-        }
-
         protected override IEnumerable<NestedTagBuilder> GenerateTags()
         {
             if (typeof (Enum).IsAssignableFrom(Context.Metadata.ModelType))
@@ -35,7 +26,7 @@ namespace Griffin.MvcContrib.Html.Generators
         }
 
 
-        public virtual IEnumerable<NestedTagBuilder> GenerateForEnum(GeneratorContext context)
+        public virtual IEnumerable<NestedTagBuilder> GenerateForEnum(ITagBuilderContext context)
         {
             Setup(context);
 

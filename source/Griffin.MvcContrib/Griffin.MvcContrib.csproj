@@ -53,6 +53,10 @@
   <ItemGroup>
     <Compile Include="Caching\NamespaceDoc.cs" />
     <Compile Include="Caching\NoCacheAttribute.cs" />
+    <Compile Include="Html\Generators\DefaultTagBuilderFactory.cs" />
+    <Compile Include="Html\Generators\ITagBuilder.cs" />
+    <Compile Include="Html\Generators\ITagBuilderContext.cs" />
+    <Compile Include="Html\Generators\ITagBuilderFactory.cs" />
     <Compile Include="Localization\DefaultUICulture.cs" />
     <Compile Include="Localization\Types\CommonPrompts.cs" />
     <Compile Include="Localization\Types\ITypePromptImporter.cs" />

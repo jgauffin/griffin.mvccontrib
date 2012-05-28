@@ -4,12 +4,11 @@ using System.Web.Mvc;
 
 namespace Griffin.MvcContrib.Html.Generators
 {
-    internal class CheckBoxGenerator : FormTagGenerator
+    /// <summary>
+    /// Generates checkboxes
+    /// </summary>
+    public class CheckBoxGenerator : FormTagGenerator
     {
-        public CheckBoxGenerator(ViewContext viewContext) : base(viewContext)
-        {
-        }
-
         protected override IEnumerable<NestedTagBuilder> GenerateTags()
         {
             if (typeof (Enum).IsAssignableFrom(Context.Metadata.ModelType))
@@ -43,7 +42,7 @@ namespace Griffin.MvcContrib.Html.Generators
         }
 
 
-        public virtual IEnumerable<NestedTagBuilder> GenerateForEnum(GeneratorContext context)
+        public virtual IEnumerable<NestedTagBuilder> GenerateForEnum(ITagBuilderContext context)
         {
             Setup(context);
 

@@ -12,8 +12,7 @@ namespace Griffin.MvcContrib.Html.Generators
         /// <summary>
         /// Initializes a new instance of the <see cref="RadioButtonGenerator"/> class.
         /// </summary>
-        /// <param name="viewContext">The view context.</param>
-        public RadioButtonGenerator(ViewContext viewContext) : base(viewContext)
+        public RadioButtonGenerator()
         {
         }
 
@@ -49,7 +48,7 @@ namespace Griffin.MvcContrib.Html.Generators
             return tags;
         }
 
-        public virtual IEnumerable<NestedTagBuilder> GenerateForEnum(GeneratorContext context)
+        public virtual IEnumerable<NestedTagBuilder> GenerateForEnum(ITagBuilderContext context)
         {
             Setup(context);
 
