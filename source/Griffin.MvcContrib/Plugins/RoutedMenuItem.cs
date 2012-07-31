@@ -61,7 +61,6 @@ namespace Griffin.MvcContrib.Plugins
             var routeName = (string)_route["area"];
             if (routeName != null)
             {
-                _route.Remove("area");
                 return new Uri(helper.RouteUrl(routeName, _route), UriKind.Relative);
             }
 
