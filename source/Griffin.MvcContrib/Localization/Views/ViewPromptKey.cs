@@ -14,7 +14,8 @@ namespace Griffin.MvcContrib.Localization.Views
     [DataContract]
     public class ViewPromptKey : IEquatable<ViewPromptKey>
     {
-        [DataMember] private readonly string _id;
+        [DataMember]
+        private readonly string _id;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ViewPromptKey"/> class.
@@ -106,13 +107,31 @@ namespace Griffin.MvcContrib.Localization.Views
         /// <summary>
         /// Generate a view path from route data 
         /// </summary>
+        /// <param name="viewPath">VirtualPath to document (includes "~/Views and filename")</param>
         /// <param name="routeData">Route to create</param>
         /// <returns>Routed string</returns>
         /// <exception cref="ArgumentNullException"></exception>
+        public static string GetViewPath(string viewPath, RouteData routeData)
+        {
+            if (routeData == null) throw new ArgumentNullException("routeData");
+
+            var path = viewPath.TrimStart('~');
+            path = path.Remove(viewPath.LastIndexOf('.') - 1);
+            path = path.Replace("/Views", "");
+            return path;
+        }
+
+        /// <summary>
+        /// Generate a view path from route data 
+        /// </summary>
+        /// <param name="routeData">Route to create</param>
+        /// <returns>Routed string</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        [Obsolete("Use the version with the viewPath")]
         public static string GetViewPath(RouteData routeData)
         {
             if (routeData == null) throw new ArgumentNullException("routeData");
-            
+
             var controllerName = routeData.GetRequiredString("Controller");
             var actionName = routeData.GetRequiredString("Action");
             var area = routeData.Values["area"] ?? routeData.DataTokens["area"];
@@ -120,6 +139,7 @@ namespace Griffin.MvcContrib.Localization.Views
                        ? string.Format("/{0}/{1}/{2}", area, controllerName, actionName)
                        : string.Format("/{0}/{1}", controllerName, actionName);
         }
+
 
         /// <summary>
         /// Determines whether the specified <see cref="System.Object"/> is equal to this instance.
@@ -132,8 +152,8 @@ namespace Griffin.MvcContrib.Localization.Views
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != typeof (ViewPromptKey)) return false;
-            return Equals((ViewPromptKey) obj);
+            if (obj.GetType() != typeof(ViewPromptKey)) return false;
+            return Equals((ViewPromptKey)obj);
         }
 
         /// <summary>

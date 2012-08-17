@@ -1,4 +1,5 @@
 ﻿using System.Configuration;
+using System.Diagnostics;
 using System.Web.Mvc;
 using Griffin.MvcContrib.Html;
 using Griffin.MvcContrib.Localization.Views;
@@ -75,7 +76,7 @@ namespace Griffin.MvcContrib
         /// <returns></returns>
         public MvcHtmlString T(string text, params object[] formatterArguments)
         {
-            var translated = ViewLocalizer.Translate(ViewContext.RouteData, text);
+            var translated = ViewLocalizer.Translate(VirtualPath, ViewContext.RouteData, text);
             return
                 MvcHtmlString.Create(formatterArguments.Length == 0
                                          ? translated

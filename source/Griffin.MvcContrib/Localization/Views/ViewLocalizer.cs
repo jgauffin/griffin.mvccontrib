@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.IO;
 using System.Web.Routing;
 
 namespace Griffin.MvcContrib.Localization.Views
@@ -27,6 +28,7 @@ namespace Griffin.MvcContrib.Localization.Views
             _repository = repository;
         }
 
+
         /// <summary>
         /// Translate a text prompt
         /// </summary>
@@ -35,6 +37,7 @@ namespace Griffin.MvcContrib.Localization.Views
         /// <returns>
         /// String if found; otherwise null.
         /// </returns>
+        [Obsolete("Use the overload with viewPath")]
         public virtual string Translate(RouteData routeData, string text)
         {
             if (routeData == null) throw new ArgumentNullException("routeData");
@@ -49,6 +52,50 @@ namespace Griffin.MvcContrib.Localization.Views
 
             var textToSay = "";
             var uri = ViewPromptKey.GetViewPath(routeData);
+            var id = new ViewPromptKey(uri, text);
+            var prompt = _repository.GetPrompt(CultureInfo.CurrentUICulture, id);
+            if (prompt == null)
+            {
+                textToSay = LoadCommonPrompt(text);
+                if (textToSay == null)
+                    _repository.CreatePrompt(CultureInfo.CurrentUICulture, uri, text, "");
+            }
+            else
+                textToSay = prompt.TranslatedText;
+
+            return string.IsNullOrEmpty(textToSay)
+                       ? FormatMissingPrompt(text)
+                       : textToSay;
+        }
+
+        /// <summary>
+        /// Translate a text prompt
+        /// </summary>
+        /// <param name="viewPath">Virtual path to the view, so that we can identify layouts and request common prompts.</param>
+        /// <param name="routeData">Used to lookup the view location</param>
+        /// <param name="text">Text to translate</param>
+        /// <returns>
+        /// String if found; otherwise null.
+        /// </returns>
+        public virtual string Translate(string viewPath, RouteData routeData, string text)
+        {
+            if (routeData == null) throw new ArgumentNullException("routeData");
+            if (string.IsNullOrEmpty(text))
+                throw new ArgumentNullException("text");
+
+            if (!_repository.Exists(CultureInfo.CurrentUICulture))
+            {
+                //use english as default
+                CloneDefaultCulture();
+            }
+
+            var textToSay = "";
+            string uri = ViewPromptKey.GetViewPath(viewPath, routeData);
+            /*
+            uri = viewPath.ToLower().Contains("/views/shared/")
+                      ? viewPath.TrimStart('~').Remove(viewPath.LastIndexOf('/'))
+                      : ViewPromptKey.GetViewPath(routeData);
+            */
             var id = new ViewPromptKey(uri, text);
             var prompt = _repository.GetPrompt(CultureInfo.CurrentUICulture, id);
             if (prompt == null)

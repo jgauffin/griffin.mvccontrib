@@ -20,15 +20,13 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
-using System.Web;
+using System.Threading;
 using System.Web.Mvc;
 using Griffin.MvcContrib.Localization.Types;
+using Griffin.MvcContrib.Localization.ValidationMessages;
 using Griffin.MvcContrib.Logging;
-using Griffin.MvcContrib.Providers;
 
 namespace Griffin.MvcContrib.Localization
 {
@@ -36,71 +34,32 @@ namespace Griffin.MvcContrib.Localization
     /// Used to localize DataAnnotation attribute error messages and view models
     /// </summary>
     /// <remarks>
+    /// <para>Hacks the attributes by assigning custom (localized) messages to them to get localized error messages.</para>
     /// <para>
     /// Check for namespace documentation for an example on how to use the provider.
     /// </para>
     /// <para>Are you missing validation rules for an attribute? Do not try to use the original validation rules. The standard attributes
-    /// uses some nasty delegates to handle the error message. Screwing with them should be handled with care. You should therefore patch
-    /// <see cref="ValidationAttributeAdapterFactory"/> instead of messing with something in here.
+    /// uses some nasty delegates to handle the error message. Screwing with them should be handled with care. 
     /// </para>
+    /// <para>Create a new <see cref="IValidationMessageDataSource"/> and register it in <see cref="ValidationMessageProviders"/> to customized the translated strings.</para>
+    /// <para>You have to let the results returned from <c>Validate()</c> implement <see cref="IClientValidationRule"/> if you want to enable client validation when using <see cref="IValidatableObject"/>.</para>
     /// </remarks>
     public class LocalizedModelValidatorProvider : DataAnnotationsModelValidatorProvider, IDisposable
     {
+        private const string WorkaroundMarker = "#g#";
         private readonly ValidationAttributeAdapterFactory _adapterFactory = new ValidationAttributeAdapterFactory();
         private readonly ILogger _logger = LogProvider.Current.GetLogger<LocalizedModelValidatorProvider>();
-        private ILocalizedStringProvider _stringProviderDontUsedirectly;
+
+        #region IDisposable Members
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LocalizedModelValidatorProvider"/> class.
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
-        /// <param name="stringProvider">The string provider.</param>
-        public LocalizedModelValidatorProvider(ILocalizedStringProvider stringProvider)
-            : this()
-        {
-            _stringProviderDontUsedirectly = stringProvider;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LocalizedModelValidatorProvider"/> class.
-        /// </summary>
-        /// <remarks>you need to register <see cref="ILocalizedStringProvider"/> in your IoC container or use
-        /// the other constructor.</remarks>
-        public LocalizedModelValidatorProvider()
+        public void Dispose()
         {
         }
 
-        /// <summary>
-        /// Gets provider using lazy loading and DependencyResolver
-        /// </summary>
-        private ILocalizedStringProvider Provider
-        {
-            get
-            {
-                if (_stringProviderDontUsedirectly != null)
-                    return _stringProviderDontUsedirectly;
-
-
-                // ASP.NET doesn't honor the IoC scope of the provider
-                // which means that we can't set the dependency one,
-                // but need to resolve it per request
-                var provider = HttpContext.Current.Items["ILocalizedStringProvider"] as ILocalizedStringProvider;
-                if (provider == null)
-                {
-                    provider = DependencyResolver.Current.GetService<ILocalizedStringProvider>();
-                    HttpContext.Current.Items["ILocalizedStringProvider"] = provider;
-                }
-                else
-                    Trace.WriteLine("** Using cached provider ");
-
-
-                if (provider == null)
-                    throw new InvalidOperationException(
-                        "Failed to find an 'ILocalizedStringProvider' implementation. Either include one in the LocalizedModelMetadataProvider constructor, or register an implementation in your Inversion Of Control container.");
-
-                return provider;
-            }
-        }
-
+        #endregion
 
         /// <summary>
         /// Gets a list of validators.
@@ -120,59 +79,114 @@ namespace Griffin.MvcContrib.Localization
                 items.Add(new RequiredAttribute());
 
 
+
             var validators = new List<ModelValidator>();
             foreach (var attr in items.OfType<ValidationAttribute>())
             {
-                if (string.IsNullOrEmpty(attr.ErrorMessageResourceName) && string.IsNullOrEmpty(attr.ErrorMessage))
+                // custom message, use the default localization
+                if (attr.ErrorMessageResourceName != null && attr.ErrorMessageResourceType != null)
                 {
-                    var errorMessage =
-                        Provider.GetValidationString(attr.GetType(), metadata.ContainerType, metadata.PropertyName) ??
-                        Provider.GetValidationString(attr.GetType());
-
-                    // we have not translated the attribute yet.
-                    if (errorMessage == null)
-                    {
-                        _logger.Warning("Failed to find translation for " + attr.GetType().Name + " on " +
-                                        metadata.ContainerType + "." + metadata.PropertyName);
-
-
-                        if (CultureInfo.CurrentUICulture.Name.StartsWith("en"))
-                            errorMessage = ValidationAttributesStringProvider.Current.GetString(attr.GetType(),
-                                                                                              CultureInfo.CurrentUICulture);
-                        else
-                            errorMessage = string.Format("[{0}: {1}]", CultureInfo.CurrentUICulture.Name,
-                                                         attr.GetType().Name.Replace("Attribute", ""));
-                    }
-
-                    string formattedError;
-                    try
-                    {
-                        lock (attr)
-                        {
-                            attr.ErrorMessage = errorMessage;
-                            formattedError = attr.FormatErrorMessage(metadata.GetDisplayName());
-                            attr.ErrorMessage = null;
-                        }
-                    }
-                    catch (Exception err)
-                    {
-                        formattedError = err.Message;
-                    }
-
-                    validators.Add(new MyValidator(attr, errorMessage, metadata, context,
-                                                   _adapterFactory.Create(attr, formattedError)));
+                    validators.Add(new DataAnnotationsModelValidator(metadata, context, attr));
+                    continue;
                 }
-                else
+
+                // specified a message, do nothing
+                if (attr.ErrorMessage != null && attr.ErrorMessage != WorkaroundMarker)
                 {
-                    var clientValidable = attr as IClientValidatable;
-                    var clientRules = clientValidable == null
-                                          ? new ModelClientValidationRule[0]
-                                          : clientValidable.GetClientValidationRules(metadata, context);
-                    validators.Add(new MyValidator(attr, attr.ErrorMessage, metadata, context, clientRules));
+                    validators.Add(new DataAnnotationsModelValidator(metadata, context, attr));
+                    continue;
                 }
+
+
+                var ctx = new GetMessageContext(attr, metadata.ContainerType, metadata.PropertyName,
+                                                Thread.CurrentThread.CurrentUICulture);
+                var errorMessage = ValidationMessageProviders.GetMessage(ctx);
+                var formattedError = errorMessage == null
+                                         ? GetMissingTranslationMessage(metadata, attr)
+                                         : FormatErrorMessage(metadata, attr, errorMessage);
+
+                var clientRules = GetClientRules(metadata, context, attr,
+                                                 formattedError);
+                validators.Add(new MyValidator(attr, formattedError, metadata, context, clientRules));
             }
 
+
+            if (metadata.Model is IValidatableObject)
+                validators.Add(new Griffin.MvcContrib.Localization.ValidatableObjectAdapter(metadata, context));
+
+
             return validators;
+        }
+
+
+        /// <summary>
+        /// Get default message if the localized string is missing
+        /// </summary>
+        /// <param name="metadata">Model meta data</param>
+        /// <param name="attr">Attribute to translate</param>
+        /// <returns>Formatted message</returns>
+        protected virtual string GetMissingTranslationMessage(ModelMetadata metadata, ValidationAttribute attr)
+        {
+            _logger.Warning("Failed to find translation for " + attr.GetType().Name + " on " +
+                            metadata.ContainerType + "." + metadata.PropertyName);
+
+
+            return string.Format("[{0}: {1}]", CultureInfo.CurrentUICulture.Name,
+                                 attr.GetType().Name.Replace("Attribute", ""));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="metadata">Model meta data</param>
+        /// <param name="attr">Attribute to localize</param>
+        /// <param name="errorMessage">Localized message with <c>{}</c> formatters.</param>
+        /// <returns>Formatted message (<c>{}</c> has been replaced with values)</returns>
+        protected virtual string FormatErrorMessage(ModelMetadata metadata, ValidationAttribute attr,
+                                                    string errorMessage)
+        {
+            string formattedError;
+            try
+            {
+                lock (attr)
+                {
+                    attr.ErrorMessage = errorMessage;
+                    formattedError = attr.FormatErrorMessage(metadata.GetDisplayName());
+                    attr.ErrorMessage = WorkaroundMarker;
+                }
+            }
+            catch (Exception err)
+            {
+                formattedError = err.Message;
+            }
+            return formattedError;
+        }
+
+        /// <summary>
+        /// Get client rules
+        /// </summary>
+        /// <param name="metadata">Model meta data</param>
+        /// <param name="context">Controller context</param>
+        /// <param name="attr">Attribute being localized</param>
+        /// <param name="formattedError">Localized error message</param>
+        /// <returns>Collection (may be empty) with error messages for client side</returns>
+        protected virtual IEnumerable<ModelClientValidationRule> GetClientRules(ModelMetadata metadata,
+                                                                                ControllerContext context,
+                                                                                ValidationAttribute attr,
+                                                                                string formattedError)
+        {
+            var clientValidable = attr as IClientValidatable;
+            var clientRules = clientValidable == null
+                                  ? _adapterFactory.Create(attr, formattedError)
+                                  : clientValidable.GetClientValidationRules(
+                                      metadata, context);
+
+            foreach (var clientRule in clientRules)
+            {
+                clientRule.ErrorMessage = formattedError;
+            }
+
+            return clientRules;
         }
 
         #region Nested type: MyValidator
@@ -199,32 +213,31 @@ namespace Griffin.MvcContrib.Localization
 
             public override IEnumerable<ModelClientValidationRule> GetClientValidationRules()
             {
+
                 return _clientRules;
             }
 
             public override IEnumerable<ModelValidationResult> Validate(object container)
             {
-                if (_attribute.IsValid(Metadata.Model))
+                var context = new ValidationContext(container, null, null);
+                var result = _attribute.GetValidationResult(Metadata.Model, context);
+                if (result == null)
                     yield break;
+
+                //if (_attribute.IsValid(Metadata.Model))
+                //  yield break;
 
                 string errorMsg;
                 lock (_attribute)
                 {
                     _attribute.ErrorMessage = _errorMsg;
                     errorMsg = _attribute.FormatErrorMessage(Metadata.GetDisplayName());
-                    _attribute.ErrorMessage = null;
+                    _attribute.ErrorMessage = WorkaroundMarker;
                 }
                 yield return new ModelValidationResult { Message = errorMsg };
             }
         }
 
         #endregion
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-        }
     }
 }

@@ -62,7 +62,7 @@
     <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.XML" />
     <Reference Include="xunit">
-      <HintPath>..\packages\xunit.1.9.0.1566\lib\xunit.dll</HintPath>
+      <HintPath>..\packages\xunit.1.9.1\lib\net20\xunit.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -72,11 +72,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Json\JsonResponseTests.cs" />
+    <Compile Include="Localization\DataAnnotationTests.cs" />
     <Compile Include="Localization\DefaultCultureTests.cs" />
     <Compile Include="Localization\LocalizedModelMetadataProviderTests.cs" />
     <Compile Include="Localization\LocalizedModelValidatorProviderTests.cs" />
-    <Compile Include="Localization\MetadataTarget.cs" />
+    <Compile Include="Localization\Messages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Messages.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Localization\TestModel.cs" />
     <Compile Include="Localization\TypePromptTests.cs" />
+    <Compile Include="Localization\ValidatableObjectAdapterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnitTest1.cs" />
   </ItemGroup>
@@ -84,6 +91,12 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Localization\Messages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Griffin.MvcContrib\Griffin.MvcContrib.csproj">

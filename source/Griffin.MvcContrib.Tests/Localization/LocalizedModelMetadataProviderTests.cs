@@ -15,16 +15,16 @@ namespace Griffin.MvcContrib.Tests.Localization
             var provider = new LocalizedModelMetadataProvider(stringProvider.Object);
             stringProvider.Setup(
                 k =>
-                k.GetModelString(It.Is<Type>(t => t == typeof (MetadataTarget)), It.Is<string>(t => t == "UserName"))).
+                k.GetModelString(It.Is<Type>(t => t == typeof (TestModel)), It.Is<string>(t => t == "Required"))).
                 Returns("Användarnamn").Verifiable();
 
-            var subject = new MetadataTarget
+            var subject = new TestModel
                               {
-                                  LastName = "Arne",
-                                  UserName = "hej"
+                                  RequiredStringLength10 = "Arne",
+                                  Required = "hej"
                               };
 
-            var actual = provider.GetMetadataForProperty(() => subject, typeof (MetadataTarget), "UserName");
+            var actual = provider.GetMetadataForProperty(() => subject, typeof (TestModel), "Required");
 
             Assert.Equal("Användarnamn", actual.DisplayName);
             stringProvider.VerifyAll();
@@ -37,16 +37,16 @@ namespace Griffin.MvcContrib.Tests.Localization
             var provider = new LocalizedModelMetadataProvider(stringProvider.Object);
             stringProvider.Setup(
                 k =>
-                k.GetModelString(It.Is<Type>(t => t == typeof (MetadataTarget)), It.Is<string>(t => t == "LastName"))).
+                k.GetModelString(It.Is<Type>(t => t == typeof (TestModel)), It.Is<string>(t => t == "RequiredStringLength10"))).
                 Returns("Efternamn").Verifiable();
 
-            var subject = new MetadataTarget
+            var subject = new TestModel
                               {
-                                  LastName = "Arne",
-                                  UserName = "hej"
+                                  RequiredStringLength10 = "Arne",
+                                  Required = "hej"
                               };
 
-            var actual = provider.GetMetadataForProperty(() => subject, typeof (MetadataTarget), "LastName");
+            var actual = provider.GetMetadataForProperty(() => subject, typeof (TestModel), "RequiredStringLength10");
 
             Assert.Equal("Efternamn", actual.DisplayName);
             stringProvider.VerifyAll();
@@ -60,16 +60,16 @@ namespace Griffin.MvcContrib.Tests.Localization
             var provider = new LocalizedModelMetadataProvider(stringProvider.Object);
             stringProvider.Setup(
                 k =>
-                k.GetModelString(It.Is<Type>(t => t == typeof (MetadataTarget)), It.Is<string>(t => t == "UserName"))).
+                k.GetModelString(It.Is<Type>(t => t == typeof (TestModel)), It.Is<string>(t => t == "Required"))).
                 Returns((string) null).Verifiable();
 
-            var subject = new MetadataTarget
+            var subject = new TestModel
                               {
-                                  LastName = "Arne",
-                                  UserName = "hej"
+                                  RequiredStringLength10 = "Arne",
+                                  Required = "hej"
                               };
 
-            var actual = provider.GetMetadataForProperty(() => subject, typeof (MetadataTarget), "UserName");
+            var actual = provider.GetMetadataForProperty(() => subject, typeof (TestModel), "Required");
 
             Assert.Equal(null, actual.DisplayName);
         }
