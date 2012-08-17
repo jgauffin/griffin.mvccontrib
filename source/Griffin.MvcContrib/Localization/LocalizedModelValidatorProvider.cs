@@ -23,12 +23,10 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
 using System.Web;
 using System.Web.Mvc;
 using Griffin.MvcContrib.Localization.Types;
 using Griffin.MvcContrib.Logging;
-using Griffin.MvcContrib.Providers;
 
 namespace Griffin.MvcContrib.Localization
 {
@@ -139,7 +137,8 @@ namespace Griffin.MvcContrib.Localization
                         if (CultureInfo.CurrentUICulture.Name.StartsWith("en"))
                             errorMessage = ValidationAttributesStringProvider.Current.GetString(attr.GetType(),
                                                                                               CultureInfo.CurrentUICulture);
-                        else
+						
+						if (String.IsNullOrEmpty(errorMessage))
                             errorMessage = string.Format("[{0}: {1}]", CultureInfo.CurrentUICulture.Name,
                                                          attr.GetType().Name.Replace("Attribute", ""));
                     }
@@ -204,17 +203,24 @@ namespace Griffin.MvcContrib.Localization
 
             public override IEnumerable<ModelValidationResult> Validate(object container)
             {
-                if (_attribute.IsValid(Metadata.Model))
-                    yield break;
+				var context = new ValidationContext(container ?? Metadata.Model, null, null)
+				              	{
+				              		DisplayName = Metadata.GetDisplayName()
+				              	};
 
-                string errorMsg;
+				ValidationResult result;
+
                 lock (_attribute)
                 {
                     _attribute.ErrorMessage = _errorMsg;
-                    errorMsg = _attribute.FormatErrorMessage(Metadata.GetDisplayName());
+					result = _attribute.GetValidationResult(Metadata.Model, context);
                     _attribute.ErrorMessage = null;
                 }
-                yield return new ModelValidationResult { Message = errorMsg };
+
+				if (result == ValidationResult.Success)
+					yield break;
+
+				yield return new ModelValidationResult { Message = result.ErrorMessage };
             }
         }
 
