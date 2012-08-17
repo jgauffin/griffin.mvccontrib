@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.Serialization.Json;
 using System.Web;
 using System.Web.Mvc;
+using Griffin.MvcContrib.Areas.Griffin.Models;
 using Griffin.MvcContrib.Areas.Griffin.Models.LocalizeTypes;
 using Griffin.MvcContrib.Localization;
 using Griffin.MvcContrib.Localization.Types;
@@ -148,15 +149,50 @@ namespace Griffin.MvcContrib.Areas.Griffin.Controllers
             return allPrompts.Where(x => !string.IsNullOrEmpty(x.TranslatedText)).ToList();
         }
 
-        public ActionResult Index()
+        bool OnlyNotTranslated
+        {
+            get
+            {
+                var value = Session["OnlyNotTranslated"];
+                if (value == null)
+                    return false;
+                return (bool)value;
+            }
+            set { Session["OnlyNotTranslated"] = value; }
+        }
+        string TableFilter
+        {
+            get
+            {
+                var value = Session["TableFilter"];
+                if (value == null)
+                    return null;
+                return (string)value;
+            }
+            set { Session["TableFilter"] = value; }
+        }
+
+
+        public ActionResult Index(FilterModel filter)
         {
             var cookie = Request.Cookies["ShowMetadata"];
             var showMetadata = cookie != null && cookie.Value == "1";
+            var languages = _repository.GetAvailableLanguages();
 
-            var languges = _repository.GetAvailableLanguages();
+            if (Request.HttpMethod == "POST" && filter != null)
+            {
+                TableFilter = filter.TableFilter;
+                OnlyNotTranslated = filter.OnlyNotTranslated;
+            }
+
+            var sf = new SearchFilter();
+            if (TableFilter != null)
+                sf.Path = TableFilter;
+            if (OnlyNotTranslated)
+                sf.OnlyNotTranslated = true;
 
             var prompts =
-                _repository.GetPrompts(CultureInfo.CurrentUICulture, DefaultUICulture.Value, new SearchFilter()).Select(
+                _repository.GetPrompts(CultureInfo.CurrentUICulture, DefaultUICulture.Value, sf).Select(
                     p => new Models.LocalizeTypes.TypePrompt(p)).OrderBy(p => p.TypeName).
                     ToList();
             if (!showMetadata)
@@ -166,8 +202,10 @@ namespace Griffin.MvcContrib.Areas.Griffin.Controllers
             var model = new IndexModel
                             {
                                 Prompts = prompts,
-                                Cultures = languges,
-                                ShowMetadata = showMetadata
+                                Cultures = languages,
+                                ShowMetadata = showMetadata,
+                                OnlyNotTranslated = OnlyNotTranslated,
+                                TableFilter = TableFilter
                             };
 
             return View(model);

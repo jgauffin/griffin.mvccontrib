@@ -118,6 +118,7 @@ namespace Griffin.MvcContrib.Localization.Views
             var path = viewPath.TrimStart('~');
             path = path.Remove(viewPath.LastIndexOf('.') - 1);
             path = path.Replace("/Views", "");
+
             return path;
         }
 

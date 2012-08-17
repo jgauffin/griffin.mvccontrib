@@ -25,5 +25,10 @@
         /// Gets or sets number of items per page.
         /// </summary>
         public int PageSize { get; set; }
+
+        /// <summary>
+        /// Gets or sets if only prompts which has not been translated should be shown.
+        /// </summary>
+        public bool OnlyNotTranslated { get; set; }
     }
 }

@@ -14,13 +14,23 @@ namespace Griffin.MvcContrib.Localization.ValidationMessages
     /// Default setup is using <see cref="GriffinStringsProvider"/> as default and <see cref="MvcDataSource"/> + <see cref="DataAnnotationDefaultStrings"/> as fallback.
     /// </para>
     /// </remarks>
+    /// <example>When not using a container:<code>
+    /// ValidationMessageProviders.Clear();
+    /// ValidationMessageProviders.Add(new GriffinStringProvider(yourLocalizedStringProvider));
+    /// 
+    /// // for attributes in System.Web.Mvc
+    /// ValidationMessageProviders.Add(new MvcDataSource());
+    /// 
+    /// // For attributes in System.ComponentModel.DataAnnotations
+    /// ValidationMessageProviders.Add(new DataAnnotationDefaultStrings());
+    /// </code></example>
     public class ValidationMessageProviders
     {
         private static readonly List<IValidationMessageDataSource> _dataSources = new List<IValidationMessageDataSource>();
 
         static ValidationMessageProviders()
         {
-           Reset();
+            Reset();
         }
 
         /// <summary>
@@ -33,6 +43,7 @@ namespace Griffin.MvcContrib.Localization.ValidationMessages
             Add(new MvcDataSource());
             Add(new DataAnnotationDefaultStrings());
         }
+
         /// <summary>
         /// Add another provider (last)
         /// </summary>

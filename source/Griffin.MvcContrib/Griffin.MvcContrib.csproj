@@ -83,7 +83,11 @@
     <Compile Include="Localization\ValidationMessages\GetMessageContext.cs" />
     <Compile Include="Localization\ValidationMessages\ValidationMessageProviders.cs" />
     <Compile Include="Localization\Views\IViewPromptImporter.cs" />
+    <Compile Include="Localization\Views\IViewPromptQueries.cs" />
+    <Compile Include="Localization\Views\IViewPromptResult.cs" />
     <Compile Include="Localization\Views\NamespaceDoc.cs" />
+    <Compile Include="Localization\Views\QueryConstraints.cs" />
+    <Compile Include="Localization\Views\SortDirection.cs" />
     <Compile Include="Logging\DebugWindowLogger.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\NamespaceDoc.cs" />
@@ -101,6 +105,7 @@
     <Compile Include="VirtualPathProvider\DiskFileLocator.cs" />
     <Compile Include="Plugins\RoutedMenuItem.cs" />
     <Compile Include="SelectHelper.cs" />
+    <Compile Include="VirtualPathProvider\EmbeddedFileProvider.cs" />
     <Compile Include="VirtualPathProvider\EmbeddedViewFileProvider.cs" />
     <Compile Include="VirtualPathProvider\EmbeddedViewFixer.cs" />
     <Compile Include="VirtualPathProvider\ExternalViewFixer.cs" />

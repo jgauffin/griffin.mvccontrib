@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.Serialization.Json;
 using System.Web;
 using System.Web.Mvc;
+using Griffin.MvcContrib.Areas.Griffin.Models;
 using Griffin.MvcContrib.Areas.Griffin.Models.LocalizeViews;
 using Griffin.MvcContrib.Localization;
 using Griffin.MvcContrib.Localization.Types;
@@ -43,7 +44,7 @@ namespace Griffin.MvcContrib.Areas.Griffin.Controllers
             {
                 var culture = new CultureInfo(lang);
                 _repository.CreateLanguage(culture, DefaultUICulture.Value);
-                return RedirectToAction("Index", new {lang});
+                return RedirectToAction("Index", new { lang });
             }
             catch (Exception err)
             {
@@ -59,15 +60,51 @@ namespace Griffin.MvcContrib.Areas.Griffin.Controllers
             }
         }
 
-        public ActionResult Index()
+        bool OnlyNotTranslated
         {
+            get
+            {
+                var value = Session["OnlyNotTranslated"];
+                if (value == null)
+                    return false;
+                return (bool)value;
+            }
+            set { Session["OnlyNotTranslated"] = value; }
+        }
+        string TableFilter
+        {
+            get
+            {
+                var value = Session["TableFilter"];
+                if (value == null)
+                    return null;
+                return (string)value;
+            }
+            set { Session["TableFilter"] = value; }
+        }
+
+        public ActionResult Index(FilterModel filter = null)
+        {
+            if (Request.HttpMethod == "POST" && filter != null)
+            {
+                TableFilter = filter.TableFilter;
+                OnlyNotTranslated = filter.OnlyNotTranslated;
+            }
+
+            var sf = new SearchFilter();
+            if (TableFilter != null)
+                sf.Path = TableFilter;
+            if (OnlyNotTranslated)
+                sf.OnlyNotTranslated = true;
             var model = new IndexModel
-                            {
-                                Cultures = _repository.GetAvailableLanguages(),
-                                Prompts =
-                                    _repository.GetAllPrompts(CultureInfo.CurrentUICulture, DefaultUICulture.Value,
-                                                              new SearchFilter()).Select(p => new ViewPrompt(p))
-                            };
+                        {
+                            Cultures = _repository.GetAvailableLanguages(),
+                            Prompts =
+                                _repository.GetAllPrompts(CultureInfo.CurrentUICulture, DefaultUICulture.Value,
+                                                          sf).Select(p => new ViewPrompt(p)),
+                            OnlyNotTranslated = OnlyNotTranslated,
+                            TableFilter = TableFilter
+                        };
             return View(model);
         }
 
@@ -216,7 +253,7 @@ namespace Griffin.MvcContrib.Areas.Griffin.Controllers
                     }
                 }
             }
-            return allPrompts.Where(x=>!string.IsNullOrEmpty(x.TranslatedText)).ToList();
+            return allPrompts.Where(x => !string.IsNullOrEmpty(x.TranslatedText)).ToList();
         }
 
     }

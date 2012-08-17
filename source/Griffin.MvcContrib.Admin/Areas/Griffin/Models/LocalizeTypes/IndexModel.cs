@@ -22,5 +22,9 @@ namespace Griffin.MvcContrib.Areas.Griffin.Models.LocalizeTypes
                                                 });
             }
         }
+
+        public bool OnlyNotTranslated { get; set; }
+
+        public string TableFilter { get; set; }
     }
 }

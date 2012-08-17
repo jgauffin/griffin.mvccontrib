@@ -58,6 +58,11 @@ namespace Griffin.MvcContrib.SqlServer.Localization
                     cmd.CommandText += " AND ViewPath LIKE @viewPath";
                     cmd.AddParameter("viewPath", filter.Path + "%");
                 }
+                if (filter.OnlyNotTranslated)
+                {
+                    cmd.CommandText += " AND (Value is null OR Value = '')";
+                }
+
                 return MapCollection(cmd);
             }
         }

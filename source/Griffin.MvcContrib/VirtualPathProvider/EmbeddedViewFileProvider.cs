@@ -1,12 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Web;
-using System.Web.Caching;
-using System.Web.Hosting;
 using System.Web.Mvc;
 
 namespace Griffin.MvcContrib.VirtualPathProvider
@@ -19,6 +11,7 @@ namespace Griffin.MvcContrib.VirtualPathProvider
     ///   Requires that a <see cref="IExternalViewFixer" /> is registered in your container if you want your views to look the same even if they are located in other projects.
     /// </para>
     /// <para>Each mapping should be done to the root namespace of each assembly</para>
+    /// <para>AllowedFileExtensions is modified to: "cshtml", "aspx" and "ascx". Feel free to change it according to your needs.</para>
     /// </remarks>
     /// <example>
     /// <code>
@@ -29,11 +22,9 @@ namespace Griffin.MvcContrib.VirtualPathProvider
     /// HostingEnvironment.RegisterVirtualPathProvider(GriffinVirtualPathProvider.Current);
     /// </code>
     /// </example>
-    public class EmbeddedViewFileProvider : IViewFileProvider
+    public class EmbeddedViewFileProvider : EmbeddedFileProvider
     {
-        private readonly string _siteRoot;
         private readonly IExternalViewFixer _viewFixer;
-        private readonly List<MappedResource> _resourceNames = new List<MappedResource>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EmbeddedViewFileProvider"/> class.
@@ -41,113 +32,30 @@ namespace Griffin.MvcContrib.VirtualPathProvider
         /// <param name="siteRoot">Root directory of the web site</param>
         /// <example>
         /// <code>
-        /// var embeddedProvider = new EmbeddedViewFileProvider2(VirtualPathUtility.ToAbsolute("~/"));
+        /// var embeddedProvider = new EmbeddedViewFileProvider(VirtualPathUtility.ToAbsolute("~/"));
         /// </code>
         /// </example>
-        public EmbeddedViewFileProvider(string siteRoot)
+        public EmbeddedViewFileProvider(string siteRoot) : base(siteRoot)
         {
-            _siteRoot = siteRoot;
             _viewFixer = DependencyResolver.Current.GetService<IExternalViewFixer>();
+            AllowedFileExtensions = new[] {"cshtml", "ascx", "aspx"};
         }
-
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EmbeddedViewFileProvider"/> class.
         /// </summary>
         /// <param name="siteRoot">Root directory of the web site</param>
-        /// <param name="viewFixer">Corrects embeddable views so that the can be built properly</param>
+        /// <param name="viewFixer">View fixer</param>
         /// <example>
         /// <code>
-        /// var embeddedProvider = new EmbeddedViewFileProvider2(VirtualPathUtility.ToAbsolute("~/"), new ExternalViewFixer());
+        /// var embeddedProvider = new EmbeddedViewFileProvider(VirtualPathUtility.ToAbsolute("~/"), new ExternalViewFixer());
         /// </code>
         /// </example>
         public EmbeddedViewFileProvider(string siteRoot, IExternalViewFixer viewFixer)
+            : base(siteRoot)
         {
-            if (viewFixer == null) throw new ArgumentNullException("viewFixer");
-            _siteRoot = siteRoot;
             _viewFixer = viewFixer;
-        }
-
-        #region IViewFileProvider Members
-
-        /// <summary>
-        ///   Checks if a file exits
-        /// </summary>
-        /// <param name="virtualPath"> Virtual path like "~/Views/Home/Index.cshtml" </param>
-        /// <returns> <c>true</c> if found; otherwise <c>false</c> . </returns>
-        public bool FileExists(string virtualPath)
-        {
-            var path = GetResource(virtualPath);
-            return path != null;
-        }
-
-        /// <summary>
-        ///   Creates a cache dependency based on the specified virtual paths
-        /// </summary>
-        /// <param name="virtualPath"> Virtual path like "~/Views/Home/Index.cshtml" </param>
-        /// <param name="dependencies"> The dependencies. </param>
-        /// <param name="utcStart"> The UTC start. </param>
-        /// <returns> A CacheDependency if the file is found and caching should be used; <see cref="NoCache.Instance" /> if caching should be disabled for the file; <c>null</c> if file is not found. </returns>
-        public CacheDependency GetCacheDependency(string virtualPath, IEnumerable dependencies, DateTime utcStart)
-        {
-            return GetResource(virtualPath) != null ? NoCache.Instance : null;
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <param name="virtualPath"> Virtual path like "~/Views/Home/Index.cshtml" </param>
-        /// <returns> CacheDependency if found; otherwise <c>false</c> . </returns>
-        public string GetCacheKey(string virtualPath)
-        {
-            var resource = GetResource(virtualPath);
-            return resource != null ? resource.FullResourceName : null;
-        }
-
-        /// <summary>
-        ///   Get file hash.
-        /// </summary>
-        /// <param name="virtualPath"> Virtual path like "~/Views/Home/Index.cshtml" </param>
-        /// <param name="dependencies"> The dependencies. </param>
-        /// <returns> a new hash each time the file have changed (if file is found); otherwise null </returns>
-        public string GetFileHash(string virtualPath, IEnumerable dependencies)
-        {
-            return null;
-        }
-
-        /// <summary>
-        ///   Get the view
-        /// </summary>
-        /// <param name="virtualPath"> Virtual path like "~/Views/Home/Index.cshtml" </param>
-        /// <returns> File </returns>
-        public VirtualFile GetFile(string virtualPath)
-        {
-            var resource = GetResource(virtualPath);
-            if (resource == null)
-                return null;
-
-            var stream = resource.Assembly.GetManifestResourceStream(resource.FullResourceName);
-
-            // embedded views need a @inherits instruction
-            if (stream != null && resource.FullResourceName.EndsWith(".cshtml"))
-            {
-                stream = CorrectView(virtualPath, stream);
-            }
-
-
-            return stream == null ? null : new EmbeddedFile(virtualPath, stream);
-        }
-
-        #endregion
-
-        /// <summary>
-        ///   Add a namespace mapping for embedded resources.
-        /// </summary>
-        /// <param name="mapping"> Mapping to add </param>
-        public void Add(NamespaceMapping mapping)
-        {
-            if (mapping == null) throw new ArgumentNullException("mapping");
-
-            Map(mapping);
+            AllowedFileExtensions = new[] { "cshtml", "ascx", "aspx" };
         }
 
         private Stream CorrectView(string virtualPath, Stream stream)
@@ -160,89 +68,25 @@ namespace Griffin.MvcContrib.VirtualPathProvider
             return outStream;
         }
 
-
         /// <summary>
-        ///   Get resource name by scanning all mapped namespaces.
+        /// Resource to load. Will correct the returned views (so that they work as regular non-embedded views)
         /// </summary>
-        /// <param name="uri"> Uri to search for. </param>
-        /// <returns> Full resource name if found; otherwise null. </returns>
-        private MappedResource GetResource(string uri)
+        /// <param name="virtualPath">Requested virtual path</param>
+        /// <param name="resource">Identified resource (i.e. the one to load)</param>
+        /// <returns>
+        /// Stream that can be returned to the Virtual Path Provider.
+        /// </returns>
+        protected override Stream LoadStream(string virtualPath, MappedResource resource)
         {
-            if (uri.StartsWith("~"))
-                uri = VirtualPathUtility.ToAbsolute(uri);
-            if (uri.StartsWith(_siteRoot))
-                uri = uri.Remove(0, _siteRoot.Length);
+            var stream = base.LoadStream(virtualPath, resource);
 
-            uri = uri.TrimStart('/').TrimEnd('/');
-            uri = uri.Replace('/', '.');
-            var result =
-                _resourceNames.FirstOrDefault(
-                    resource => resource.ResourceName.Equals(uri, StringComparison.OrdinalIgnoreCase));
-            return result;
-        }
-
-        private void Map(NamespaceMapping mapping)
-        {
-            var names = mapping.Assembly.GetManifestResourceNames();
-            foreach (var name in names)
+            // embedded views need a @inherits instruction
+            if (stream != null && resource.FullResourceName.EndsWith(".cshtml"))
             {
-                if (!name.StartsWith(mapping.FolderNamespace))
-                    continue;
-
-
-                _resourceNames.Add(new MappedResource
-                {
-                    Assembly = mapping.Assembly,
-                    AssemblyDate = new FileInfo(mapping.Assembly.Location).CreationTimeUtc,
-                    FullResourceName = name,
-                    ResourceRoot = mapping.FolderNamespace,
-                    ResourceName = name.Remove(0, mapping.FolderNamespace.Length + 1)
-                    // include the last dot
-                });
-            }
-        }
-
-        #region Nested type: EmbeddedFile
-
-        private class EmbeddedFile : VirtualFile
-        {
-            private readonly Stream _resourceStream;
-
-            public EmbeddedFile(string virtualPath, Stream resourceStream)
-                : base(virtualPath)
-            {
-                _resourceStream = resourceStream;
+                stream = CorrectView(virtualPath, stream);
             }
 
-            /// <summary>
-            ///   When overridden in a derived class, returns a read-only stream to the virtual resource.
-            /// </summary>
-            /// <returns> A read-only stream to the virtual file. </returns>
-            public override Stream Open()
-            {
-                return _resourceStream;
-            }
+            return stream;
         }
-
-        #endregion
-
-        #region Nested type: MappedResource
-
-        private class MappedResource
-        {
-            public string ResourceRoot { get; set; }
-            public string FullResourceName { get; set; }
-            public string ResourceName { get; set; }
-
-            public Assembly Assembly { get; set; }
-            public DateTime AssemblyDate { get; set; }
-
-            public override string ToString()
-            {
-                return ResourceName + "/" + FullResourceName;
-            }
-        }
-
-        #endregion
     }
 }

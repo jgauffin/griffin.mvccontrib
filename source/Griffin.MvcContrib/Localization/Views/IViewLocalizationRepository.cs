@@ -72,5 +72,4 @@ namespace Griffin.MvcContrib.Localization.Views
         /// <param name="key">Prompt key</param>
         void Delete(CultureInfo cultureInfo, ViewPromptKey key);
     }
-
 }

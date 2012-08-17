@@ -6,21 +6,29 @@
 <div class="griffin">
     @Html.Partial("_menu")
     <h2>@CultureInfo.CurrentUICulture.DisplayName</h2>
-    @using (Html.BeginForm("CreateLanguage", "LocalizeTypes"))
+    @using (Html.BeginForm("CreateLanguage", "LocalizeViews"))
     {
         @Html.ValidationSummary(true)
         <div style="float: right">
             Change language:
             @Html.DropDownList("changeLanguage", Model.CultureItems, "", CultureInfo.CurrentUICulture.Name)
+            <div style="background-color: aliceblue; margin-top: 10px;">
+                Create language (should be a lang code like "sv-se")
+                <br />
+                <input type="text" name="lang" />
+                <input type="submit" value="Create" />
+            </div>
         </div>
-        <div>
-            Create language (should be a lang code like "sv-se")
-            <input type="text" name="lang" />
-            <input type="submit" value="Create" />
+    }
+    @using (Html.BeginForm("Index"))
+    {
+        <div style="float: left">
+            Namespace: @Html.TextBoxFor(model => model.TableFilter)
+            <br />
+            Show only untranslated @Html.CheckBoxFor(model => Model.OnlyNotTranslated)
         </div>
-        <div>
-            <label>@Html.CheckBoxFor(model => model.ShowMetadata) Show metadata</label>
-        </div>
+        <input type="submit" value="show" />
+        <div style="clear: both"></div>
     }
     <table>
         <tr>
@@ -49,12 +57,17 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.TranslatedText)
                 </td>
-                <td>
-                    @Html.ActionLink("Edit", "Edit", new {id = item.TextKey})
-                    @Html.ActionLink("Delete", "Delete", new {id = item.TextKey})
-                    @if (item.ModelName != "CommonPrompts")
+                <td style="width: 64px">
+                    <a href="@Url.Action("Edit", new { id = item.TextKey })" title="Edit text" style="text-decoration: none">
+                        <img src="@Url.Content("~/Areas/Griffin/Content/GriffinImg/edit.png")"/>
+                    </a><a href="@Url.Action("Delete", new { id = item.TextKey })" title="Delete text" style="text-decoration: none">
+                        <img src="@Url.Content("~/Areas/Griffin/Content/GriffinImg/delete.png")"/>
+                    </a>
+                    @if (item.Namespace != "CommonPrompts")
                     {
-                        @Html.ActionLink("Make common", "MakeCommon", new {id = item.TextKey}, new {title = "Use this phrase for all properties with the same name that haven't got a translation."})
+                        <a href="@Url.Action("MakeCommon", new { id = item.TextKey })" title="Share text between views" style="text-decoration: none">
+                            <img src="@Url.Content("~/Areas/Griffin/Content/GriffinImg/generic.png")"/>
+                        </a>
                     }
                 </td>
             </tr>

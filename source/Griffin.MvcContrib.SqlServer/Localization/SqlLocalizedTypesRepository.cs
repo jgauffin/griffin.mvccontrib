@@ -53,13 +53,17 @@ namespace Griffin.MvcContrib.SqlServer.Localization
                 cmd.AddParameter("LocaleId", cultureInfo.LCID);
                 if (!string.IsNullOrEmpty(filter.TextFilter))
                 {
-                    cmd.CommandText += " AND (TypeName LIKE @TextFilter OR TextName LIKE @TextFilter";
+                    cmd.CommandText += " AND (TypeName LIKE @TextFilter OR TextName LIKE @TextFilter)";
                     cmd.AddParameter("TextFilter", '%' + filter.TextFilter + "%");
                 }
                 if (!string.IsNullOrEmpty(filter.Path))
                 {
                     cmd.CommandText += " AND TypeName LIKE @PartialName";
                     cmd.AddParameter("PartialName", filter.Path + "%");
+                }
+                if (filter.OnlyNotTranslated)
+                {
+                    cmd.CommandText += " AND (Value IS null OR Value = '')";
                 }
 
                 using (var reader = cmd.ExecuteReader())

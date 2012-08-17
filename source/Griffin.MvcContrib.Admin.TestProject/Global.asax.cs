@@ -53,7 +53,7 @@ namespace Griffin.MvcContrib.Admin.TestProject
             GriffinAdminRoles.HomePage = null;
 
             AddSupportForEmbeddedViews();
-            SetupLocalicationProviders();
+            SetupLocalizationProviders();
 
             var builder = new ContainerBuilder();
             builder.RegisterControllers(GetType().Assembly);
@@ -62,7 +62,7 @@ namespace Griffin.MvcContrib.Admin.TestProject
             DependencyResolver.SetResolver(new AutofacDependencyResolver(_container));
         }
 
-        private void SetupLocalicationProviders()
+        private void SetupLocalizationProviders()
         {
             ModelValidatorProviders.Providers.Clear();
             ModelMetadataProviders.Current = new LocalizedModelMetadataProvider();
@@ -72,6 +72,7 @@ namespace Griffin.MvcContrib.Admin.TestProject
 
         private static void RegisterLocalizationFeaturesInTheContainer(ContainerBuilder builder)
         {
+            // add the controllers
             builder.RegisterControllers(typeof(MvcContrib.Areas.Griffin.GriffinAreaRegistration).Assembly);
 
             // Loads strings from repositories.
@@ -88,15 +89,7 @@ namespace Griffin.MvcContrib.Admin.TestProject
 
         private static void AddSupportForEmbeddedViews()
         {
-            // you can assign a custom WebViewPage or a custom layout in EmbeddedViewFixer.
-            var fixer = new ExternalViewFixer()
-                            {
-                                LayoutPath = "~/Views/Shared/_Layout.cshtml"
-                            };
-            var provider = new EmbeddedViewFileProvider(VirtualPathUtility.ToAbsolute("~/"), fixer);
-            provider.Add(new NamespaceMapping(typeof(MvcContrib.Areas.Griffin.GriffinAreaRegistration).Assembly, "Griffin.MvcContrib"));
-
-            GriffinVirtualPathProvider.Current.Add(provider);
+            GriffinVirtualPathProvider.Current.RegisterAdminFiles("~/Views/Shared/_Layout.cshtml");
             HostingEnvironment.RegisterVirtualPathProvider(GriffinVirtualPathProvider.Current);
         }
     }

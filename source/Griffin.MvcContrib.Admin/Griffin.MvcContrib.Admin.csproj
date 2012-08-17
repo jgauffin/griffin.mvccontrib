@@ -31,8 +31,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>
-    </DocumentationFile>
+    <DocumentationFile>bin\Release\Griffin.MvcContrib.Admin.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -65,16 +64,21 @@
     <Compile Include="Areas\Griffin\Models\LocalizeTypes\TranslateModel.cs" />
     <Compile Include="Areas\Griffin\Models\LocalizeTypes\TypePrompt.cs" />
     <Compile Include="Areas\Griffin\Models\LocalizeViews\EditModel.cs" />
+    <Compile Include="Areas\Griffin\Models\FilterModel.cs" />
     <Compile Include="Areas\Griffin\Models\LocalizeViews\IndexModel.cs" />
     <Compile Include="Areas\Griffin\Models\LocalizeViews\TranslateModel.cs" />
     <Compile Include="Areas\Griffin\Models\LocalizeViews\ViewPrompt.cs" />
     <Compile Include="GriffinAdminRoles.cs" />
     <Compile Include="GriffinAuthorizeAttribute.cs" />
+    <Compile Include="GriffinVirtualPathProviderExtensions.cs" />
     <Compile Include="NamespaceDoc.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Readme\ReadMe.txt" />
+    <EmbeddedResource Include="Areas\Griffin\Content\GriffinImg\delete.png" />
+    <EmbeddedResource Include="Areas\Griffin\Content\GriffinImg\edit.png" />
+    <EmbeddedResource Include="Areas\Griffin\Content\GriffinImg\generic.png" />
     <EmbeddedResource Include="Areas\Griffin\Scripts\griffin.js" />
   </ItemGroup>
   <ItemGroup>
