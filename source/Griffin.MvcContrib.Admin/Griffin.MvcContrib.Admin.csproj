@@ -76,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Readme\ReadMe.txt" />
+    <EmbeddedResource Include="screenshot.png" />
     <EmbeddedResource Include="Areas\Griffin\Content\GriffinImg\delete.png" />
     <EmbeddedResource Include="Areas\Griffin\Content\GriffinImg\edit.png" />
     <EmbeddedResource Include="Areas\Griffin\Content\GriffinImg\generic.png" />

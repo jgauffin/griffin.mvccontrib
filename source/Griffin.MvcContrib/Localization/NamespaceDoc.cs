@@ -15,7 +15,7 @@ namespace Griffin.MvcContrib.Localization
     /// <term>Translate only</term>
     /// <description>
     /// You need to setup the <see cref="LocalizedModelValidatorProvider"/> and <see cref="LocalizedModelMetadataProvider"/> in your
-    /// global.asax. The easiest way to get prove strings for them is to use string tables with the help of <see cref="ResourceStringProvider"/> class.
+    /// global.asax. The easiest way to provide strings for them is to use string tables with the help of <see cref="ResourceStringProvider"/> class.
     /// </description>
     /// </item>
     /// <item>
@@ -24,11 +24,10 @@ namespace Griffin.MvcContrib.Localization
     /// <para>
     /// You can also manage translations by using the <see cref="IViewLocalizationRepository"/> and the
     /// <see cref="ILocalizedTypesRepository"/> interfaces. Register one of the implementations in your inversion of control
-    /// container. You might also want to register <see cref="LocalizedModelValidatorProvider"/> and <see cref="LocalizedModelMetadataProvider"/>
-    /// in your container too, instead of assigning them directly (as they will need a database context). Dont forget to call <c>ModelMetaDataProviders.Clear()</c>
+    /// container. Dont forget to call <c>ModelMetaDataProviders.Clear()</c>
     /// in your global.asax as the default provider is not compatible with the one in this library.
     /// </para>
-    /// There are three available providers, flatfiles in the "Localization.FlatFile" namespace
+    /// There are three available providers, flatfiles in the <c>Griffin.MvcConctrib.Localization.FlatFile</c> namespace
     /// and the external SqlServer package (which should work with any SQL based database) and finally the external package for RavenDb.
     /// </description>
     /// </item>
@@ -44,11 +43,18 @@ namespace Griffin.MvcContrib.Localization
     /// {
     ///     protected void Application_Start()
     ///     {
-    ///          var stringProvider = new ResourceStringProvider(ModelMetadataStrings.ResourceManager);
-    ///          ModelMetadataProviders.Current = new LocalizedModelMetadataProvider(stringProvider);
+    ///         var stringProvider = new ResourceStringProvider(ModelMetadataStrings.ResourceManager);
+    /// 
+    ///         ModelMetadataProviders.Current = new LocalizedModelMetadataProvider(stringProvider);
     ///
+    ///         // required when not using IoC.
+    ///         ValidationMessageProviders.Clear();
+    ///         ValidationMessageProviders.Add(new GriffinStringsProvider(st)); // the rest
+    ///         ValidationMessageProviders.Add(new MvcDataSource()); //mvc attributes
+    ///         ValidationMessageProviders.Add(new DataAnnotationDefaultStrings()); //data annotation attributes
+    /// 
     ///         ModelValidatorProviders.Providers.Clear();
-    ///         ModelValidatorProviders.Providers.Add(new LocalizedModelValidatorProvider(stringProvider));
+    ///         ModelValidatorProviders.Providers.Add(new LocalizedModelValidatorProvider());
     ///     }
     /// }
     /// </code>
@@ -59,29 +65,18 @@ namespace Griffin.MvcContrib.Localization
     /// <para>You can also register the providers in your container (the example uses Autofac):
     /// <example><code><![CDATA[
     /// // Loads strings from repositories.
-    ///  builder.RegisterType<RepositoryStringProvider>().AsImplementedInterfaces().InstancePerLifetimeScope();
-    ///  builder.RegisterType<ViewLocalizer>().AsImplementedInterfaces().InstancePerLifetimeScope();
+    /// builder.RegisterType<RepositoryStringProvider>().AsImplementedInterfaces().InstancePerLifetimeScope();
+    /// builder.RegisterType<ViewLocalizer>().AsImplementedInterfaces().InstancePerLifetimeScope();
     /// builder.RegisterType<SqlLocalizedTypesRepository>().AsImplementedInterfaces().InstancePerLifetimeScope();
     /// builder.RegisterType<SqlLocalizedViewsRepository>().AsImplementedInterfaces().InstancePerLifetimeScope();
-    /// 
-    /// // Localization providers.
-    /// ModelValidatorProviders.Providers.Clear();
-    /// builder.RegisterType<LocalizedModelMetadataProvider>().As<ModelMetadataProvider>().InstancePerLifetimeScope();
-    /// builder.RegisterType<LocalizedModelValidatorProvider>().As<ModelValidatorProvider>().InstancePerLifetimeScope();
     /// 
     /// // Connection factory
     /// builder.RegisterInstance(new AdoNetConnectionFactory("DemoDb")).AsSelf();
     /// builder.RegisterType<LocalizationDbContext>().AsImplementedInterfaces().InstancePerLifetimeScope(); 
     /// ]]></code></example>
-    /// Which works well for context sensitive implementations. Do note that you still need to invoke <c>ModelValidatorProviders.Providers.Clear();</c>
-    /// as shown in the example.
-    /// </para>    /// <para>
-    /// There is also an administration area <c>Griffin.MvcContrib.Admin</c> which can used to handle all translations.
     /// </para>
     /// <para>
-    /// !!IMPORTANT!! It seems like ASP.NET (MVC) doesnt honor the specified lifetime in the container (seems to keep an instance instead
-    /// of resolving it again) for the ModelValidatorProvider and ModelMetadataProvider. This means that you can NOT register the providers
-    /// in the container (but you can registering everything else since the providers uses DependencyResolver internally).
+    /// There is also an administration area <c>Griffin.MvcContrib.Admin</c> which can used to handle all translations.
     /// </para>
     /// </remarks>
     [CompilerGenerated]

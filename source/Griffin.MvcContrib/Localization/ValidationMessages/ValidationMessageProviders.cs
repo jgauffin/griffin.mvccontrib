@@ -16,7 +16,7 @@ namespace Griffin.MvcContrib.Localization.ValidationMessages
     /// </remarks>
     /// <example>When not using a container:<code>
     /// ValidationMessageProviders.Clear();
-    /// ValidationMessageProviders.Add(new GriffinStringProvider(yourLocalizedStringProvider));
+    /// ValidationMessageProviders.Add(new GriffinStringsProvider(yourLocalizedStringProvider));
     /// 
     /// // for attributes in System.Web.Mvc
     /// ValidationMessageProviders.Add(new MvcDataSource());

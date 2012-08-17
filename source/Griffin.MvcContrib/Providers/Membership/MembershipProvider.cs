@@ -260,8 +260,17 @@ namespace Griffin.MvcContrib.Providers.Membership
                 return null;
             }
 
-            ValidatePassword(username, password);
-
+            try
+            {
+                ValidatePassword(username, password);
+            }
+            catch
+            {
+                // not the smoothest approach, but the best 
+                // considering the inconsistent password failure handling.
+                status = MembershipCreateStatus.InvalidPassword;
+                return null;
+            }
 
             var account = AccountRepository.Create(providerUserKey, ApplicationName, username, email);
             var passwordInfo = new AccountPasswordInfo(username, password);

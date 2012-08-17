@@ -44,3 +44,4 @@ source/Griffin.MvcContrib/Help/*
 !source/Griffin.MvcContrib/Help/documentation.chm
 
 documentation/Help/*
+source/Griffin.MvcContrib.Admin/Help/*

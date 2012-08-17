@@ -6,9 +6,11 @@ namespace Griffin.MvcContrib
     /// Administration area for Griffin.MvcContrib
     /// </summary>
     /// <remarks>
+    /// <img src="screenshot.png" />
     /// <para>
     /// The administration areas is currently used only for managing the localization features (the
     /// user management is not completed yet).
+    /// 
     /// </para>
     /// <para>
     /// Installation guidelines:

@@ -17,15 +17,20 @@ Read the wiki for a more detailed introduction.
 Installation (nuget)
 --------------------
 
-Base contrib package:
-
+	// base package
     install-package griffin.mvccontrib
 	
-The administration area:
-
+	// administration area
 	install-package griffin.mvccontrib.admin
 
-More information
-=================
+	// sql server membership provider (and localization storage)
+	install-package griffin.mvccontrib.sqlserver
+	
+	// ravendb membership provider (and localization storage)
+	install-package griffin.mvccontrib.ravendb
 
-Read the wiki.
+Documentation
+--------------
+
+* [Core](http://griffinframework.net/docs/mvccontrib/)
+* [Admin](http://griffinframework.net/docs/mvccontrib/admin/)

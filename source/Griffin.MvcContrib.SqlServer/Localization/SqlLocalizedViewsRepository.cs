@@ -60,7 +60,7 @@ namespace Griffin.MvcContrib.SqlServer.Localization
                 }
                 if (filter.OnlyNotTranslated)
                 {
-                    cmd.CommandText += " AND (Value is null OR Value = '')";
+                    cmd.CommandText += " AND (Value is null OR Value LIKE '')";
                 }
 
                 return MapCollection(cmd);
