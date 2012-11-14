@@ -33,7 +33,7 @@ namespace Griffin.MvcContrib
             var embeddedViews = new EmbeddedViewFileProvider(VirtualPathUtility.ToAbsolute("~/"), fixer);
             embeddedViews.Add(new NamespaceMapping(griffinAssembly, "Griffin.MvcContrib"));
             provider.Add(embeddedViews);
-
+            
             // Add support for loading content files:
             var contentFilesProvider = new EmbeddedFileProvider(VirtualPathUtility.ToAbsolute("~/"));
             contentFilesProvider.Add(new NamespaceMapping(griffinAssembly, "Griffin.MvcContrib"));

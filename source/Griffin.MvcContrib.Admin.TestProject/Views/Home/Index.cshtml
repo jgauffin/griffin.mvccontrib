@@ -7,7 +7,8 @@
     @T(@"To learn more about ASP.NET MVC visit <a href=""{0}"" title=""ASP.NET MVC Website"">{0}</a>.", "http://asp.net/mvc")
 </p>
 <p>
-    Add "?lang=en-us" or any other culture in the UI to fill the administration area.</p>
+    Add "?lang=en-us" or any other culture in the UI to fill the administration area.
+</p>
 <h3>@T("Just to try out localization")</h3>
 @using (Html.BeginForm())
 {
@@ -16,12 +17,21 @@
     <p>
         @Html.LabelFor(x => x.Name)
         @Html.EditorFor(x => x.Name)
-        @Html.ValidationMessageFor(x=>x.Name)
+        @Html.ValidationMessageFor(x => x.Name)
     </p>
     <p>
         @Html.LabelFor(x => x.Age)
         @Html.EditorFor(x => x.Age)
         @Html.ValidationMessageFor(x => x.Age)
+    </p>
+    <p>
+        @Html.LabelFor(x => x.Password1)
+        @Html.EditorFor(x => x.Password1)
+        @Html.ValidationMessageFor(x => x.Password1)
+        @Html.LabelFor(x => x.Password2)
+        @Html.EditorFor(x => x.Password2)
+        @Html.ValidationMessageFor(x => x.Password2)
+
     </p>
     <input type="submit" />
 }

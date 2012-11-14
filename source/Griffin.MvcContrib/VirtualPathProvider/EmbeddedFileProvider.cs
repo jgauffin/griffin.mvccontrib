@@ -36,6 +36,12 @@ namespace Griffin.MvcContrib.VirtualPathProvider
             AllowedFileExtensions = new[] {"png", "jpg", "jpeg", "gif", "css", "coffee", "js"};
         }
 
+        /// <summary>
+        /// Gets or sets file extensions that may be served.
+        /// </summary>
+        /// <remarks>Default extensions: <code>new[] {"png", "jpg", "jpeg", "gif", "css", "coffee", "js"}</code></remarks>
+        public string[] AllowedFileExtensions { get; set; }
+
         #region IViewFileProvider Members
 
         /// <summary>
@@ -91,9 +97,12 @@ namespace Griffin.MvcContrib.VirtualPathProvider
         {
             var resource = GetResource(virtualPath);
             if (resource == null)
+            {
                 return null;
-            
+            }
+
             var stream = LoadStream(virtualPath, resource);
+            Trace.WriteLine(GetType() + ": " + virtualPath + " = " + stream);
             return stream == null ? null : new EmbeddedFile(virtualPath, stream);
         }
 
@@ -142,6 +151,7 @@ namespace Griffin.MvcContrib.VirtualPathProvider
             var result =
                 _resourceNames.FirstOrDefault(
                     resource => resource.ResourceName.Equals(uri, StringComparison.OrdinalIgnoreCase));
+
             return result;
         }
 
@@ -158,19 +168,19 @@ namespace Griffin.MvcContrib.VirtualPathProvider
             {
                 if (!name.StartsWith(mapping.FolderNamespace))
                     continue;
-                
+
                 if (!IsFileAllowed(name))
                     continue;
 
                 _resourceNames.Add(new MappedResource
-                                       {
-                                           Assembly = mapping.Assembly,
-                                           AssemblyDate = new FileInfo(mapping.Assembly.Location).CreationTimeUtc,
-                                           FullResourceName = name,
-                                           ResourceRoot = mapping.FolderNamespace,
-                                           ResourceName = name.Remove(0, mapping.FolderNamespace.Length + 1)
-                                           // include the last dot
-                                       });
+                    {
+                        Assembly = mapping.Assembly,
+                        AssemblyDate = new FileInfo(mapping.Assembly.Location).CreationTimeUtc,
+                        FullResourceName = name,
+                        ResourceRoot = mapping.FolderNamespace,
+                        ResourceName = name.Remove(0, mapping.FolderNamespace.Length + 1)
+                        // include the last dot
+                    });
             }
         }
 
@@ -184,16 +194,10 @@ namespace Griffin.MvcContrib.VirtualPathProvider
         {
             if (resourceName == null) throw new ArgumentNullException("resourceName");
 
+            Debug.WriteLine(string.Join(", ", AllowedFileExtensions));
             var extension = resourceName.Substring(resourceName.LastIndexOf('.') + 1);
             return AllowedFileExtensions.Any(x => x == extension);
         }
-
-        /// <summary>
-        /// Gets or sets file extensions that may be served.
-        /// </summary>
-        /// <remarks>Default extensions: <code>new[] {"png", "jpg", "jpeg", "gif", "css", "coffee", "js"}</code></remarks>
-        public string[] AllowedFileExtensions { get; set; }
-
 
         #region Nested type: EmbeddedFile
 

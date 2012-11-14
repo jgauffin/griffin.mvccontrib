@@ -45,3 +45,4 @@ source/Griffin.MvcContrib/Help/*
 
 documentation/Help/*
 source/Griffin.MvcContrib.Admin/Help/*
+*.shfbproj_*

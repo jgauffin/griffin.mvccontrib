@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.IO;
 using System.Web.Mvc;
 
@@ -55,7 +56,7 @@ namespace Griffin.MvcContrib.VirtualPathProvider
             : base(siteRoot)
         {
             _viewFixer = viewFixer;
-            AllowedFileExtensions = new[] { "cshtml", "ascx", "aspx" };
+            AllowedFileExtensions = new[] {"cshtml", "ascx", "aspx"};
         }
 
         private Stream CorrectView(string virtualPath, Stream stream)

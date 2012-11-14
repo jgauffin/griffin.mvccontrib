@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Security.Principal;
 using System.Web;
 using System.Web.Hosting;
 using System.Web.Mvc;
@@ -31,6 +33,7 @@ namespace Griffin.MvcContrib.Admin.TestProject
         public static void RegisterRoutes(RouteCollection routes)
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
+            routes.IgnoreRoute("{*staticfile}", new { staticfile = @".*\.(css|js|gif|jpg)(/.*)?" });
 
             routes.MapRoute(
                 "Default", // Route name
@@ -60,6 +63,13 @@ namespace Griffin.MvcContrib.Admin.TestProject
             RegisterLocalizationFeaturesInTheContainer(builder);
             _container = builder.Build();
             DependencyResolver.SetResolver(new AutofacDependencyResolver(_container));
+        }
+
+        protected void Application_PostAuthenticateRequest(object sender, EventArgs e)
+        {
+            // I got Windows 7 Home on my home computer = no windows auth
+            // so here I'm simply faking a authed user.
+            HttpContext.Current.User=new GenericPrincipal(new GenericIdentity("Arne Storbyxa"), new string[0]);
         }
 
         private void SetupLocalizationProviders()

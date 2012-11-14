@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web.Caching;
 using System.Web.Hosting;
@@ -73,7 +74,14 @@ namespace Griffin.MvcContrib.VirtualPathProvider
         /// <returns> true if the file exists in the virtual file system; otherwise, false. </returns>
         public override bool FileExists(string virtualPath)
         {
-            return _fileProviders.Any(provider => provider.FileExists(virtualPath)) || base.FileExists(virtualPath);
+            foreach (var provider in _fileProviders)
+            {
+                if (provider.FileExists(virtualPath))
+                {
+                    return true;
+                }
+            }
+            return base.FileExists(virtualPath);
         }
 
 
@@ -124,11 +132,13 @@ namespace Griffin.MvcContrib.VirtualPathProvider
         /// <returns> A descendent of the <see cref="T:System.Web.Hosting.VirtualFile" /> class that represents a file in the virtual file system. </returns>
         public override VirtualFile GetFile(string virtualPath)
         {
-            foreach (
-                var result in
-                    _fileProviders.Select(provider => provider.GetFile(virtualPath)).Where(result => result != null))
+            foreach (var provider in _fileProviders)
             {
-                return result;
+                var file = provider.GetFile(virtualPath);
+                if (file != null)
+                {
+                    return file;
+                }
             }
 
             return base.GetFile(virtualPath);

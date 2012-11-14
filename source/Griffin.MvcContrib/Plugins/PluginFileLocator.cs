@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Web;
 using System.Web.Hosting;
 using Griffin.MvcContrib.VirtualPathProvider;
@@ -16,6 +18,7 @@ namespace Griffin.MvcContrib.Plugins
     public class PluginFileLocator : IViewFileLocator
     {
         private readonly string _basePath;
+        private IEnumerable<string> _allowedFileExtensions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PluginFileLocator"/> class.
@@ -32,7 +35,7 @@ namespace Griffin.MvcContrib.Plugins
         /// </summary>
         /// <param name="uri">Requested uri</param>
         /// <returns>
-        /// Full disk path if found; otherwise null.
+        /// Full disk path if found; otherwise <c>null</c>.
         /// </returns>
         public string GetFullPath(string uri)
         {
@@ -49,7 +52,32 @@ namespace Griffin.MvcContrib.Plugins
             var areaName = fixedUri.Substring(7, pos - 7);
 
             var path = string.Format("{0}{1}\\Plugin.{1}{2}", _basePath, areaName, fixedUri.Replace('/', '\\'));
+
+            if (!IsFileAllowed(uri))
+                return null;
             return File.Exists(path) ? path : null;
+        }
+
+        /// <summary>
+        /// determins if the found embedded file might be mapped and provided.
+        /// </summary>
+        /// <param name="fullPath">Full path to the file</param>
+        /// <returns><c>true</c> if the file is allowed; otherwise <c>false</c>.</returns>
+        protected virtual bool IsFileAllowed(string fullPath)
+        {
+            if (fullPath == null) throw new ArgumentNullException("fullPath");
+
+            var extension = fullPath.Substring(fullPath.LastIndexOf('.') + 1);
+            return _allowedFileExtensions.Any(x => x == extension);
+        }
+
+        /// <summary>
+        /// Set extensions that are allowed to be scanned.
+        /// </summary>
+        /// <param name="fileExtensions">File extensions without the dot.</param>
+        public void SetAllowedExtensions(IEnumerable<string> fileExtensions)
+        {
+            _allowedFileExtensions = fileExtensions;
         }
 
         #endregion

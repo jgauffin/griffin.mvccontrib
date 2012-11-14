@@ -179,7 +179,7 @@ namespace Griffin.MvcContrib.Localization
             var clientRules = clientValidable == null
                                   ? _adapterFactory.Create(attr, formattedError)
                                   : clientValidable.GetClientValidationRules(
-                                      metadata, context);
+                                      metadata, context).ToList();
 
             foreach (var clientRule in clientRules)
             {

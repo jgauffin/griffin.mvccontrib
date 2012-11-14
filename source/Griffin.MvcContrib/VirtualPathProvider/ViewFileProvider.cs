@@ -49,6 +49,22 @@ namespace Griffin.MvcContrib.VirtualPathProvider
             if (viewFileLocator == null) throw new ArgumentNullException("viewFileLocator");
             _viewFileLocator = viewFileLocator;
             _viewFixer = viewFixer;
+            _viewFileLocator.SetAllowedExtensions(new[] {"cshtml", "ascx", "aspx"});
+        }
+
+        /// <summary>
+        /// Gets or sets file extensions (without a dot) that this provider can supply
+        /// </summary>
+        /// <value>Default is cshtml, ascx and aspx.</value>
+        public string[] AllowedFileExtensions
+        {
+            set
+            {
+                if (value == null)
+                    throw new ArgumentNullException("value");
+
+                _viewFileLocator.SetAllowedExtensions(value);
+            }
         }
 
         #region IViewFileProvider Members

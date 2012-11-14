@@ -40,7 +40,6 @@ namespace Griffin.MvcContrib.SqlServer
             var connection = _factory.CreateConnection();
             if (connection == null)
                 throw new InvalidOperationException(string.Format("Failed to build a ADO.NET connection using the connection string named '{0}'.", _connectionStringName));
-            Trace.WriteLine("** Creating connection " + connection.GetHashCode());
             connection.ConnectionString = _connectionString.ConnectionString;
             connection.Open();
             return connection;

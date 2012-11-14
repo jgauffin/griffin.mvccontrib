@@ -17,24 +17,14 @@ namespace Griffin.MvcContrib.SqlServer
         /// <param name="connectionFactory">The connection factory.</param>
         public LocalizationDbContext(AdoNetConnectionFactory connectionFactory)
         {
-            Trace.WriteLine("** created LocalizationDbContext " + GetHashCode());
+            if (connectionFactory == null) throw new ArgumentNullException("connectionFactory");
             Connection = connectionFactory.CreateConnection();
         }
-
-        private IDbConnection _connection;
 
         /// <summary>
         /// Gets open connection
         /// </summary>
-        public IDbConnection Connection
-        {
-            get
-            {
-                Trace.WriteLine("** Getting connection " + GetHashCode());
-                return _connection;
-            }
-            private set { _connection = value; }
-        }
+        public IDbConnection Connection { get; private set; }
 
 
         /// <summary>
@@ -62,6 +52,7 @@ namespace Griffin.MvcContrib.SqlServer
         ///   </example>
         public virtual string ChangePrefix(string sql)
         {
+            if (sql == null) throw new ArgumentNullException("sql");
             return ParameterPrefix == '@' ? sql : sql.Replace('@', ParameterPrefix);
         }
 
@@ -70,7 +61,6 @@ namespace Griffin.MvcContrib.SqlServer
         /// </summary>
         public void Dispose()
         {
-            Trace.WriteLine("** Disposing connection" + GetHashCode());
             if (Connection == null)
                 return;
 

@@ -18,11 +18,11 @@
     <OutputPath>.\Help\</OutputPath>
     <HtmlHelpName>Documentation</HtmlHelpName>
     <Language>en-US</Language>
-    <HelpTitle>Griffin.MvcContrib</HelpTitle>
+    <HelpTitle>Griffin.MvcContrib.Admin</HelpTitle>
     <HelpFileFormat>HtmlHelp1, Website</HelpFileFormat>
     <DocumentationSources>
-      <DocumentationSource sourceFile="..\Griffin.MvcContrib\bin\Release\Griffin.MvcContrib.dll" />
-<DocumentationSource sourceFile="..\Griffin.MvcContrib\bin\Release\Griffin.MvcContrib.xml" /></DocumentationSources>
+      <DocumentationSource sourceFile="Griffin.MvcContrib.Admin.csproj" />
+    </DocumentationSources>
     <BuildLogFile />
     <HtmlHelp1xCompilerPath />
     <HtmlHelp2xCompilerPath />
