@@ -48,11 +48,19 @@ namespace Griffin.MvcContrib.Plugins
         }
 
         /// <summary>
-        ///   Called during startup to scan for all plugin assemblies
+        /// Called during startup to scan for all plugin assemblies
         /// </summary>
         public void Find()
         {
-            foreach (var file in Directory.GetFiles(_path, "Plugin.*.dll"))
+            Find("Plugin.*.dll");
+        }
+
+        /// <summary>
+        /// Called during startup to scan for all plugin assemblies, specifing the plugin filter
+        /// </summary>
+        public void Find(string pluginMask)
+        {
+            foreach (var file in Directory.GetFiles(_path, pluginMask))
             {
                 LoadPluginAssembly(file);
             }
