@@ -34,3 +34,4 @@ Documentation
 
 * [Core](http://griffinframework.net/docs/mvccontrib/)
 * [Admin](http://griffinframework.net/docs/mvccontrib/admin/)
+* [Forum/Mailing list](https://groups.google.com/forum/#!forum/mvccontrib)
