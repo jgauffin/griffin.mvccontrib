@@ -292,8 +292,8 @@ namespace Griffin.MvcContrib.Localization.FlatFile
                 if (prompts == null)
                 {
                     prompts = new ViewPromptCollection(culture);
-                    _languages.Add(culture, prompts);
                 }
+                _languages.Add(culture, prompts);
             }
 
             return prompts;
