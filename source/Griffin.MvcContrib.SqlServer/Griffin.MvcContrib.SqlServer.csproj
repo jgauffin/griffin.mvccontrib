@@ -34,6 +34,9 @@
     <DocumentationFile>bin\Release\Griffin.MvcContrib.SqlServer.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Griffin.MvcContrib">
+      <HintPath>..\..\..\AnnounceRegisterUltra\packages\griffin.mvccontrib.1.1.3\lib\net40\Griffin.MvcContrib.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -51,12 +54,6 @@
     <Compile Include="Localization\SqlLocalizedTypesRepository.cs" />
     <Compile Include="Localization\SqlLocalizedViewsRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Griffin.MvcContrib\Griffin.MvcContrib.csproj">
-      <Project>{0D102D58-4D79-444D-B633-F7ACD3B6D749}</Project>
-      <Name>Griffin.MvcContrib</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Database.sql" />
