@@ -102,9 +102,7 @@ namespace Griffin.MvcContrib.Localization
 
             if (metadata.DisplayName == null)
             {
-                metadata.DisplayName = Translate(containerType, propertyName);
-                if (!DefaultUICulture.IsActive && metadata.DisplayName == null)
-                    metadata.DisplayName = string.Format("[{0}: {1}]", CultureInfo.CurrentUICulture.Name, propertyName);
+                metadata.DisplayName = Translate(containerType, propertyName) ?? DefaultUICulture.FormatUnknown(propertyName);
             }
 
             if (metadata.Watermark == null)
