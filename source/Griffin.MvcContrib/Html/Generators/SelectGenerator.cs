@@ -1,6 +1,8 @@
+using Griffin.MvcContrib.Localization;
 using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
+using System.Linq;
 
 namespace Griffin.MvcContrib.Html.Generators
 {
@@ -11,7 +13,9 @@ namespace Griffin.MvcContrib.Html.Generators
     {
         protected override IEnumerable<NestedTagBuilder> GenerateTags()
         {
-            if (typeof (Enum).IsAssignableFrom(Context.Metadata.ModelType))
+            var type = getNonNullableModelType();
+
+            if (typeof (Enum).IsAssignableFrom(type))
                 return GenerateForEnum(Context);
 
             var selectContext = Context as SelectContext;
@@ -34,21 +38,47 @@ namespace Griffin.MvcContrib.Html.Generators
             if (!string.IsNullOrEmpty(Context.Metadata.Description))
                 selectTag.MergeAttribute("title", Context.Metadata.Description);
 
-            foreach (var enumName in Enum.GetNames(Context.Metadata.ModelType))
+            var names = Enum.GetNames(getNonNullableModelType());
+            if(context.Metadata.IsNullableValueType)
+                names = new string[] { string.Empty }.Concat(names).ToArray();
+
+            foreach (var enumName in names)
             {
                 var tagBuilder = new NestedTagBuilder("option");
                 tagBuilder.MergeAttribute("value", enumName, true);
                 if (GetValue() == enumName)
                     tagBuilder.MergeAttribute("selected", "selected");
 
-
-                var title = LocalizedStringProvider.GetEnumString(Context.Metadata.ModelType, enumName);
-                tagBuilder.SetInnerText(title);
+                if (enumName != string.Empty)
+                {
+                    var title = LocalizedStringProvider.GetEnumString(getNonNullableModelType(), enumName) ?? DefaultUICulture.FormatUnknown(enumName);
+                    tagBuilder.SetInnerText(title);
+                }
 
                 selectTag.AddChild(tagBuilder);
             }
 
             return new[] {selectTag};
+        }
+
+        private Type getNonNullableModelType()
+        {
+            return getNonNullableModelType(Context.Metadata);
+        }
+
+        /// <remarks>
+        /// http://blogs.msdn.com/b/stuartleeks/archive/2010/05/21/asp-net-mvc-creating-a-dropdownlist-helper-for-enums.aspx
+        /// </remarks>
+        private Type getNonNullableModelType(ModelMetadata modelMetadata)
+        {
+            Type realModelType = modelMetadata.ModelType;
+
+            Type underlyingType = Nullable.GetUnderlyingType(realModelType);
+            if (underlyingType != null)
+            {
+                realModelType = underlyingType;
+            }
+            return realModelType;
         }
     }
 }

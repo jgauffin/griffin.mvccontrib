@@ -78,5 +78,19 @@ namespace Griffin.MvcContrib.Localization
                 return culture.Name.StartsWith(_culture.Name);
             return _culture.Name.StartsWith(culture.Name);
         }
+
+        /// <summary>
+        /// Format the name as the default format for unknown translations:
+        /// ex: [en-US:ProperyName]
+        /// </summary>
+        /// <param name="name">String to format</param>
+        /// <returns>Formatted name</returns>
+        public static string FormatUnknown(string name)
+        {
+            var uiCultureName = "?";
+            if (!DefaultUICulture.IsActive)
+                uiCultureName = CultureInfo.CurrentUICulture.Name;
+            return string.Format("[{0}: {1}]", uiCultureName, name);
+        }
     }
 }
