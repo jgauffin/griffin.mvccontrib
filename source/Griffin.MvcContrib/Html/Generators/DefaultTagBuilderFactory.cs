@@ -34,7 +34,7 @@ namespace Griffin.MvcContrib.Html.Generators
         public ITagBuilder Create(string tagName)
         {
             ITagBuilderFactory factory;
-            if (!_tagBuilders.TryGetValue(tagName, out factory))
+            if (_tagBuilders.TryGetValue(tagName, out factory))
                 return factory.Create(tagName);
 
             return null;

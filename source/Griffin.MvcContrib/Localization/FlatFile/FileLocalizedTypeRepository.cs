@@ -238,12 +238,8 @@ namespace Griffin.MvcContrib.Localization.FlatFile
                 if (_languages.TryGetValue(culture, out prompts))
                     return prompts;
 
-                prompts = LoadLanguage(culture);
-                if (prompts == null)
-                {
-                    prompts = new TypePromptCollection(culture);
-                    _languages.Add(culture, prompts);
-                }
+                prompts = LoadLanguage(culture) ?? new TypePromptCollection(culture);
+                _languages.Add(culture, prompts);
             }
 
             return prompts;

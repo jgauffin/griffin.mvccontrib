@@ -34,6 +34,7 @@ namespace Griffin.MvcContrib.Html.Generators
         /// <param name="context">The context.</param>
         protected GeneratorContext(GeneratorContext context)
         {
+            _viewContext = context.ViewContext;
             Name = context.Name;
             FullName = context.FullName;
             Metadata = context.Metadata;
