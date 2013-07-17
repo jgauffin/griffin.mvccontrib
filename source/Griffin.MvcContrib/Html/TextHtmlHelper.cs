@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Griffin.MvcContrib.Localization;
+using Griffin.MvcContrib.Localization.Types;
+using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Web.Mvc;
@@ -37,7 +39,28 @@ namespace Griffin.MvcContrib.Html
 
         public MvcHtmlString DisplayFor<TProperty>(Expression<Func<TModel, TProperty>> property)
         {
-            return null;
+            var languageProvider = DependencyResolver.Current.GetService<ILocalizedStringProvider>();
+
+            var metadata = ModelMetadata.FromStringExpression("", this.ViewData);
+            if (metadata.Model == null)
+                return new MvcHtmlString(metadata.NullDisplayText);
+
+            var value = metadata.Model.ToString();
+            var result =
+            metadata.Model is Enum ?
+                languageProvider.GetEnumString(getNonNullableModelType(metadata), value) ?? DefaultUICulture.FormatUnknown(value) :
+                languageProvider.GetModelString(metadata.ModelType, value) ?? DefaultUICulture.FormatUnknown(value);
+
+            return new MvcHtmlString(result);
+        }
+
+        /// <remarks>
+        /// http://blogs.msdn.com/b/stuartleeks/archive/2010/05/21/asp-net-mvc-creating-a-dropdownlist-helper-for-enums.aspx
+        /// </remarks>
+        private Type getNonNullableModelType(ModelMetadata modelMetadata)
+        {
+            Type result = Nullable.GetUnderlyingType(modelMetadata.ModelType) ?? modelMetadata.ModelType;
+            return result;
         }
     }
 
