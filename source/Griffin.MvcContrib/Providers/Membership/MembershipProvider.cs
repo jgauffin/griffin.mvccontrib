@@ -276,6 +276,9 @@ namespace Griffin.MvcContrib.Providers.Membership
             var passwordInfo = new AccountPasswordInfo(username, password);
             account.Password = PasswordStrategy.Encrypt(passwordInfo);
             account.PasswordSalt = passwordInfo.PasswordSalt;
+            
+            account.PasswordAnswer = passwordAnswer;
+            account.PasswordQuestion = passwordQuestion;
 
             status = AccountRepository.Register(account);
             if (status == MembershipCreateStatus.Success)
