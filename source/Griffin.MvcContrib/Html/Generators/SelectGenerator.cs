@@ -71,14 +71,8 @@ namespace Griffin.MvcContrib.Html.Generators
         /// </remarks>
         private Type getNonNullableModelType(ModelMetadata modelMetadata)
         {
-            Type realModelType = modelMetadata.ModelType;
-
-            Type underlyingType = Nullable.GetUnderlyingType(realModelType);
-            if (underlyingType != null)
-            {
-                realModelType = underlyingType;
-            }
-            return realModelType;
+            Type result = Nullable.GetUnderlyingType(modelMetadata.ModelType) ?? modelMetadata.ModelType;
+            return result;
         }
     }
 }
