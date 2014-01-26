@@ -385,7 +385,8 @@ namespace Griffin.MvcContrib.Providers.Membership
             if (PasswordPolicy.IsPasswordQuestionRequired && answer == null)
                 throw new MembershipPasswordException("Password answer is empty and question/answer is required.");
 
-            if (!user.PasswordAnswer.Equals(answer, StringComparison.OrdinalIgnoreCase))
+            if (PasswordPolicy.IsPasswordQuestionRequired && 
+                !user.PasswordAnswer.Equals(answer, StringComparison.OrdinalIgnoreCase))
                 return null;
 
             var newPassword = PasswordStrategy.GeneratePassword(PasswordPolicy);
