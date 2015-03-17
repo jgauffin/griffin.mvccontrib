@@ -1,7 +1,9 @@
 Griffin.MvcContrib
 ==================
 
-A contribution project for ASP.NET MVC3
+A contribution project for ASP.NET MVC.
+
+***I do not actively maintain this library anymore, but pull requests are most welcome***
 
 Current features
 ----------------
