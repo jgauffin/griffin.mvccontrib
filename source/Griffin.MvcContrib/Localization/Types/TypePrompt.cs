@@ -13,8 +13,6 @@ namespace Griffin.MvcContrib.Localization.Types
     [DataContract]
     public class TypePrompt : IEquatable<TypePrompt>
     {
-        private Type _subject;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="TypePrompt"/> class.
         /// </summary>

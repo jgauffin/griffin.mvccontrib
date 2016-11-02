@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Web.Mvc;
 
 namespace Griffin.MvcContrib.Localization.ValidationMessages
 {
@@ -20,7 +19,10 @@ namespace Griffin.MvcContrib.Localization.ValidationMessages
         /// </returns>
         public string GetMessage(IGetMessageContext context)
         {
-            if (context.Attribute is CompareAttribute)
+            if (context.Attribute is System.ComponentModel.DataAnnotations.CompareAttribute)
+                return "The {0} and {1} fields to not match.";
+
+            if (context.Attribute is System.Web.Mvc.CompareAttribute)
                 return "The {0} and {1} fields to not match.";
 
             return null;

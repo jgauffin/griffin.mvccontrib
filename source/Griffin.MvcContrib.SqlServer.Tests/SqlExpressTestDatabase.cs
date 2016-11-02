@@ -72,7 +72,7 @@ namespace Griffin.MvcContrib.SqlServer.Tests
                         " ON PRIMARY (NAME=" + databaseName +
                         ", FILENAME='" + _databaseFilename + "')";*/
                         string.Format(
-                            "CREATE DATABASE {0} ON PRIMARY (NAME={0}, FILENAME='{1}', SIZE = 3000KB) LOG ON ( NAME = N'{0}_Log', FILENAME = N'{1}_Log.ldf', SIZE = 512KB)",
+                            "CREATE DATABASE {0} ON PRIMARY (NAME={0}, FILENAME='{1}', SIZE = 10000KB) LOG ON ( NAME = N'{0}_Log', FILENAME = N'{1}_Log.ldf', SIZE = 512KB)",
                             databaseName, _databaseFilename);
                     command.ExecuteNonQuery();
 

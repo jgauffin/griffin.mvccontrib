@@ -2,13 +2,22 @@
 using Griffin.MvcContrib.Localization;
 using Griffin.MvcContrib.Localization.Types;
 using Moq;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Globalization;
+using System.Threading;
 
 namespace Griffin.MvcContrib.Tests.Localization
 {
+    [TestClass]
     public class LocalizedModelMetadataProviderTests
     {
-        [Fact]
+        [TestInitialize]
+        public void CultureReset()
+        {
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo(1033);
+        }
+
+        [TestMethod]
         public void TestAProperty()
         {
             var stringProvider = new Mock<ILocalizedStringProvider>();
@@ -26,11 +35,11 @@ namespace Griffin.MvcContrib.Tests.Localization
 
             var actual = provider.GetMetadataForProperty(() => subject, typeof (TestModel), "Required");
 
-            Assert.Equal("Användarnamn", actual.DisplayName);
+            Assert.AreEqual("Användarnamn", actual.DisplayName);
             stringProvider.VerifyAll();
         }
 
-        [Fact]
+        [TestMethod]
         public void TestAnotherProperty()
         {
             var stringProvider = new Mock<ILocalizedStringProvider>();
@@ -48,14 +57,16 @@ namespace Griffin.MvcContrib.Tests.Localization
 
             var actual = provider.GetMetadataForProperty(() => subject, typeof (TestModel), "RequiredStringLength10");
 
-            Assert.Equal("Efternamn", actual.DisplayName);
+            Assert.AreEqual("Efternamn", actual.DisplayName);
             stringProvider.VerifyAll();
         }
 
-        [Fact]
+        [TestMethod]
         public void TestNotTranslatedProperty()
         {
             DefaultUICulture.Reset();
+
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo(1033);
             var stringProvider = new Mock<ILocalizedStringProvider>();
             var provider = new LocalizedModelMetadataProvider(stringProvider.Object);
             stringProvider.Setup(
@@ -71,7 +82,7 @@ namespace Griffin.MvcContrib.Tests.Localization
 
             var actual = provider.GetMetadataForProperty(() => subject, typeof (TestModel), "Required");
 
-            Assert.Equal(null, actual.DisplayName);
+            Assert.AreEqual("[?: Required]", actual.DisplayName);
         }
     }
 }

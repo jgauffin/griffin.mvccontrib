@@ -2,8 +2,6 @@ using System.Globalization;
 using Griffin.MvcContrib.Localization.Types;
 using Griffin.MvcContrib.SqlServer.Localization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Xunit;
-using Assert = Xunit.Assert;
 
 namespace Griffin.MvcContrib.SqlServer.Tests
 {
@@ -54,7 +52,7 @@ CREATE TABLE LocalizedViews(
         {
             var p = _repository.GetPrompt(new CultureInfo(1053),
                                           new TypePromptKey(typeof (TestType).FullName, "FirstNameOrSomething"));
-            Assert.Null(p);
+            Assert.IsNull(p);
         }
 
         [TestMethod]
@@ -76,8 +74,8 @@ CREATE TABLE LocalizedViews(
             _repository.Save(new CultureInfo(1053), typeof (TestType).FullName, "FirstName", "Förnamn");
 
             var prompt = _repository.GetPrompt(new CultureInfo(1053), key);
-            Assert.NotNull(prompt);
-            Assert.Equal("Förnamn", prompt.TranslatedText);
+            Assert.IsNotNull(prompt);
+            Assert.AreEqual("Förnamn", prompt.TranslatedText);
         }
 
         [TestMethod]
@@ -86,7 +84,7 @@ CREATE TABLE LocalizedViews(
             var key = new TypePromptKey(typeof(TestType).FullName, "FirstName");
             _repository.Update(new CultureInfo(1053), key, "Förrenammne");
             var prompt = _repository.GetPrompt(new CultureInfo(1053), key);
-            Assert.Null(prompt);
+            Assert.IsNull(prompt);
         }
 
         [TestMethod]
@@ -95,8 +93,8 @@ CREATE TABLE LocalizedViews(
             var key = new TypePromptKey(typeof(TestType).FullName, "FirstName");
             _repository.Save(new CultureInfo(1053), typeof(TestType).FullName, "FirstName", "Förrenammne");
             var prompt = _repository.GetPrompt(new CultureInfo(1053), key);
-            Assert.NotNull(prompt);
-            Assert.Equal("Förrenammne", prompt.TranslatedText);
+            Assert.IsNotNull(prompt);
+            Assert.AreEqual("Förrenammne", prompt.TranslatedText);
         }
 
         [TestMethod]
@@ -109,9 +107,9 @@ CREATE TABLE LocalizedViews(
 
             var enprompt = _repository.GetPrompt(new CultureInfo(1033), key);
             var seprompt = _repository.GetPrompt(new CultureInfo(1053), key);
-            Assert.NotNull(enprompt);
-            Assert.NotNull(seprompt);
-            Assert.NotEqual(enprompt.TranslatedText, seprompt.TranslatedText);
+            Assert.IsNotNull(enprompt);
+            Assert.IsNotNull(seprompt);
+            Assert.AreNotEqual(enprompt.TranslatedText, seprompt.TranslatedText);
         }
     }
 }

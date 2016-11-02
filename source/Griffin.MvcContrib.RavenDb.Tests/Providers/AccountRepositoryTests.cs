@@ -4,12 +4,12 @@ using Griffin.MvcContrib.RavenDb.Providers;
 using Raven.Client;
 using Raven.Client.Converters;
 using Raven.Client.Embedded;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Griffin.MvcContrib.RavenDb.Tests.Providers
 {
     // integration tests
-
+    [TestClass]
     public class AccountRepositoryTests : IDisposable
     {
         private readonly EmbeddableDocumentStore _documentStore;
@@ -36,7 +36,7 @@ namespace Griffin.MvcContrib.RavenDb.Tests.Providers
 
         #endregion
 
-        [Fact]
+        [TestMethod]
         public void Register_GetByKey_Delete()
         {
             var email = Guid.NewGuid().ToString("N") + "@somewhere.com";
@@ -53,13 +53,13 @@ namespace Griffin.MvcContrib.RavenDb.Tests.Providers
             _session.SaveChanges();
 
             var user = repos.GetByProviderKey("ten");
-            Assert.NotNull(user);
+            Assert.IsNotNull(user);
 
             repos.Delete(email, true);
             _session.SaveChanges();
         }
 
-        [Fact]
+        [TestMethod]
         public void Register_GetByUsrName_Delete()
         {
             var email = Guid.NewGuid().ToString("N") + "@somewhere.com";
@@ -76,14 +76,13 @@ namespace Griffin.MvcContrib.RavenDb.Tests.Providers
             _session.SaveChanges();
 
             var user = repos.Get(email);
-            Assert.NotNull(user);
+            Assert.IsNotNull(user);
 
             repos.Delete(email, true);
             _session.SaveChanges();
         }
-
-
-        [Fact]
+        
+        [TestMethod]
         public void ListUsers()
         {
             var repos = new RavenDbAccountRepository(_session);
@@ -98,5 +97,4 @@ namespace Griffin.MvcContrib.RavenDb.Tests.Providers
             repos.FindAll(1, 500, out records);
         }
     }
-
 }

@@ -9,24 +9,25 @@ using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using Griffin.MvcContrib.Json;
 using Newtonsoft.Json;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 //using ModelError = Griffin.MvcContrib.Json.ModelError;
 
 namespace Griffin.MvcContrib.Tests.Json
 {
+    [TestClass]
     public class JsonResponseTests
     {
-        [Fact]
+        [TestMethod]
         public void SerializeError()
         {
             var response = new JsonResponse(false, new ErrorMessage("Something failed"));
 
             var actual = JsonConvert.SerializeObject(response);
 
-            Assert.Equal(@"{""success"":false,""contentType"":""error"",""body"":{""message"":""Something failed""}}", actual);
+            Assert.AreEqual(@"{""success"":false,""contentType"":""error"",""body"":{""message"":""Something failed""}}", actual);
         }
 
-        [Fact]
+        [TestMethod]
         public void SerializeModelError()
         {
             var errors = new List<KeyValuePair<string, ModelState>>();
@@ -38,10 +39,10 @@ namespace Griffin.MvcContrib.Tests.Json
 
             var actual = JsonConvert.SerializeObject(response);
 
-            Assert.Equal(@"{""success"":false,""contentType"":""model-errors"",""body"":{""Something"":[""some error""]}}", actual);
+            Assert.AreEqual(@"{""success"":false,""contentType"":""model-errors"",""body"":{""Something"":[""some error""]}}", actual);
         }
 
-        [Fact]
+        [TestMethod]
         public void SerializeValidationRules()
         {
             var rules = new ValidationRules();
@@ -51,7 +52,7 @@ namespace Griffin.MvcContrib.Tests.Json
 
             var actual = JsonConvert.SerializeObject(new JsonResponse(true, rules));
 
-            Assert.Equal(@"{""success"":true,""contentType"":""validation-rules"",""body"":{""messages"":{""SomeProp"":{""required"":""The field is required, dude!""}},""rules"":{""someProp"":{""required"":""true""}}}}", actual);
+            Assert.AreEqual(@"{""success"":true,""contentType"":""validation-rules"",""body"":{""messages"":{""SomeProp"":{""required"":""The field is required, dude!""}},""rules"":{""someProp"":{""required"":""true"",""max"":""40""}}}}", actual);
         }
     }
 }

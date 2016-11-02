@@ -30,8 +30,7 @@ namespace Griffin.MvcContrib.SqlServer.Localization
             if (db == null) throw new ArgumentNullException("db");
             _db = db;
         }
-
-
+        
 
         #region ILocalizedTypesRepository Members
 

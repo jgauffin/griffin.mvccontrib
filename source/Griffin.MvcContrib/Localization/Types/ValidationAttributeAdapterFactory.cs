@@ -97,14 +97,22 @@ namespace Griffin.MvcContrib.Localization.Types
                                                                               attr.MaximumLength)
                                                                       };
                                                        });
-            AddDelegateRule<CompareAttribute>((attribute, errMsg) =>
+            AddDelegateRule<System.Web.Mvc.CompareAttribute>((attribute, errMsg) =>
                                                   {
-                                                      var attr = (CompareAttribute) attribute;
+                                                      var attr = (System.Web.Mvc.CompareAttribute) attribute;
                                                       return new[]
                                                                  {
-                                                                     new ModelClientValidationEqualToRule(errMsg, CompareAttribute.FormatPropertyForClientValidation(attr.OtherProperty))
+                                                                     new ModelClientValidationEqualToRule(errMsg, System.Web.Mvc.CompareAttribute.FormatPropertyForClientValidation(attr.OtherProperty))
                                                                  };
                                                   });
+            AddDelegateRule<System.ComponentModel.DataAnnotations.CompareAttribute>((attribute, errMsg) =>
+            {
+                var attr = (System.ComponentModel.DataAnnotations.CompareAttribute)attribute;
+                return new[]
+                           {
+                                                                     new ModelClientValidationEqualToRule(errMsg, attr.OtherProperty)
+                                                                 };
+            });
         }
     }
 }

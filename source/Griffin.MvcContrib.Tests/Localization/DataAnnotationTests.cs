@@ -6,10 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using Griffin.MvcContrib.Localization.ValidationMessages;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Griffin.MvcContrib.Tests.Localization
 {
+    [TestClass]
     public class DataAnnotationTests
     {
         public string GetMessage<T>(string propertyName, int lcid) where T : ValidationAttribute, new()
@@ -22,18 +23,18 @@ namespace Griffin.MvcContrib.Tests.Localization
             return da.GetMessage(context);
         }
 
-        [Fact]
+        [TestMethod]
         public void GetRequiredEnglish()
         {
             var message = GetMessage<RequiredAttribute>("Required", new CultureInfo("en-us").LCID);
-            Assert.Equal("The {0} field is required.", message);
+            Assert.AreEqual("The {0} field is required.", message);
         }
 
-        [Fact]
+        [TestMethod]
         public void GetRequiredUnknownLang()
         {
             var message = GetMessage<RequiredAttribute>("Required", 1098);
-            Assert.Equal(null, message);
+            Assert.AreEqual(null, message);
         }
 
     }
