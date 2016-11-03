@@ -4,7 +4,7 @@ namespace Griffin.MvcContrib.SqlServer.Tests
 {
     public class SqlExpressConnectionFactory : SqlExpressTestDatabase, ILocalizationDbContext
     {
-        public SqlExpressConnectionFactory(string schema) : base(schema)
+        public SqlExpressConnectionFactory(string schema, string dropSchema) : base(schema, dropSchema)
         {
         }
 

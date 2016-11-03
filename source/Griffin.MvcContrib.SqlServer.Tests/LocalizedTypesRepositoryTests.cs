@@ -8,7 +8,7 @@ namespace Griffin.MvcContrib.SqlServer.Tests
     [TestClass]
     public class LocalizedTypesRepositoryTests
     {
-        public const string Schema =
+        public const string SchemaStatement =
             @"CREATE TABLE LocalizedTypes(
 	Id int IDENTITY(1,1) NOT NULL,
 	LocaleId int NOT NULL,
@@ -31,21 +31,38 @@ CREATE TABLE LocalizedViews(
 	UpdatedAt datetime NOT NULL,
 	UpdatedBy nvarchar(50) NOT NULL
 );";
-        private readonly SqlExpressConnectionFactory _factory = new SqlExpressConnectionFactory(Schema);
+
+        public const string DropSchemaStatement =
+            @"DROP TABLE LocalizedTypes;
+DROP TABLE LocalizedViews;";
+
+        private readonly SqlExpressConnectionFactory _factory = new SqlExpressConnectionFactory(SchemaStatement, DropSchemaStatement);
         private SqlLocalizedTypesRepository _repository;
 
-        [TestInitialize]
-        public void Init()
+        public LocalizedTypesRepositoryTests()
         {
             _repository = new SqlLocalizedTypesRepository(_factory);
         }
 
+        [ClassInitialize]
+        public static void CreateDatabase(TestContext context)
+        {
+            SqlExpressConnectionFactory.CreateDatabase();
+        }
+
+        [TestInitialize]
+        public void CreateTables()
+        {
+            _factory.CreateSchema();
+        }
+
 
         [TestCleanup]
-        public void Cleanup()
+        public void DropSchema()
         {
             _factory.Dispose();
         }
+        
 
         [TestMethod]
         public void GetNonExistant()

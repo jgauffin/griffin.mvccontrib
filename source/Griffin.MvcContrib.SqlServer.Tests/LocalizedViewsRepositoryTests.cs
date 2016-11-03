@@ -9,7 +9,7 @@ namespace Griffin.MvcContrib.SqlServer.Tests
     [TestClass]
     public class LocalizedViewsRepositoryTests
     {
-        public const string Schema =
+        public const string SchemaStatement =
             @"CREATE TABLE LocalizedTypes(
 	Id int IDENTITY(1,1) NOT NULL,
 	LocaleId int NOT NULL,
@@ -32,6 +32,9 @@ CREATE TABLE LocalizedViews(
 	UpdatedAt datetime NOT NULL,
 	UpdatedBy nvarchar(50) NOT NULL
 );";
+        public const string DropSchemaStatement =
+           @"DROP TABLE LocalizedTypes;
+DROP TABLE LocalizedViews;";
         private const string ViewPath = "/myarea/controller/index";
 
         private const string TextName =
@@ -39,13 +42,31 @@ CREATE TABLE LocalizedViews(
 
         private readonly ViewPromptKey _key = new ViewPromptKey(ViewPath, TextName);
         private readonly SqlLocalizedViewsRepository _repository;
-        private readonly SqlExpressConnectionFactory _factory = new SqlExpressConnectionFactory(Schema);
+        private readonly SqlExpressConnectionFactory _factory = new SqlExpressConnectionFactory(SchemaStatement, DropSchemaStatement);
 
         public LocalizedViewsRepositoryTests()
         {
             _repository = new SqlLocalizedViewsRepository(_factory);
         }
 
+        [ClassInitialize]
+        public static void CreateDatabase(TestContext context)
+        {
+            SqlExpressConnectionFactory.CreateDatabase();
+        }
+
+        [TestInitialize]
+        public void CreateTables()
+        {
+            _factory.CreateSchema();
+        }
+        
+        [TestCleanup]
+        public void DropSchema()
+        {
+            _factory.Dispose();
+        }
+       
         [TestMethod]
         public void GetNonExistant()
         {
