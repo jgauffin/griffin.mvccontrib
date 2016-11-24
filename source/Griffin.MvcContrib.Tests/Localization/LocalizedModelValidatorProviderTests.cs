@@ -6,15 +6,18 @@ using Griffin.MvcContrib.Localization;
 using Griffin.MvcContrib.Localization.Types;
 using Griffin.MvcContrib.Localization.ValidationMessages;
 using Moq;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading;
+using System.Globalization;
 
 namespace Griffin.MvcContrib.Tests.Localization
 {
+    [TestClass]
     public class LocalizedModelValidatorProviderTests
     {
         private readonly LocalizedModelValidatorProvider _provider;
         private readonly Mock<IValidationMessageDataSource> _stringProvider;
-
+        
         public LocalizedModelValidatorProviderTests()
         {
             _stringProvider = new Mock<IValidationMessageDataSource>();
@@ -23,17 +26,24 @@ namespace Griffin.MvcContrib.Tests.Localization
             _provider = new LocalizedModelValidatorProvider();
         }
 
-        [Fact]
+        [TestInitialize]
+        public void SetCurrentLocale()
+        {
+
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo(1033);
+        }
+
+        [TestMethod]
         public void CustomErrorMessage()
         {
             var model = new TestModel{Compare1 = "1", Compare2 = "b", Required = "yes", RequiredStringLength10 = "qaa", ResourceFile = "nope"};
             var validator = GetValidator(model, "CustomMessage");
 
             var actual = validator.Validate(model).First().Message;
-            Assert.Equal("Custom message", actual);
+            Assert.AreEqual("Custom message", actual);
         }
 
-        [Fact]
+        [TestMethod]
         public void RegEx()
         {
             ValidationMessageProviders.Clear();
@@ -44,20 +54,20 @@ namespace Griffin.MvcContrib.Tests.Localization
             var actual = validator.Validate(model).First().Message;
 
             // regex can't be identified in the DataAnnotations resource file :(
-            Assert.Equal("[en-US: RegularExpression]", actual);
+            Assert.AreEqual("[en-US: RegularExpression]", actual);
         }
 
-        [Fact]
+        [TestMethod]
         public void ResourceFileMessage()
         {
             var model = new TestModel();
             var validator = GetValidator(model, "ResourceFile");
 
             var actual = validator.Validate(model).First().Message;
-            Assert.Equal("From resource file", actual);
+            Assert.AreEqual("From resource file", actual);
         }
 
-        [Fact]
+        [TestMethod]
         public void DefaultMessage()
         {
             ValidationMessageProviders.Clear();
@@ -66,10 +76,10 @@ namespace Griffin.MvcContrib.Tests.Localization
             var validator = GetValidator(model, "Required");
 
             var actual = validator.Validate(model).First().Message;
-            Assert.Equal("The Required field is required.", actual);
+            Assert.AreEqual("The Required field is required.", actual);
         }
 
-        [Fact]
+        [TestMethod]
         public void CompareAttribute()
         {
             ValidationMessageProviders.Clear();
@@ -80,12 +90,12 @@ namespace Griffin.MvcContrib.Tests.Localization
             var validator = GetValidator(model, "Compare1");
 
             var actual = validator.Validate(model).First().Message;
-            Assert.Equal("The Compare1 and Compare2 fields to not match.", actual);
+            Assert.AreEqual("The Compare1 and Compare2 fields to not match.", actual);
         }
 
 
 
-        [Fact]
+        [TestMethod]
         public void ClientValidatable()
         {
             ValidationMessageProviders.Reset();
@@ -96,11 +106,11 @@ namespace Griffin.MvcContrib.Tests.Localization
 
             var result = validators.ToList().First().Validate(model).ToList();
 
-            Assert.NotEqual(0, result.Count);
+            Assert.AreNotEqual(0, result.Count);
 
         }
 
-        private ModelValidator GetValidator(TestModel model, string propertyName)
+        private System.Web.Mvc.ModelValidator GetValidator(TestModel model, string propertyName)
         {
             var metadataProvider = new DataAnnotationsModelMetadataProvider();
             var metadata =
@@ -112,11 +122,11 @@ namespace Griffin.MvcContrib.Tests.Localization
             return validator;
         }
 
-        [Fact]
+        [TestMethod]
         public void DefaultRequiredClientValidationString()
         {
             var model = new TestModel { RequiredStringLength10 = "Arne", Required = "Kalle" };
-            var metadataProvider = new DataAnnotationsModelMetadataProvider();
+            var metadataProvider = new System.Web.Mvc.DataAnnotationsModelMetadataProvider();
             var metadata = metadataProvider.GetMetadataForProperty(() => model, typeof(TestModel), "Required");
             _stringProvider.Setup(k => k.GetMessage(It.Is<IGetMessageContext>(x => x.Attribute is RequiredAttribute))).Returns(
                 "The {0} field is required.").Verifiable();
@@ -127,11 +137,11 @@ namespace Griffin.MvcContrib.Tests.Localization
 
             var clientRules = validator.GetClientValidationRules();
 
-            Assert.True(validator.IsRequired);
-            Assert.Equal("The Required field is required.", clientRules.Single().ErrorMessage);
+            Assert.IsTrue(validator.IsRequired);
+            Assert.AreEqual("The Required field is required.", clientRules.Single().ErrorMessage);
         }
 
-        [Fact]
+        [TestMethod]
         public void RequiredClientValidationString()
         {
             var model = new TestModel { RequiredStringLength10 = "Arne", Required = "Kalle" };
@@ -146,8 +156,8 @@ namespace Griffin.MvcContrib.Tests.Localization
 
             var clientRules = validator.GetClientValidationRules();
 
-            Assert.True(validator.IsRequired);
-            Assert.Equal("Fältet 'Required' är humm!", clientRules.Single().ErrorMessage);
+            Assert.IsTrue(validator.IsRequired);
+            Assert.AreEqual("Fältet 'Required' är humm!", clientRules.Single().ErrorMessage);
             _stringProvider.VerifyAll();
         }
     }

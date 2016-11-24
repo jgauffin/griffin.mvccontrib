@@ -1,61 +1,66 @@
 ﻿using System.Globalization;
 using Griffin.MvcContrib.Localization;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading;
 
 namespace Griffin.MvcContrib.Tests.Localization
 {
+    [TestClass]
     public class DefaultCultureTests
     {
-        public DefaultCultureTests()
+        [TestInitialize]
+        public void ResetCulture()
         {
             DefaultUICulture.Reset();
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo(1033);
         }
 
-        [Fact]
+        [TestMethod]
         public void DefaultLcidIsEnglish()
         {
-            Assert.Equal(1033, DefaultUICulture.LCID);
+            Assert.AreEqual(1033, DefaultUICulture.LCID);
         }
 
-        [Fact]
+        [TestMethod]
         public void DefaultIsAlsoNeutral()
         {
-            Assert.True(DefaultUICulture.Is(new CultureInfo("en")));
+            Assert.IsTrue(DefaultUICulture.Is(new CultureInfo("en")));
         }
 
-        [Fact]
+        [TestMethod]
         public void DefaulIsUsEnglish()
         {
-            Assert.True(DefaultUICulture.Is(new CultureInfo("en-us")));
+            Assert.IsTrue(DefaultUICulture.Is(new CultureInfo("en-us")));
         }
 
-        [Fact]
+        [TestMethod]
         public void IsActive()
         {
-            Assert.True(DefaultUICulture.IsActive);
+            CultureInfo _culture = new CultureInfo(1033);
+            Assert.IsTrue(DefaultUICulture.IsActive);
         }
 
-        [Fact]
+        [TestMethod]
         public void ChangeCultureToGbAndVerify()
         {
             DefaultUICulture.Set(new CultureInfo("en-gb"));
 
-            Assert.Equal(new CultureInfo("en-gb").LCID, DefaultUICulture.LCID);
-            Assert.True(DefaultUICulture.Is(new CultureInfo("en")));
-            Assert.True(DefaultUICulture.Is(new CultureInfo("en-gb")));
-            Assert.False(DefaultUICulture.IsActive);
+            Assert.AreEqual(new CultureInfo("en-gb").LCID, DefaultUICulture.LCID);
+            Assert.IsTrue(DefaultUICulture.Is(new CultureInfo("en")));
+            Assert.IsTrue(DefaultUICulture.Is(new CultureInfo("en-gb")));
+            Assert.IsFalse(DefaultUICulture.IsActive);
         }
 
-        [Fact]
+        [TestMethod]
         public void ChangeCultureToSwedishAndVerify()
         {
             DefaultUICulture.Set(new CultureInfo(1053));
 
-            Assert.Equal(1053, DefaultUICulture.LCID);
-            Assert.False(DefaultUICulture.Is(new CultureInfo("en")));
-            Assert.True(DefaultUICulture.Is(new CultureInfo(1053)));
-            Assert.False(DefaultUICulture.IsActive);
-            Assert.False(DefaultUICulture.IsEnglish);
+            Assert.AreEqual(1053, DefaultUICulture.LCID);
+            Assert.IsFalse(DefaultUICulture.Is(new CultureInfo("en")));
+            Assert.IsTrue(DefaultUICulture.Is(new CultureInfo(1053)));
+            Assert.IsFalse(DefaultUICulture.IsActive);
+            Assert.IsFalse(DefaultUICulture.IsEnglish);
         }
     }
 }

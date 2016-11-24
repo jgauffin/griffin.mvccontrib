@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Web.Mvc;
 using Griffin.MvcContrib.Localization.ValidationMessages;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Griffin.MvcContrib.Tests.Localization
 {
+    [TestClass]
     public class ValidatableObjectAdapterTests
     {
-        [Fact]
+        [TestMethod]
         public void ValidatbleObjectAdapter()
         {
             var model = new TestModel();
@@ -20,7 +21,7 @@ namespace Griffin.MvcContrib.Tests.Localization
             var adapter = new MvcContrib.Localization.ValidatableObjectAdapter(metadata, controllerContext);
 
             var result = adapter.Validate(model).ToList();
-            Assert.NotEqual(0, result.Count);
+            Assert.AreNotEqual(0, result.Count);
         }
     }
 }

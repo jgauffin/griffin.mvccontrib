@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Griffin.MvcContrib.Localization.Types;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Griffin.MvcContrib.Tests.Localization
 {
+    [TestClass]
     public class TypePromptTests
     {
-        [Fact]
+        [TestMethod]
         public void LoadWrongVersion()
         {
             TypePrompt prompt = new TypePrompt();
 
-            Assert.NotNull(prompt.TypeFullName);
+            Assert.IsNull(prompt.TypeFullName);
         }
     }
 }

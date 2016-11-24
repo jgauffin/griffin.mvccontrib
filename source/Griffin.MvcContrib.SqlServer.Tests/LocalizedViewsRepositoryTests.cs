@@ -1,13 +1,15 @@
 using System.Globalization;
 using Griffin.MvcContrib.Localization.Views;
 using Griffin.MvcContrib.SqlServer.Localization;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Griffin.MvcContrib.SqlServer.Tests
 {
+
+    [TestClass]
     public class LocalizedViewsRepositoryTests
     {
-        public const string Schema =
+        public const string SchemaStatement =
             @"CREATE TABLE LocalizedTypes(
 	Id int IDENTITY(1,1) NOT NULL,
 	LocaleId int NOT NULL,
@@ -30,6 +32,9 @@ CREATE TABLE LocalizedViews(
 	UpdatedAt datetime NOT NULL,
 	UpdatedBy nvarchar(50) NOT NULL
 );";
+        public const string DropSchemaStatement =
+           @"DROP TABLE LocalizedTypes;
+DROP TABLE LocalizedViews;";
         private const string ViewPath = "/myarea/controller/index";
 
         private const string TextName =
@@ -37,21 +42,39 @@ CREATE TABLE LocalizedViews(
 
         private readonly ViewPromptKey _key = new ViewPromptKey(ViewPath, TextName);
         private readonly SqlLocalizedViewsRepository _repository;
-        private readonly SqlExpressConnectionFactory _factory = new SqlExpressConnectionFactory(Schema);
+        private readonly SqlExpressConnectionFactory _factory = new SqlExpressConnectionFactory(SchemaStatement, DropSchemaStatement);
 
         public LocalizedViewsRepositoryTests()
         {
             _repository = new SqlLocalizedViewsRepository(_factory);
         }
 
-        [Fact]
+        [ClassInitialize]
+        public static void CreateDatabase(TestContext context)
+        {
+            SqlExpressConnectionFactory.CreateDatabase();
+        }
+
+        [TestInitialize]
+        public void CreateTables()
+        {
+            _factory.CreateSchema();
+        }
+        
+        [TestCleanup]
+        public void DropSchema()
+        {
+            _factory.Dispose();
+        }
+       
+        [TestMethod]
         public void GetNonExistant()
         {
             var p = _repository.GetPrompt(new CultureInfo(1053), new ViewPromptKey("/some/action/", "forme"));
-            Assert.Null(p);
+            Assert.IsNull(p);
         }
 
-        [Fact]
+        [TestMethod]
         public void TestCreateLang()
         {
             using (var cmd = _factory.Connection.CreateCommand())
@@ -64,26 +87,26 @@ CREATE TABLE LocalizedViews(
         }
 
 
-        [Fact]
+        [TestMethod]
         public void GetExisting()
         {
             _repository.Save(new CultureInfo(1053), ViewPath, TextName, "Förnamn");
 
             var prompt = _repository.GetPrompt(new CultureInfo(1053), _key);
-            Assert.NotNull(prompt);
-            Assert.Equal("Förnamn", prompt.TranslatedText);
+            Assert.IsNotNull(prompt);
+            Assert.AreEqual("Förnamn", prompt.TranslatedText);
         }
 
-        [Fact]
+        [TestMethod]
         public void Update()
         {
             _repository.Save(new CultureInfo(1053), ViewPath, TextName, "Förrenammne");
             var prompt = _repository.GetPrompt(new CultureInfo(1053), _key);
-            Assert.NotNull(prompt);
-            Assert.Equal("Förrenammne", prompt.TranslatedText);
+            Assert.IsNotNull(prompt);
+            Assert.AreEqual("Förrenammne", prompt.TranslatedText);
         }
 
-        [Fact]
+        [TestMethod]
         public void TwoLanguages()
         {
             _repository.Save(new CultureInfo(1033), ViewPath, TextName, "FirstName");
@@ -92,9 +115,9 @@ CREATE TABLE LocalizedViews(
 
             var enprompt = _repository.GetPrompt(new CultureInfo(1033), _key);
             var seprompt = _repository.GetPrompt(new CultureInfo(1053), _key);
-            Assert.NotNull(enprompt);
-            Assert.NotNull(seprompt);
-            Assert.NotEqual(enprompt.TranslatedText, seprompt.TranslatedText);
+            Assert.IsNotNull(enprompt);
+            Assert.IsNotNull(seprompt);
+            Assert.AreNotEqual(enprompt.TranslatedText, seprompt.TranslatedText);
         }
     }
 }
